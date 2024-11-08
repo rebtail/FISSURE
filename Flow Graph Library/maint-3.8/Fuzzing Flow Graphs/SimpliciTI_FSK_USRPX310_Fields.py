@@ -5,15 +5,14 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Simpliciti Fsk Fields
-# GNU Radio version: 3.10.7.0
+# Title: Simpliciti Fsk Usrpx310 Fields
+# GNU Radio version: 3.8.5.0
 
 from gnuradio import blocks
 from gnuradio import digital
 from gnuradio import filter
 from gnuradio import gr
 from gnuradio.filter import firdes
-from gnuradio.fft import window
 import sys
 import signal
 from argparse import ArgumentParser
@@ -24,12 +23,10 @@ import time
 import fuzzer
 
 
-
-
-class SimpliciTI_FSK_Fields(gr.top_block):
+class SimpliciTI_FSK_USRPX310_Fields(gr.top_block):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Simpliciti Fsk Fields", catch_exceptions=True)
+        gr.top_block.__init__(self, "Simpliciti Fsk Usrpx310 Fields")
 
         ##################################################
         # Variables
@@ -41,7 +38,7 @@ class SimpliciTI_FSK_Fields(gr.top_block):
         self.sampling_multiple = sampling_multiple = 16
         self.sampling_factor = sampling_factor = 100
         self.sample_rate = sample_rate = 4e6
-        self.library_filepath = library_filepath = "~/FISSURE/YAML/library_3_10.yaml"
+        self.library_filepath = library_filepath = "~/FISSURE/YAML/library_3_8.yaml"
         self.ip_address = ip_address = "192.168.40.2"
         self.fuzzing_type = fuzzing_type = "['Random','Sequential']"
         self.fuzzing_seed = fuzzing_seed = "0"
@@ -58,7 +55,6 @@ class SimpliciTI_FSK_Fields(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-
         self.uhd_usrp_sink_0 = uhd.usrp_sink(
             ",".join(("", "addr=" + ip_address)),
             uhd.stream_args(
@@ -69,13 +65,12 @@ class SimpliciTI_FSK_Fields(gr.top_block):
             '',
         )
         self.uhd_usrp_sink_0.set_subdev_spec(tx_usrp_channel, 0)
-        self.uhd_usrp_sink_0.set_samp_rate(sample_rate)
-        self.uhd_usrp_sink_0.set_time_unknown_pps(uhd.time_spec(0))
-
         self.uhd_usrp_sink_0.set_center_freq(tx_frequency, 0)
-        self.uhd_usrp_sink_0.set_antenna(tx_usrp_antenna, 0)
         self.uhd_usrp_sink_0.set_gain(tx_usrp_gain, 0)
-        self.mmse_resampler_xx_0 = filter.mmse_resampler_cc(0, (sampling_factor*data_rate*sampling_multiple/sample_rate))
+        self.uhd_usrp_sink_0.set_antenna(tx_usrp_antenna, 0)
+        self.uhd_usrp_sink_0.set_samp_rate(sample_rate)
+        self.uhd_usrp_sink_0.set_time_unknown_pps(uhd.time_spec())
+        self.mmse_resampler_xx_0 = filter.mmse_resampler_cc(0, sampling_factor*data_rate*sampling_multiple/sample_rate)
         self.fuzzer_packet_insert_0 = fuzzer.packet_insert([0],20,0)
         self.fuzzer_fuzzer_0 = fuzzer.fuzzer(fuzzing_seed,fuzzing_fields,fuzzing_type,fuzzing_min,fuzzing_max,fuzzing_data,fuzzing_interval,fuzzing_protocol,fuzzing_packet_type,library_filepath)
         self.digital_gfsk_mod_0 = digital.gfsk_mod(
@@ -83,12 +78,11 @@ class SimpliciTI_FSK_Fields(gr.top_block):
             sensitivity=0.1,
             bt=0.5,
             verbose=False,
-            log=False,
-            do_unpack=True)
+            log=False)
         self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(8)
         self.blocks_null_source_0 = blocks.null_source(gr.sizeof_char*1)
         self.blocks_multiply_const_vxx_1 = blocks.multiply_const_cc(0.1)
-        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff((-1))
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(-1)
         self.blocks_float_to_char_0 = blocks.float_to_char(1, 1)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
 
@@ -140,21 +134,21 @@ class SimpliciTI_FSK_Fields(gr.top_block):
 
     def set_sampling_multiple(self, sampling_multiple):
         self.sampling_multiple = sampling_multiple
-        self.mmse_resampler_xx_0.set_resamp_ratio((self.sampling_factor*self.data_rate*self.sampling_multiple/self.sample_rate))
+        self.mmse_resampler_xx_0.set_resamp_ratio(self.sampling_factor*self.data_rate*self.sampling_multiple/self.sample_rate)
 
     def get_sampling_factor(self):
         return self.sampling_factor
 
     def set_sampling_factor(self, sampling_factor):
         self.sampling_factor = sampling_factor
-        self.mmse_resampler_xx_0.set_resamp_ratio((self.sampling_factor*self.data_rate*self.sampling_multiple/self.sample_rate))
+        self.mmse_resampler_xx_0.set_resamp_ratio(self.sampling_factor*self.data_rate*self.sampling_multiple/self.sample_rate)
 
     def get_sample_rate(self):
         return self.sample_rate
 
     def set_sample_rate(self, sample_rate):
         self.sample_rate = sample_rate
-        self.mmse_resampler_xx_0.set_resamp_ratio((self.sampling_factor*self.data_rate*self.sampling_multiple/self.sample_rate))
+        self.mmse_resampler_xx_0.set_resamp_ratio(self.sampling_factor*self.data_rate*self.sampling_multiple/self.sample_rate)
         self.uhd_usrp_sink_0.set_samp_rate(self.sample_rate)
 
     def get_library_filepath(self):
@@ -234,12 +228,13 @@ class SimpliciTI_FSK_Fields(gr.top_block):
 
     def set_data_rate(self, data_rate):
         self.data_rate = data_rate
-        self.mmse_resampler_xx_0.set_resamp_ratio((self.sampling_factor*self.data_rate*self.sampling_multiple/self.sample_rate))
+        self.mmse_resampler_xx_0.set_resamp_ratio(self.sampling_factor*self.data_rate*self.sampling_multiple/self.sample_rate)
 
 
 
 
-def main(top_block_cls=SimpliciTI_FSK_Fields, options=None):
+
+def main(top_block_cls=SimpliciTI_FSK_USRPX310_Fields, options=None):
     tb = top_block_cls()
 
     def sig_handler(sig=None, frame=None):

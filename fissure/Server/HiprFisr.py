@@ -64,7 +64,6 @@ class HiprFisr:
     """Fissure HIPRFISR Class"""
 
     settings: Dict
-    library: Dict
     identifier: str = fissure.comms.Identifiers.HIPRFISR
     logger: logging.Logger = fissure.utils.get_logger(fissure.comms.Identifiers.HIPRFISR)
     ip_address: str
@@ -126,9 +125,8 @@ class HiprFisr:
         # Load settings from Fissure Config YAML
         self.settings = fissure.utils.get_fissure_config()
 
-        # Load Library from Fissure Library YAML
+        # Detect Operating System
         self.os_info = fissure.utils.get_os_info()
-        self.library = fissure.utils.load_library(self.os_info)
 
         # Create the HIPRFISR ZMQ Nodes
         listen_addr = self.initialize_comms(address)

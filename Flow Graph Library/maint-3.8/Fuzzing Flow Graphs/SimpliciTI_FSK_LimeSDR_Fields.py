@@ -6,7 +6,7 @@
 #
 # GNU Radio Python Flow Graph
 # Title: Simpliciti Fsk Limesdr Fields
-# GNU Radio version: 3.8.1.0
+# GNU Radio version: 3.8.5.0
 
 from gnuradio import blocks
 from gnuradio import digital
@@ -20,6 +20,7 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 import fuzzer
 import limesdr
+
 
 class SimpliciTI_FSK_LimeSDR_Fields(gr.top_block):
 
@@ -88,7 +89,6 @@ class SimpliciTI_FSK_LimeSDR_Fields(gr.top_block):
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
 
 
-
         ##################################################
         # Connections
         ##################################################
@@ -102,6 +102,7 @@ class SimpliciTI_FSK_LimeSDR_Fields(gr.top_block):
         self.connect((self.digital_gfsk_mod_0, 0), (self.mmse_resampler_xx_0, 0))
         self.connect((self.fuzzer_packet_insert_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
         self.connect((self.mmse_resampler_xx_0, 0), (self.blocks_multiply_const_vxx_1, 0))
+
 
     def get_tx_gain(self):
         return self.tx_gain
@@ -220,18 +221,22 @@ class SimpliciTI_FSK_LimeSDR_Fields(gr.top_block):
 
 
 
+
+
 def main(top_block_cls=SimpliciTI_FSK_LimeSDR_Fields, options=None):
     tb = top_block_cls()
 
     def sig_handler(sig=None, frame=None):
         tb.stop()
         tb.wait()
+
         sys.exit(0)
 
     signal.signal(signal.SIGINT, sig_handler)
     signal.signal(signal.SIGTERM, sig_handler)
 
     tb.start()
+
     try:
         input('Press Enter to quit: ')
     except EOFError:

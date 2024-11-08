@@ -1,6 +1,41 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2024-11-07
+
+PostgreSQL database introduction to replace YAML libraries.
+
+### Added
+
+- Database files: example.env, docker-compose.yaml, db folder, fissure_db_dump.sql
+- Splash screen while database caches are retrieved and Dashboard widgets finish updating
+- pgAdmin link in Tools>Development menu
+- Preview button for downloaded files in Archive tab
+- Rename button for downloaded files in Archive tab
+- RSPdx, RSPdx R2 options in Sensor Node Configuration dialog tabs (support only for GNU Radio 3.10 operating systems)
+- More View File buttons in PD>Demodulation tab
+- Link to FIRMS in Tools>Weather menu
+
+### Changed
+
+- Replaced library functions for retreiving, adding, and removing values from a YAML library to a database library
+- Components can cache certain tables from the database located at the HIPRFISR for quick access (still stored in "backend.library" variable types)
+- Removed Refresh button from Archive tab for the listview (listview updates automatically)
+- Removed outdated Mode_S_PPM_dump1090.py file from maint-3.8 attacks
+- Expanded TSI detector threshold ranges for spinboxes
+- Widened OOK Signal Generator widgets, increased number of bursts spinbox range
+
+### Fixed
+
+- SDRPlay .grc file overwriting rtl2832U python file for the TSI wideband detector
+- Expanded second installer GUI to prevent the buttons from overlapping the status text
+- Selecting another file after deleting an item from Archive tab listview
+- Ask for confirmation when deleting a file in IQ Data tab
+- Filepath corrected for opening SigMF metadata file for SigMF button in IQ Data tab
+- Removed .pyc files
+- Refresh file list after doing IQ Data>Split action
+- Dashboard no longer freezes when closing after Protocol Discovery is turned on without an active sensor node selected
+
 ## 2024-10-13
 
 Import/Export installer software setups.

@@ -38,7 +38,6 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)  # Scapy warnings
 
 IP_ADDRESS = "127.0.0.1"
 CERT_DIR = "certificates"
-CONFIG_FILE = os.path.join(fissure.utils.YAML_DIR, "sensor_node.yaml")
 
 DELAY = 0.5  # Seconds
 
@@ -223,7 +222,6 @@ class SensorNode():
         ################        
 
         self.hiprfisr_socket = fissure.comms.Server(
-            # schema=CONFIG_FILE,
             address=sensor_node_pair_address,
             sock_type=zmq.PAIR,
             name=f"{self.identifier}::sensor_node",
@@ -862,18 +860,6 @@ class SensorNode():
             c_thread = threading.Thread(target=self.runFlowGraphGUI_Thread, args=(stop_event, sensor_node_id, flow_graph_filepath, variable_names, variable_values, autorun_index))
         # Python2, Python3
         else:
-            #print(variable_names)
-            #print(variable_values)
-            #print(type(variable_values))
-            #print(repr(variable_values))
-            #print type(repr(variable_values))
-            #for n in range(0,len(variable_values)):
-                #print("asdfasd")
-                #print(variable_values[n])
-                #variable_values[n] = variable_values[n].replace('`','\`')
-            #print("after")
-            #print(variable_values)
-            #print("function")
             c_thread = threading.Thread(target=self.runPythonScriptThread, args=(stop_event, sensor_node_id, file_type, flow_graph_filepath, variable_names, variable_values, run_with_sudo, autorun_index, False))  # backticks execute commands
 
         c_thread.daemon = True
@@ -1959,9 +1945,6 @@ class SensorNode():
         loadedmod, class_name = self.overwriteFlowGraphVariables(flow_graph_filename, variable_names, variable_values)
 
         # Call the "__init__" Function
-        print("AAAAAAAAAAA")
-        print(loadedmod)
-        print(class_name)
         self.wideband_flowtoexec = getattr(loadedmod,class_name)()
 
         # Start it

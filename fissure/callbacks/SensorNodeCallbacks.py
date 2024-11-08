@@ -740,12 +740,7 @@ async def startTSI_Detector(component: object, sensor_node_id=0, detector="", va
                 component.tsi_detector_socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
             # Run Event and Do Not Block, SUB Created on Update Click
-            print("HEEEEEEEEEEEEEREDSAF")
             class_name = flow_graph_filename.replace(".py", "")
-            print(flow_graph_filename)
-            print(class_name)
-            print(variable_names)
-            print(variable_values)
             loop = asyncio.get_event_loop()
             loop.run_in_executor(None, component.runWidebandThread, sensor_node_id, class_name, variable_names, variable_values)
 

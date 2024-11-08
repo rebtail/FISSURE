@@ -2126,10 +2126,10 @@ p, li { white-space: pre-wrap; }
              </font>
             </property>
             <property name="minimum">
-             <number>-90</number>
+             <number>-99</number>
             </property>
             <property name="maximum">
-             <number>0</number>
+             <number>99</number>
             </property>
             <property name="value">
              <number>-70</number>
@@ -2419,10 +2419,10 @@ p, li { white-space: pre-wrap; }
              </font>
             </property>
             <property name="minimum">
-             <number>-90</number>
+             <number>-99</number>
             </property>
             <property name="maximum">
-             <number>0</number>
+             <number>99</number>
             </property>
             <property name="value">
              <number>-70</number>
@@ -3036,10 +3036,10 @@ p, li { white-space: pre-wrap; }
              </rect>
             </property>
             <property name="minimum">
-             <number>-120</number>
+             <number>-99</number>
             </property>
             <property name="maximum">
-             <number>20</number>
+             <number>99</number>
             </property>
             <property name="value">
              <number>0</number>
@@ -11669,9 +11669,9 @@ p, li { white-space: pre-wrap; }
         <widget class="QPushButton" name="pushButton_pd_flow_graphs_load_selected">
          <property name="geometry">
           <rect>
-           <x>675</x>
+           <x>740</x>
            <y>285</y>
-           <width>111</width>
+           <width>110</width>
            <height>27</height>
           </rect>
          </property>
@@ -12381,6 +12381,28 @@ p, li { white-space: pre-wrap; }
           <bool>false</bool>
          </property>
         </widget>
+        <widget class="QPushButton" name="pushButton_pd_flow_graphs_lookup_view">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>610</x>
+           <y>285</y>
+           <width>110</width>
+           <height>27</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>View File</string>
+         </property>
+        </widget>
         <zorder>frame5_19</zorder>
         <zorder>frame5_18</zorder>
         <zorder>frame5_17</zorder>
@@ -12415,6 +12437,7 @@ p, li { white-space: pre-wrap; }
         <zorder>pushButton_pd_flow_graphs_auto_select</zorder>
         <zorder>label2_26</zorder>
         <zorder>textEdit_pd_flow_graphs_modulation</zorder>
+        <zorder>pushButton_pd_flow_graphs_lookup_view</zorder>
        </widget>
        <widget class="QLabel" name="label1_234">
         <property name="geometry">
@@ -12457,9 +12480,9 @@ p, li { white-space: pre-wrap; }
         <widget class="QPushButton" name="pushButton_pd_flow_graphs_load_selected_all">
          <property name="geometry">
           <rect>
-           <x>95</x>
+           <x>160</x>
            <y>285</y>
-           <width>111</width>
+           <width>110</width>
            <height>27</height>
           </rect>
          </property>
@@ -12589,6 +12612,28 @@ p, li { white-space: pre-wrap; }
            <string>RSPdx R2</string>
           </property>
          </item>
+        </widget>
+        <widget class="QPushButton" name="pushButton_pd_flow_graphs_all_fgs_view">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>285</y>
+           <width>110</width>
+           <height>27</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>View File</string>
+         </property>
         </widget>
        </widget>
       </widget>
@@ -30301,7 +30346,7 @@ p, li { white-space: pre-wrap; }
          <rect>
           <x>135</x>
           <y>35</y>
-          <width>50</width>
+          <width>100</width>
           <height>27</height>
          </rect>
         </property>
@@ -30390,7 +30435,7 @@ p, li { white-space: pre-wrap; }
          <rect>
           <x>135</x>
           <y>5</y>
-          <width>50</width>
+          <width>100</width>
           <height>27</height>
          </rect>
         </property>
@@ -30407,7 +30452,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QLabel" name="label2_160">
         <property name="geometry">
          <rect>
-          <x>200</x>
+          <x>250</x>
           <y>70</y>
           <width>130</width>
           <height>17</height>
@@ -30429,9 +30474,9 @@ p, li { white-space: pre-wrap; }
        <widget class="QSpinBox" name="spinBox_iq_ook_bursts">
         <property name="geometry">
          <rect>
-          <x>335</x>
+          <x>385</x>
           <y>65</y>
-          <width>50</width>
+          <width>55</width>
           <height>27</height>
          </rect>
         </property>
@@ -30444,6 +30489,9 @@ p, li { white-space: pre-wrap; }
         <property name="minimum">
          <number>1</number>
         </property>
+        <property name="maximum">
+         <number>999</number>
+        </property>
         <property name="value">
          <number>1</number>
         </property>
@@ -30454,7 +30502,7 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="geometry">
          <rect>
-          <x>335</x>
+          <x>385</x>
           <y>95</y>
           <width>157</width>
           <height>27</height>
@@ -30515,7 +30563,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QLabel" name="label2_285">
         <property name="geometry">
          <rect>
-          <x>200</x>
+          <x>250</x>
           <y>100</y>
           <width>130</width>
           <height>17</height>
@@ -30537,7 +30585,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QLabel" name="label2_286">
         <property name="geometry">
          <rect>
-          <x>200</x>
+          <x>250</x>
           <y>10</y>
           <width>130</width>
           <height>17</height>
@@ -30562,9 +30610,9 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="geometry">
          <rect>
-          <x>335</x>
+          <x>385</x>
           <y>5</y>
-          <width>50</width>
+          <width>100</width>
           <height>27</height>
          </rect>
         </property>
@@ -30586,7 +30634,7 @@ p, li { white-space: pre-wrap; }
          <rect>
           <x>135</x>
           <y>95</y>
-          <width>50</width>
+          <width>100</width>
           <height>27</height>
          </rect>
         </property>
@@ -30628,9 +30676,9 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="geometry">
          <rect>
-          <x>335</x>
+          <x>385</x>
           <y>35</y>
-          <width>50</width>
+          <width>100</width>
           <height>27</height>
          </rect>
         </property>
@@ -30647,7 +30695,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QLabel" name="label2_288">
         <property name="geometry">
          <rect>
-          <x>200</x>
+          <x>250</x>
           <y>40</y>
           <width>130</width>
           <height>17</height>
@@ -30696,7 +30744,7 @@ p, li { white-space: pre-wrap; }
          <rect>
           <x>135</x>
           <y>65</y>
-          <width>50</width>
+          <width>100</width>
           <height>27</height>
          </rect>
         </property>
@@ -30713,7 +30761,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QLabel" name="label2_290">
         <property name="geometry">
          <rect>
-          <x>455</x>
+          <x>505</x>
           <y>10</y>
           <width>130</width>
           <height>17</height>
@@ -30738,10 +30786,10 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="geometry">
          <rect>
-          <x>590</x>
+          <x>640</x>
           <y>5</y>
-          <width>600</width>
-          <height>54</height>
+          <width>550</width>
+          <height>115</height>
          </rect>
         </property>
         <property name="font">
@@ -30752,6 +30800,13 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="tabChangesFocus">
          <bool>true</bool>
+        </property>
+        <property name="html">
+         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </widget>
@@ -32730,28 +32785,6 @@ p, li { white-space: pre-wrap; }
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <widget class="QPushButton" name="pushButton_archive_download_refresh">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>745</y>
-        <width>90</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>11</pointsize>
-        <strikeout>false</strikeout>
-       </font>
-      </property>
-      <property name="text">
-       <string>Refresh</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="pushButton_archive_download_delete">
       <property name="geometry">
        <rect>
@@ -32834,7 +32867,7 @@ p, li { white-space: pre-wrap; }
         <x>10</x>
         <y>70</y>
         <width>280</width>
-        <height>670</height>
+        <height>640</height>
        </rect>
       </property>
       <property name="font">
@@ -32932,8 +32965,8 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="geometry">
        <rect>
-        <x>105</x>
-        <y>775</y>
+        <x>10</x>
+        <y>745</y>
         <width>90</width>
         <height>27</height>
        </rect>
@@ -32969,6 +33002,127 @@ p, li { white-space: pre-wrap; }
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_archive_download_preview">
+      <property name="geometry">
+       <rect>
+        <x>105</x>
+        <y>775</y>
+        <width>90</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <strikeout>false</strikeout>
+       </font>
+      </property>
+      <property name="text">
+       <string>Preview</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_archive_download_rename">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>775</y>
+        <width>90</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <strikeout>false</strikeout>
+       </font>
+      </property>
+      <property name="text">
+       <string>Rename</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label2_36">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>715</y>
+        <width>120</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <strikeout>false</strikeout>
+       </font>
+      </property>
+      <property name="text">
+       <string>Preview Data Type:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboBox_archive_downloaded_data_type">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>715</y>
+        <width>160</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <strikeout>false</strikeout>
+       </font>
+      </property>
+      <item>
+       <property name="text">
+        <string>Complex Float 32</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Float/Float 32</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Short/Int 16</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Int/Int 32</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Byte/Int 8</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Complex Float 64</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Complex Int 64</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Complex Int 16</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Complex Int 8</string>
+       </property>
+      </item>
      </widget>
     </widget>
     <widget class="QLabel" name="label1_96">
@@ -33965,126 +34119,182 @@ p, li { white-space: pre-wrap; }
       <attribute name="title">
        <string>Browse</string>
       </attribute>
-      <widget class="QFrame" name="frame1_68">
+      <widget class="QComboBox" name="comboBox_library_browse">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>1190</width>
-         <height>765</height>
+         <x>205</x>
+         <y>15</y>
+         <width>250</width>
+         <height>25</height>
         </rect>
        </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <widget class="QTreeWidget" name="treeWidget_library_browse">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>45</y>
-          <width>1170</width>
-          <height>710</height>
-         </rect>
+       <item>
+        <property name="text">
+         <string>archive_collection</string>
         </property>
-        <property name="styleSheet">
-         <string notr="true"/>
+       </item>
+       <item>
+        <property name="text">
+         <string>archive_favorites</string>
         </property>
-        <property name="expandsOnDoubleClick">
-         <bool>true</bool>
+       </item>
+       <item>
+        <property name="text">
+         <string>attack_categories</string>
         </property>
-        <column>
-         <property name="text">
-          <string notr="true">library.yaml</string>
-         </property>
-        </column>
-       </widget>
-       <widget class="QComboBox" name="comboBox_library_browse_yaml">
-        <property name="geometry">
-         <rect>
-          <x>495</x>
-          <y>10</y>
-          <width>200</width>
-          <height>27</height>
-         </rect>
+       </item>
+       <item>
+        <property name="text">
+         <string>attacks</string>
         </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
+       </item>
+       <item>
+        <property name="text">
+         <string>conditioner_flow_graphs</string>
         </property>
-        <item>
-         <property name="text">
-          <string>library_3_8.yaml</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>library_3_10.yaml</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>logging.yaml</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>sensor_node.yaml</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>dashboard.yaml</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>hiprfisr.yaml</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>pd.yaml</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>tsi.yaml</string>
-         </property>
-        </item>
-       </widget>
+       </item>
+       <item>
+        <property name="text">
+         <string>demodulation_flow_graphs</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>detector_flow_graphs</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>inspection_flow_graphs</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>modulation_types</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>packet_types</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>protocols</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>soi_data</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>triggers</string>
+        </property>
+       </item>
       </widget>
-      <widget class="QLabel" name="label1_247">
+      <widget class="QPushButton" name="pushButton_library_browse_pgadmin4">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>1190</width>
-         <height>20</height>
+         <x>15</x>
+         <y>780</y>
+         <width>99</width>
+         <height>27</height>
         </rect>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <italic>false</italic>
-         <bold>true</bold>
+         <pointsize>11</pointsize>
          <strikeout>false</strikeout>
         </font>
        </property>
        <property name="text">
-        <string>Browse YAML Files</string>
+        <string>pgAdmin 4</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_97">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>15</y>
+         <width>200</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+       <property name="text">
+        <string>PostgreSQL Database Tables:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QTableWidget" name="tableWidget1_library_browse">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>1200</width>
+         <height>725</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOn</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>155</number>
+       </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
+      </widget>
+      <widget class="QPushButton" name="pushButton_library_browse_delete_row">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>780</y>
+         <width>99</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+       <property name="text">
+        <string>Delete Row</string>
        </property>
       </widget>
      </widget>
@@ -35324,690 +35534,6 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
        </column>
-      </widget>
-     </widget>
-     <widget class="QWidget" name="tab_browse">
-      <attribute name="title">
-       <string>Remove</string>
-      </attribute>
-      <widget class="QLabel" name="label2_184">
-       <property name="geometry">
-        <rect>
-         <x>420</x>
-         <y>25</y>
-         <width>100</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-         <strikeout>false</strikeout>
-        </font>
-       </property>
-       <property name="text">
-        <string>Protocol:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="comboBox_library_browse_protocol">
-       <property name="geometry">
-        <rect>
-         <x>530</x>
-         <y>20</y>
-         <width>200</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-         <strikeout>false</strikeout>
-        </font>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_library_remove_protocol">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>750</x>
-         <y>20</y>
-         <width>99</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-         <strikeout>false</strikeout>
-        </font>
-       </property>
-       <property name="text">
-        <string>Remove</string>
-       </property>
-      </widget>
-      <widget class="QFrame" name="frame6_1">
-       <property name="geometry">
-        <rect>
-         <x>-5</x>
-         <y>60</y>
-         <width>1225</width>
-         <height>121</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <widget class="QListWidget" name="listWidget_library_browse_attacks3">
-        <property name="geometry">
-         <rect>
-          <x>560</x>
-          <y>5</y>
-          <width>655</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label2_185">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>5</y>
-          <width>120</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Attacks
-
-</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-       <widget class="QListWidget" name="listWidget_library_browse_attacks_modulation">
-        <property name="geometry">
-         <rect>
-          <x>405</x>
-          <y>5</y>
-          <width>150</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
-       <widget class="QListWidget" name="listWidget_library_browse_attacks">
-        <property name="geometry">
-         <rect>
-          <x>145</x>
-          <y>5</y>
-          <width>255</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_library_attacks_remove">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>25</x>
-          <y>85</y>
-          <width>99</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Remove</string>
-        </property>
-       </widget>
-       <widget class="QCheckBox" name="checkBox_library_attacks_remove_flow_graphs">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>25</x>
-          <y>60</y>
-          <width>120</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Delete Files</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QFrame" name="frame6_2">
-       <property name="geometry">
-        <rect>
-         <x>-5</x>
-         <y>180</y>
-         <width>1225</width>
-         <height>121</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <widget class="QListWidget" name="listWidget_library_browse_modulation_types">
-        <property name="geometry">
-         <rect>
-          <x>145</x>
-          <y>5</y>
-          <width>280</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label2_186">
-        <property name="geometry">
-         <rect>
-          <x>15</x>
-          <y>5</y>
-          <width>120</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Modulation
-Types</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_library_browse_remove_modulation">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>25</x>
-          <y>85</y>
-          <width>99</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Remove</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QFrame" name="frame6_3">
-       <property name="geometry">
-        <rect>
-         <x>-5</x>
-         <y>300</y>
-         <width>1225</width>
-         <height>121</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <widget class="QTextEdit" name="textEdit_library_browse_packet_types">
-        <property name="geometry">
-         <rect>
-          <x>695</x>
-          <y>5</y>
-          <width>520</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_library_browse_remove_packet_type">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>25</x>
-          <y>85</y>
-          <width>99</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Remove</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label2_187">
-        <property name="geometry">
-         <rect>
-          <x>15</x>
-          <y>5</y>
-          <width>120</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Packet Types</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-       <widget class="QListWidget" name="listWidget_library_browse_packet_types2">
-        <property name="geometry">
-         <rect>
-          <x>430</x>
-          <y>5</y>
-          <width>260</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
-       <widget class="QListWidget" name="listWidget_library_browse_packet_types">
-        <property name="geometry">
-         <rect>
-          <x>145</x>
-          <y>5</y>
-          <width>280</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
-       <zorder>textEdit_library_browse_packet_types</zorder>
-       <zorder>label2_187</zorder>
-       <zorder>listWidget_library_browse_packet_types2</zorder>
-       <zorder>listWidget_library_browse_packet_types</zorder>
-       <zorder>pushButton_library_browse_remove_packet_type</zorder>
-      </widget>
-      <widget class="QFrame" name="frame6_4">
-       <property name="geometry">
-        <rect>
-         <x>-5</x>
-         <y>540</y>
-         <width>1225</width>
-         <height>160</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <widget class="QTextEdit" name="textEdit_library_browse_sois">
-        <property name="geometry">
-         <rect>
-          <x>430</x>
-          <y>5</y>
-          <width>260</width>
-          <height>150</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label2_189">
-        <property name="geometry">
-         <rect>
-          <x>15</x>
-          <y>5</y>
-          <width>120</width>
-          <height>150</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>SOIs</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-       <widget class="QListWidget" name="listWidget_library_browse_sois">
-        <property name="geometry">
-         <rect>
-          <x>145</x>
-          <y>5</y>
-          <width>280</width>
-          <height>150</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_library_browse_remove_soi">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>25</x>
-          <y>125</y>
-          <width>99</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Remove</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QFrame" name="frame6_5">
-       <property name="geometry">
-        <rect>
-         <x>-5</x>
-         <y>420</y>
-         <width>1225</width>
-         <height>121</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <widget class="QListWidget" name="listWidget_library_browse_demod_fgs">
-        <property name="geometry">
-         <rect>
-          <x>635</x>
-          <y>5</y>
-          <width>280</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
-       <widget class="QListWidget" name="listWidget_library_browse_demod_fgs_modulation">
-        <property name="geometry">
-         <rect>
-          <x>145</x>
-          <y>5</y>
-          <width>280</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label2_188">
-        <property name="geometry">
-         <rect>
-          <x>15</x>
-          <y>5</y>
-          <width>120</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Demodulation 
-Flow Graphs</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-       <widget class="QListWidget" name="listWidget_library_browse_demod_fgs_hardware">
-        <property name="geometry">
-         <rect>
-          <x>430</x>
-          <y>5</y>
-          <width>200</width>
-          <height>110</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_library_browse_remove_demod_fg">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>25</x>
-          <y>85</y>
-          <width>99</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Remove</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QFrame" name="frame6_6">
-       <property name="geometry">
-        <rect>
-         <x>-5</x>
-         <y>699</y>
-         <width>1225</width>
-         <height>120</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <widget class="QListWidget" name="listWidget_library_browse_statistics2">
-        <property name="geometry">
-         <rect>
-          <x>430</x>
-          <y>5</y>
-          <width>260</width>
-          <height>105</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label2_190">
-        <property name="geometry">
-         <rect>
-          <x>15</x>
-          <y>5</y>
-          <width>120</width>
-          <height>105</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Statistics</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-       <widget class="QListWidget" name="listWidget_library_browse_statistics">
-        <property name="geometry">
-         <rect>
-          <x>145</x>
-          <y>5</y>
-          <width>280</width>
-          <height>105</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-       </widget>
       </widget>
      </widget>
      <widget class="QWidget" name="tab_protocol_data">

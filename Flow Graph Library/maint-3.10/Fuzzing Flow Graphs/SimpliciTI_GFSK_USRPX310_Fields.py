@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Simpliciti Gfsk Fields
+# Title: Simpliciti Gfsk Usrpx310 Fields
 # GNU Radio version: 3.10.7.0
 
 from gnuradio import blocks
@@ -26,10 +26,10 @@ import fuzzer
 
 
 
-class SimpliciTI_GFSK_Fields(gr.top_block):
+class SimpliciTI_GFSK_USRPX310_Fields(gr.top_block):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Simpliciti Gfsk Fields", catch_exceptions=True)
+        gr.top_block.__init__(self, "Simpliciti Gfsk Usrpx310 Fields", catch_exceptions=True)
 
         ##################################################
         # Variables
@@ -239,7 +239,7 @@ class SimpliciTI_GFSK_Fields(gr.top_block):
 
 
 
-def main(top_block_cls=SimpliciTI_GFSK_Fields, options=None):
+def main(top_block_cls=SimpliciTI_GFSK_USRPX310_Fields, options=None):
     tb = top_block_cls()
 
     def sig_handler(sig=None, frame=None):

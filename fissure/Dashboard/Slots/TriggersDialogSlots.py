@@ -39,8 +39,12 @@ def _slotCategoryChanged(TriggersDlg: QtCore.QObject):
     # Update Triggers
     TriggersDlg.comboBox_trigger.blockSignals(True)  # Prevents multiple calls
     TriggersDlg.comboBox_trigger.clear()
-    trigger_list = list(TriggersDlg.dashboard.backend.library['Triggers'][get_category].keys())
-    TriggersDlg.comboBox_trigger.addItems(sorted(trigger_list))
+    trigger_list = fissure.utils.library.getTriggerNames(
+        TriggersDlg.dashboard.backend.library, 
+        get_category,
+        fissure.utils.get_library_version()
+    )
+    TriggersDlg.comboBox_trigger.addItems(trigger_list)
     TriggersDlg.comboBox_trigger.blockSignals(False)
     _slotTriggerChanged(TriggersDlg)
 
@@ -55,20 +59,40 @@ def _slotTriggerChanged(TriggersDlg: QtCore.QObject):
     get_trigger = str(TriggersDlg.comboBox_trigger.currentText())
     
     # File and Type
-    TriggersDlg.label2_filename.setText(TriggersDlg.dashboard.backend.library['Triggers'][get_category][get_trigger]['File'])
-    TriggersDlg.label2_type.setText(TriggersDlg.dashboard.backend.library['Triggers'][get_category][get_trigger]['Type'])
+    TriggersDlg.label2_filename.setText(
+        fissure.utils.library.getTriggerFilename(
+            TriggersDlg.dashboard.backend.library, 
+            get_category, 
+            get_trigger,
+            fissure.utils.get_library_version()
+        )
+    )
+    TriggersDlg.label2_type.setText(
+        fissure.utils.library.getTriggerFileType(
+            TriggersDlg.dashboard.backend.library, 
+            get_category, 
+            get_trigger,
+            fissure.utils.get_library_version()
+        )
+    )
     
     # Update Default Settings
+    get_default_settings = fissure.utils.library.getTriggerDefaultSettings(
+        TriggersDlg.dashboard.backend.library, 
+        get_category, 
+        get_trigger,
+        fissure.utils.get_library_version()
+    )
     if (get_category == "Time") and (get_trigger == "Sensor Node Time"):
         TriggersDlg.dateTimeEdit_sensor_node_time_trigger_time.setDateTime(QtCore.QDateTime.currentDateTime())
         TriggersDlg.stackedWidget_trigger_info.setCurrentIndex(1)
     elif (get_category == "Time") and (get_trigger == "Timer"):
-        TriggersDlg.textEdit_timer_trigger_timer.setPlainText(str(TriggersDlg.dashboard.backend.library['Triggers']['Time']['Timer']['Default Settings']['Timer Seconds']))
+        TriggersDlg.textEdit_timer_trigger_timer.setPlainText(str(get_default_settings['Timer Seconds']))
         TriggersDlg.stackedWidget_trigger_info.setCurrentIndex(2)
     elif (get_category == "Acoustic") and (get_trigger == "Sound Threshold"):
-        TriggersDlg.textEdit_sound_threshold_threshold.setPlainText(str(TriggersDlg.dashboard.backend.library['Triggers']['Acoustic']['Sound Threshold']['Default Settings']['Threshold']))
-        TriggersDlg.textEdit_sound_threshold_duration.setPlainText(str(TriggersDlg.dashboard.backend.library['Triggers']['Acoustic']['Sound Threshold']['Default Settings']['Duration']))
-        TriggersDlg.textEdit_sound_threshold_sample_rate.setPlainText(str(TriggersDlg.dashboard.backend.library['Triggers']['Acoustic']['Sound Threshold']['Default Settings']['Sample Rate']))
+        TriggersDlg.textEdit_sound_threshold_threshold.setPlainText(str(get_default_settings['Threshold']))
+        TriggersDlg.textEdit_sound_threshold_duration.setPlainText(str(get_default_settings['Duration']))
+        TriggersDlg.textEdit_sound_threshold_sample_rate.setPlainText(str(get_default_settings['Sample Rate']))
         TriggersDlg.stackedWidget_trigger_info.setCurrentIndex(3)
     elif (get_category == "Filesystem") and (get_trigger == "File Modified"):
         TriggersDlg.stackedWidget_trigger_info.setCurrentIndex(4)
@@ -91,7 +115,7 @@ def _slotTriggerChanged(TriggersDlg: QtCore.QObject):
     elif (get_category == "RF") and (get_trigger == "GPS Line"):
         TriggersDlg.stackedWidget_trigger_info.setCurrentIndex(13)
     elif (get_category == "RF") and (get_trigger == "X10 Demod"):
-        TriggersDlg.textEdit_rf_x10_demod_text.setPlainText(str(TriggersDlg.dashboard.backend.library['Triggers']['RF']['X10 Demod']['Default Settings']['Matching Text']))
+        TriggersDlg.textEdit_rf_x10_demod_text.setPlainText(str(get_default_settings['Matching Text']))
         TriggersDlg.stackedWidget_trigger_info.setCurrentIndex(14)
     elif (get_category == "RF") and (get_trigger == "Plane Spotting"):
         TriggersDlg.stackedWidget_trigger_info.setCurrentIndex(15)
@@ -100,10 +124,10 @@ def _slotTriggerChanged(TriggersDlg: QtCore.QObject):
     elif (get_category == "RF") and (get_trigger == "Cellular Tower"):
         TriggersDlg.stackedWidget_trigger_info.setCurrentIndex(17)
     elif (get_category == "Networking") and (get_trigger == "Webserver Curl"):
-        TriggersDlg.textEdit_networking_webserver_curl_ip.setPlainText(str(TriggersDlg.dashboard.backend.library['Triggers']['Networking']['Webserver Curl']['Default Settings']['IP Address']))
+        TriggersDlg.textEdit_networking_webserver_curl_ip.setPlainText(str(get_default_settings['IP Address']))
         TriggersDlg.stackedWidget_trigger_info.setCurrentIndex(18)
     elif (get_category == "RF") and (get_trigger == "Power Threshold"):
-        TriggersDlg.textEdit_rf_power_threshold_sample_rate.setPlainText(str(TriggersDlg.dashboard.backend.library['Triggers']['RF']['Power Threshold']['Default Settings']['Sample Rate']))
+        TriggersDlg.textEdit_rf_power_threshold_sample_rate.setPlainText(str(get_default_settings['Sample Rate']))
         TriggersDlg.stackedWidget_trigger_info.setCurrentIndex(19)
     else:
         TriggersDlg.stackedWidget_trigger_info.setCurrentIndex(0)  # Blank

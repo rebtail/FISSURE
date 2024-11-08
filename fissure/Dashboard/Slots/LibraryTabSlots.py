@@ -91,328 +91,6 @@ def _slotLibraryGalleryImageChanged(dashboard: QtCore.QObject):
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowseAttackChanged(dashboard: QtCore.QObject):
-    """ 
-    Updates modulation types for the selected attack.
-    """
-    try:
-        # Clear Boxes
-        dashboard.ui.listWidget_library_browse_attacks_modulation.clear()
-
-        # Get Attack Modulation Types
-        get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-        get_attack = str(dashboard.ui.listWidget_library_browse_attacks.item(dashboard.ui.listWidget_library_browse_attacks.currentRow()).text())
-        get_modulation_types = fissure.utils.library.getModulations(dashboard.backend.library, get_protocol)
-
-        # Populate the Listbox with the Associated Attack Modulation Types
-        for n in get_modulation_types:
-            dashboard.ui.listWidget_library_browse_attacks_modulation.addItem(n)
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowseAttackModulationChanged(dashboard: QtCore.QObject):
-    """ 
-    Updates modulation types for the selected attack.
-    """
-    try:
-        # Clear Boxes
-        dashboard.ui.listWidget_library_browse_attacks3.clear()
-
-        # Get Attack Hardware Types
-        get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-        get_attack = str(dashboard.ui.listWidget_library_browse_attacks.item(dashboard.ui.listWidget_library_browse_attacks.currentRow()).text())
-        get_modulation_type = str(dashboard.ui.listWidget_library_browse_attacks_modulation.item(dashboard.ui.listWidget_library_browse_attacks_modulation.currentRow()).text())
-        get_hardware = dashboard.backend.library['Protocols'][get_protocol]['Attacks'][get_attack][get_modulation_type]['Hardware'].keys()
-
-        # Populate the Listbox with the Associated Attack Hardware Types
-        for n in get_hardware:
-            get_file_type = list(dashboard.backend.library['Protocols'][get_protocol]['Attacks'][get_attack][get_modulation_type]['Hardware'][n].keys())[0]
-            get_flow_graph = dashboard.backend.library['Protocols'][get_protocol]['Attacks'][get_attack][get_modulation_type]['Hardware'][n][get_file_type]
-            dashboard.ui.listWidget_library_browse_attacks3.addItem(n + ": " + get_file_type + ": " + get_flow_graph)
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowseSOIsChanged(dashboard: QtCore.QObject):
-    """ 
-    Updates details for the selected SOI.
-    """
-    try:
-        # Get SOI Information
-        get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-        get_soi = str(dashboard.ui.listWidget_library_browse_sois.item(dashboard.ui.listWidget_library_browse_sois.currentRow()).text())
-        get_soi_data = dashboard.backend.library["Protocols"][get_protocol]['SOI Data'][get_soi]
-
-        # Update the Text
-        dashboard.ui.textEdit_library_browse_sois.setPlainText("Frequency (MHz): " + str(get_soi_data['Frequency']))
-        dashboard.ui.textEdit_library_browse_sois.append("Modulation: " + str(get_soi_data['Modulation']))
-        dashboard.ui.textEdit_library_browse_sois.append("Bandwidth (MHz): " + str(get_soi_data['Bandwidth']))
-        dashboard.ui.textEdit_library_browse_sois.append("Continuous: " + str(get_soi_data['Continuous']))
-        dashboard.ui.textEdit_library_browse_sois.append("Start Frequency (MHz): " + str(get_soi_data['Start Frequency']))
-        dashboard.ui.textEdit_library_browse_sois.append("End Frequency (MHz): " + str(get_soi_data['End Frequency']))
-        dashboard.ui.textEdit_library_browse_sois.append("Notes: " + str(get_soi_data['Notes']))
-
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowsePacketTypesChanged(dashboard: QtCore.QObject):
-    """ 
-    Updates fields for the selected packet type.
-    """
-    try:
-        # Clear Boxes
-        dashboard.ui.listWidget_library_browse_packet_types2.clear()
-        dashboard.ui.textEdit_library_browse_packet_types.setPlainText("")
-
-        # Get Packet Type Information
-        get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-        get_packet_type = str(dashboard.ui.listWidget_library_browse_packet_types.item(dashboard.ui.listWidget_library_browse_packet_types.currentRow()).text())
-        get_fields = fissure.utils.library.getFields(dashboard.backend.library, get_protocol, get_packet_type)
-
-        # Populate the Listbox with the Associated Packet Types
-        for n in get_fields:
-            dashboard.ui.listWidget_library_browse_packet_types2.addItem(n)
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowsePacketTypesFieldsChanged(dashboard: QtCore.QObject):
-    """ 
-    Updates lengths and default values for the selected fields.
-    """
-    try:
-        # Clear Box
-        dashboard.ui.textEdit_library_browse_packet_types.setPlainText("")
-
-        # Get Field Information
-        get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-        get_packet_type = str(dashboard.ui.listWidget_library_browse_packet_types.item(dashboard.ui.listWidget_library_browse_packet_types.currentRow()).text())
-        get_field = str(dashboard.ui.listWidget_library_browse_packet_types2.item(dashboard.ui.listWidget_library_browse_packet_types2.currentRow()).text())
-        get_field_properties = fissure.utils.library.getFieldProperties(dashboard.backend.library, get_protocol, get_packet_type, get_field)
-
-        # Populate the Listbox with the Associated Fields
-        dashboard.ui.textEdit_library_browse_packet_types.setPlainText("Length (Bits): " + str(get_field_properties['Length']))
-        dashboard.ui.textEdit_library_browse_packet_types.append("Default Value: " + str(get_field_properties['Default Value']))
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowseStatisticsChanged(dashboard: QtCore.QObject):
-    """ 
-    Updates the statistical information for the selected statistic.
-    """
-    try:
-        # Clear Boxes
-        dashboard.ui.listWidget_library_browse_statistics2.clear()
-
-        # Get Statistic
-        get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-        get_statistic = str(dashboard.ui.listWidget_library_browse_statistics.item(dashboard.ui.listWidget_library_browse_statistics.currentRow()).text())
-        get_values = fissure.utils.library.getStatisticValues(dashboard.backend.library, get_protocol, get_statistic)
-
-        # Populate the Listbox with the Associated Statistical Values
-        for n in get_values:
-            dashboard.ui.listWidget_library_browse_statistics2.addItem(str(n))
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowseDemodFGsModulationClicked(dashboard: QtCore.QObject):
-    """ 
-    Updates the demodulation flow graph hardware list for a given protocol and modulation type
-    """
-    # Clear the List Widgets
-    dashboard.ui.listWidget_library_browse_demod_fgs_hardware.clear()
-    dashboard.ui.listWidget_library_browse_demod_fgs.clear()
-
-    # Get Protocol
-    get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-
-    try:
-        # Get Modulation
-        get_modulation = str(dashboard.ui.listWidget_library_browse_demod_fgs_modulation.item(dashboard.ui.listWidget_library_browse_demod_fgs_modulation.currentRow()).text())
-
-        # Get Demodulation Flow Graphs
-        get_hardware = fissure.utils.library.getDemodulationFlowGraphsHardware(dashboard.backend.library, protocol=get_protocol, modulation=get_modulation)
-        for n in sorted(get_hardware,key=str.lower):
-            dashboard.ui.listWidget_library_browse_demod_fgs_hardware.addItem(n)
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowseDemodFGsHardwareClicked(dashboard: QtCore.QObject):
-    """ 
-    Updates the demodulation flow graph list widget for a given protocol, modulation type, and hardware type.
-    """
-    # Clear the List Widget
-    dashboard.ui.listWidget_library_browse_demod_fgs.clear()
-
-    # Get Protocol
-    get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-
-    try:
-        # Get Modulation
-        get_modulation = str(dashboard.ui.listWidget_library_browse_demod_fgs_modulation.item(dashboard.ui.listWidget_library_browse_demod_fgs_modulation.currentRow()).text())
-
-        # Get Hardware
-        get_hardware = str(dashboard.ui.listWidget_library_browse_demod_fgs_hardware.item(dashboard.ui.listWidget_library_browse_demod_fgs_hardware.currentRow()).text())
-
-        # Get Demodulation Flow Graphs
-        get_demod_fgs = fissure.utils.library.getDemodulationFlowGraphs(dashboard.backend.library, protocol=get_protocol, modulation=get_modulation, hardware=get_hardware)
-        for n in sorted(get_demod_fgs,key=str.lower):
-            dashboard.ui.listWidget_library_browse_demod_fgs.addItem(n)
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowseDemodFGsClicked(dashboard: QtCore.QObject):
-    """ 
-    Enables the "Remove" button near the demodulation flow graphs list widget.
-    """
-    # Enable the Button
-    dashboard.ui.pushButton_library_browse_remove_demod_fg.setEnabled(True)
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowseSOIsClicked(dashboard: QtCore.QObject):
-    """ 
-    Enables the "Remove" button near the SOI list widget.
-    """
-    # Enable the Button
-    dashboard.ui.pushButton_library_browse_remove_soi.setEnabled(True)
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowsePacketTypesClicked(dashboard: QtCore.QObject):
-    """ 
-    Enables the "Remove" button near the packet types list widget.
-    """
-    # Enable the Button
-    dashboard.ui.pushButton_library_browse_remove_packet_type.setEnabled(True)
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowseModulationsClicked(dashboard: QtCore.QObject):
-    """ 
-    Enables the "Remove" button near the modulation types list widget.
-    """
-    # Enable the Button
-    dashboard.ui.pushButton_library_browse_remove_modulation.setEnabled(True)
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowseAttacksClicked(dashboard: QtCore.QObject):
-    """ 
-    Enables the "Remove" button and "Delete Files" checkbox after clicking the attack list widget.
-    """
-    # Enable the Button and Checkbox
-    dashboard.ui.pushButton_library_attacks_remove.setEnabled(True)
-    dashboard.ui.checkBox_library_attacks_remove_flow_graphs.setEnabled(True)
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryBrowseYAML_Changed(dashboard: QtCore.QObject):
-    """ 
-    This adds the library and other YAML data to the library browse TreeWidget.
-    """
-    # Get the ComboBox Text
-    get_file = str(dashboard.ui.comboBox_library_browse_yaml.currentText())
-
-    # Load YAML
-    if get_file == "library_3_8.yaml":
-        filename = os.path.join(fissure.utils.YAML_DIR, "library_3_8.yaml")
-    elif get_file == "library_3_10.yaml":
-        filename = os.path.join(fissure.utils.YAML_DIR, "library_3_10.yaml")
-    elif get_file == "logging.yaml":
-        filename = os.path.join(fissure.utils.YAML_DIR, "logging.yaml")
-    else:
-        filename = os.path.join(fissure.utils.YAML_DIR, get_file)
-    with open(filename) as yaml_file:
-        get_yaml = yaml.load(yaml_file, yaml.FullLoader)
-
-    # Populate the Attack TreeWidget
-    dashboard.ui.treeWidget_library_browse.clear()
-    dashboard.ui.treeWidget_library_browse.setHeaderLabel(get_file)
-    dashboard.fill_item(dashboard.ui.treeWidget_library_browse.invisibleRootItem(), get_yaml)
-    dashboard.ui.treeWidget_library_browse.collapseAll()
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotLibraryRemoveProtocolChanged(dashboard: QtCore.QObject):
-    """ 
-    Updates the Browse Library section with library information.
-    """
-    # Get Protocol
-    get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-    if get_protocol == "Unknown":
-        dashboard.ui.pushButton_library_remove_protocol.setEnabled(False)
-    else:
-        dashboard.ui.pushButton_library_remove_protocol.setEnabled(True)
-
-    # Clear Boxes
-    dashboard.ui.textEdit_library_browse_sois.setPlainText("")
-    dashboard.ui.listWidget_library_browse_packet_types2.clear()
-    dashboard.ui.textEdit_library_browse_packet_types.setPlainText("")
-    dashboard.ui.listWidget_library_browse_attacks_modulation.clear()
-    dashboard.ui.listWidget_library_browse_attacks3.clear()
-    dashboard.ui.listWidget_library_browse_statistics2.clear()
-
-    # Disable the Buttons
-    dashboard.ui.pushButton_library_browse_remove_demod_fg.setEnabled(False)
-    dashboard.ui.pushButton_library_browse_remove_soi.setEnabled(False)
-    dashboard.ui.pushButton_library_browse_remove_packet_type.setEnabled(False)
-    dashboard.ui.pushButton_library_browse_remove_modulation.setEnabled(False)
-
-    # Populate the Listbox with the Associated Attacks
-    dashboard.ui.listWidget_library_browse_attacks.clear()
-    get_attacks = fissure.utils.library.getAttacks(dashboard.backend.library, get_protocol)
-    for n in get_attacks:
-        dashboard.ui.listWidget_library_browse_attacks.addItem(n)
-
-    # Populate the Listbox with the Associated Modulation Types
-    dashboard.ui.listWidget_library_browse_modulation_types.clear()
-    get_modulation_types = fissure.utils.library.getModulations(dashboard.backend.library, get_protocol)
-    for n in get_modulation_types:
-        dashboard.ui.listWidget_library_browse_modulation_types.addItem(n)
-
-    # Populate the Listbox with the Associated Packet Types
-    dashboard.ui.listWidget_library_browse_packet_types.clear()
-    get_packet_types = fissure.utils.library.getPacketTypes(dashboard.backend.library, get_protocol)
-    for n in get_packet_types:
-        dashboard.ui.listWidget_library_browse_packet_types.addItem(n)
-
-    # Populate the Listbox with the Associated Demodulation Flow Graphs
-    dashboard.ui.listWidget_library_browse_demod_fgs_modulation.clear()
-    dashboard.ui.listWidget_library_browse_demod_fgs_hardware.clear()
-    dashboard.ui.listWidget_library_browse_demod_fgs.clear()
-    get_modulation = fissure.utils.library.getDemodulationFlowGraphsModulation(dashboard.backend.library, protocol=get_protocol)
-    for n in get_modulation:
-        dashboard.ui.listWidget_library_browse_demod_fgs_modulation.addItem(n)
-
-    # Populate the Listbox with the Associated SOIs
-    dashboard.ui.listWidget_library_browse_sois.clear()
-    get_sois = sorted(fissure.utils.library.getSOIs(dashboard.backend.library, get_protocol))
-    for n in get_sois:
-        dashboard.ui.listWidget_library_browse_sois.addItem(n)
-
-    # Populate the Listbox with the Associated Statistics
-    dashboard.ui.listWidget_library_browse_statistics.clear()
-    get_statistics = fissure.utils.library.getStatistics(dashboard.backend.library, get_protocol)
-    for n in get_statistics:
-        dashboard.ui.listWidget_library_browse_statistics.addItem(n)
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
 def _slotLibrarySearchBinaryClicked(dashboard: QtCore.QObject):
     """ 
     Converts the PD Search Field Values edit box to binary.
@@ -528,12 +206,9 @@ def _slotLibraryAddDataTypeChanged(dashboard: QtCore.QObject):
     elif get_type == "Signal of Interest":
         dashboard.ui.label1_library_add.setText("Add New Signal of Interest to Library")
         dashboard.ui.stackedWidget2_library_pd.setCurrentIndex(3)
-    elif get_type == "Statistics":
-        dashboard.ui.label1_library_add.setText("Add New Statistics to Library")
-        dashboard.ui.stackedWidget2_library_pd.setCurrentIndex(4)
     elif get_type == "Demodulation Flow Graph":
         dashboard.ui.label1_library_add.setText("Add New Demodulation Flow Graph to Library")
-        dashboard.ui.stackedWidget2_library_pd.setCurrentIndex(5)
+        dashboard.ui.stackedWidget2_library_pd.setCurrentIndex(4)
 
         # Populate Demodulation Flow Graph Modulation Types
         get_protocol = str(dashboard.ui.comboBox_library_pd_protocol.currentText())
@@ -545,7 +220,7 @@ def _slotLibraryAddDataTypeChanged(dashboard: QtCore.QObject):
     elif get_type == "Attack":
         _slotAttackImportProtocolChanged(dashboard)
         dashboard.ui.label1_library_add.setText("Add New Attack to Library")
-        dashboard.ui.stackedWidget2_library_pd.setCurrentIndex(6)
+        dashboard.ui.stackedWidget2_library_pd.setCurrentIndex(5)
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -558,7 +233,7 @@ def _slotAttackImportProtocolChanged(dashboard: QtCore.QObject):
     get_protocol = str(dashboard.ui.comboBox_library_pd_protocol.currentText())
     if get_protocol != "":
         try:
-            modulation_types = dashboard.backend.library["Protocols"][get_protocol]["Modulation Types"]
+            modulation_types = fissure.utils.library.getModulations(dashboard.backend.library, get_protocol)
             dashboard.ui.comboBox_library_attacks_modulation.addItems(modulation_types)
         # No Modulation Types Available
         except KeyError:
@@ -862,11 +537,9 @@ async def _slotLibraryAddAddToLibrary_Clicked(dashboard: QtCore.QObject):
     get_modulation = ""
     new_packet_name = ""
     get_packet_data = []
-    get_soi_data = []
-    get_statistical_data = []
-
-    demodulation_fg_data = []
-    get_demodulation_type = ""
+    get_soi_data = {}
+    demodulation_fg_data = {}
+    attack_data = {}
 
     # Protocol Name
     if dashboard.ui.stackedWidget2_library_pd.currentIndex() == 0:
@@ -874,9 +547,12 @@ async def _slotLibraryAddAddToLibrary_Clicked(dashboard: QtCore.QObject):
         protocols = fissure.utils.library.getProtocols(dashboard.backend.library)
 
         # Empty or Duplicate
-        if (len(protocol_name) == 0) or (protocol_name in protocols):
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Enter valid protocol name.")
+        if len(protocol_name) == 0:
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Enter valid protocol name.")
             return
+        if protocol_name in protocols:
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Protocol already exists.")
+            return        
     else:
         protocol_name = str(dashboard.ui.comboBox_library_pd_protocol.currentText())
 
@@ -886,8 +562,11 @@ async def _slotLibraryAddAddToLibrary_Clicked(dashboard: QtCore.QObject):
         modulation_types = fissure.utils.library.getModulations(dashboard.backend.library, protocol_name)
 
         # Empty or Duplicate
-        if (len(get_modulation) == 0) or (get_modulation in modulation_types):
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Enter valid modulation type.")
+        if len(get_modulation) == 0:
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Enter valid modulation type.")
+            return
+        if get_modulation in modulation_types:
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Modulation type already exists.")
             return
 
     # Packet Type
@@ -897,60 +576,53 @@ async def _slotLibraryAddAddToLibrary_Clicked(dashboard: QtCore.QObject):
         packet_types = fissure.utils.library.getPacketTypes(dashboard.backend.library, protocol_name)
 
         # Empty or Duplicate
-        if (len(new_packet_name) == 0) or (new_packet_name in packet_types):
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Enter valid packet name.")
+        if len(new_packet_name) == 0:
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Enter valid packet name.")
+            return
+        if new_packet_name in packet_types:
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Packet type already exists.")
             return
 
-        else:
-            # Check for Content
-            if dashboard.ui.tableWidget_library_pd_packet.rowCount() == 0:
-                fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "The number of fields cannot be zero.")
-                return
+        # Check for Content
+        if dashboard.ui.tableWidget_library_pd_packet.rowCount() == 0:
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "The number of fields cannot be zero.")
+            return
+
+        # Get Packet Data
+        for row in range(0,dashboard.ui.tableWidget_library_pd_packet.rowCount()):
+            get_packet_data.append([])
+            get_packet_data[row].append(str(dashboard.ui.tableWidget_library_pd_packet.item(row,0).text()))
+            get_packet_data[row].append(str(dashboard.ui.tableWidget_library_pd_packet.item(row,1).text()))
+
+            # Check Default Values for Binary Characters
+            check_default_values = str(dashboard.ui.tableWidget_library_pd_packet.item(row,2).text())
+            if set(check_default_values).issubset({'0','1',' '}) and bool(check_default_values):
+                get_packet_data[row].append(check_default_values)
             else:
-                # Get Packet Data
-                for row in range(0,dashboard.ui.tableWidget_library_pd_packet.rowCount()):
-                    get_packet_data.append([])
-                    get_packet_data[row].append(str(dashboard.ui.tableWidget_library_pd_packet.item(row,0).text()))
-                    get_packet_data[row].append(str(dashboard.ui.tableWidget_library_pd_packet.item(row,1).text()))
+                await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Default values must be binary: 1010 0010 1111...")
+                return
 
-                    # Check Default Values for Binary Characters
-                    check_default_values = str(dashboard.ui.tableWidget_library_pd_packet.item(row,2).text())
-                    if set(check_default_values).issubset({'0','1',' '}) and bool(check_default_values):
-                        get_packet_data[row].append(check_default_values)
-                    else:
-                        fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Default values must be binary: 1010 0010 1111...")
-                        return
-
-                    get_packet_data[row].append(str(dashboard.ui.tableWidget_library_pd_packet.cellWidget(row,3).currentText()))
-                    get_packet_data[row].append(str(dashboard.ui.tableWidget_library_pd_packet.item(row,4).text()))
+            get_packet_data[row].append(str(dashboard.ui.tableWidget_library_pd_packet.cellWidget(row,3).currentText()))
+            get_packet_data[row].append(str(dashboard.ui.tableWidget_library_pd_packet.item(row,4).text()))
 
     # Signal of Interest
     elif dashboard.ui.stackedWidget2_library_pd.currentIndex() == 3:
         # Must Have Subtype/Label
         if len(str(dashboard.ui.textEdit_library_pd_soi_subtype.toPlainText()).replace(" ","")) == 0:
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Requires Subtype/Label")
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Requires Subtype/Label")
             return
 
-        get_soi_data.append(str(dashboard.ui.textEdit_library_pd_soi_frequency.toPlainText()))
-        get_soi_data.append(str(dashboard.ui.textEdit_library_pd_soi_modulation.toPlainText()))
-        get_soi_data.append(str(dashboard.ui.textEdit_library_pd_soi_bandwidth.toPlainText()))
-        get_soi_data.append(str(dashboard.ui.comboBox_library_pd_soi_continuous.currentText()))
-        get_soi_data.append(str(dashboard.ui.textEdit_library_pd_soi_start_frequency.toPlainText()))
-        get_soi_data.append(str(dashboard.ui.textEdit_library_pd_soi_end_frequency.toPlainText()))
-        get_soi_data.append(str(dashboard.ui.textEdit_library_pd_soi_notes.toPlainText()))
-        get_soi_data.append(str(dashboard.ui.textEdit_library_pd_soi_subtype.toPlainText()))
-        for n in range(0,len(get_soi_data)):
-            if get_soi_data[n] == "":
-                # Ignore Notes
-                if n != 6:
-                    get_soi_data[n] = "-1"
-
-    # Statistics
-    elif dashboard.ui.stackedWidget2_library_pd.currentIndex() == 4:
-        pass
+        get_soi_data["soi_name"] = str(dashboard.ui.textEdit_library_pd_soi_subtype.toPlainText())
+        get_soi_data["center_frequency"] = str(dashboard.ui.textEdit_library_pd_soi_frequency.toPlainText())
+        get_soi_data["start_frequency"] = str(dashboard.ui.textEdit_library_pd_soi_start_frequency.toPlainText())
+        get_soi_data["end_frequency"] = str(dashboard.ui.textEdit_library_pd_soi_end_frequency.toPlainText())
+        get_soi_data["bandwidth"] = str(dashboard.ui.textEdit_library_pd_soi_bandwidth.toPlainText())
+        get_soi_data["continuous"] = str(dashboard.ui.comboBox_library_pd_soi_continuous.currentText())
+        get_soi_data["modulation"] = str(dashboard.ui.textEdit_library_pd_soi_modulation.toPlainText())
+        get_soi_data["notes"] = str(dashboard.ui.textEdit_library_pd_soi_notes.toPlainText())
 
     # Demodulation Flow Graph
-    elif dashboard.ui.stackedWidget2_library_pd.currentIndex() == 5:
+    elif dashboard.ui.stackedWidget2_library_pd.currentIndex() == 4:
         get_demodulation_fg = str(dashboard.ui.textEdit_library_pd_demodulation_fg.toPlainText())
         get_demodulation_type = str(dashboard.ui.comboBox_library_pd_modulation_types.currentText())
         get_demodulation_hardware = str(dashboard.ui.comboBox_library_pd_hardware.currentText())
@@ -963,10 +635,10 @@ async def _slotLibraryAddAddToLibrary_Clicked(dashboard: QtCore.QObject):
 
         # Invalid Demodulation Flow Graph
         if get_demodulation_fg == "":
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Enter valid demodulation flow graph filepath.")
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Enter valid demodulation flow graph filepath.")
             return
         if get_demodulation_type == "":
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Add modulation type for demodulation flow graph.")
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Add modulation type for demodulation flow graph.")
             return
 
         # Add .py and .grc to "PD Flow Graphs"
@@ -977,44 +649,48 @@ async def _slotLibraryAddAddToLibrary_Clicked(dashboard: QtCore.QObject):
             # Check for Duplicate
             demod_fg_exists = os.path.exists(os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "PD Flow Graphs", get_demodulation_fg))
             if demod_fg_exists:
-                fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Duplicate demodulation flow graph name")
+                await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Duplicate demodulation flow graph name")
                 return
 
             shutil.copy(demod_py_filepath, os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "PD Flow Graphs", get_demodulation_fg))
-            demodulation_fg_data = [get_demodulation_type, get_demodulation_fg, get_demodulation_hardware, get_sniffer_type]
+            demodulation_fg_data["output_type"] = get_sniffer_type
+            demodulation_fg_data["filename"] = get_demodulation_fg
+            demodulation_fg_data["hardware"] = get_demodulation_hardware
+            demodulation_fg_data["modulation_type"] = get_demodulation_type
 
             demod_grc_file = get_demodulation_fg.replace('.py','.grc')
             demod_grc_filepath = demod_py_filepath.replace('.py','.grc')
             shutil.copy(demod_grc_filepath, os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "PD Flow Graphs", demod_grc_file))
         except:
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "New demodulation flow graph requires a valid .py and .grc file with the same name.")
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "New demodulation flow graph requires a valid .py and .grc file with the same name.")
             return
 
     # Attack
-    elif dashboard.ui.stackedWidget2_library_pd.currentIndex() == 6:
+    elif dashboard.ui.stackedWidget2_library_pd.currentIndex() == 5:
         # Get Tree Parent, Attack Name, Hardware
         get_tree_parent = str(dashboard.ui.comboBox_library_attacks_subcategory.currentText())
         get_attack_name = str(dashboard.ui.textEdit_library_attacks_name.toPlainText())
         get_hardware = str(dashboard.ui.comboBox_library_attacks_hardware.currentText())
         get_file_type = str(dashboard.ui.comboBox_library_attacks_file_type.currentText())
         get_new_filename = str(dashboard.ui.textEdit_library_attacks_new_name.toPlainText())
+        get_attack_type = str(dashboard.ui.comboBox_library_attacks_attack_type.currentText())
 
         # Assemble New Attack Filepath, Determine Single-Stage or Multi-Stage
         get_filepath = str(dashboard.ui.label_library_attacks_filepath.text())
 
         # Invalid Filepath
         if len(get_filepath) == 0:
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'Select attack file.')
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'Select attack file.')
             return
 
         # Invalid Attack Template Name
         if len(get_attack_name) == 0:
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'Enter new attack template name.')
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'Enter new attack template name.')
             return
 
         # Invalid Attack Name
         if len(get_new_filename) == 0:
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'Enter new attack name.')
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'Enter new attack name.')
             return
 
         # Format Filepath
@@ -1025,160 +701,62 @@ async def _slotLibraryAddAddToLibrary_Clicked(dashboard: QtCore.QObject):
                 dashboard.ui.textEdit_library_attacks_new_name.setPlainText(get_new_filename)
             else:
                 get_new_filename = str(dashboard.ui.textEdit_library_attacks_new_name.toPlainText())
-            attack_type = "Single-Stage"
         elif get_filepath.rsplit(".",1)[1] == "msa":
             get_new_filename = get_filepath.rsplit("/",1)[-1]
-            attack_type = "Multi-Stage"
         else:
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'Attack needs to end with ".py" or ".msa"')
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'Attack needs to end with ".py" or ".msa"')
             return
+        
+        # Multi-Stage Category Name
+        if get_attack_type == "Multi-Stage":  # Multi-Stage and Fuzzing types not supported yet
+            get_tree_parent = "Multi-Stage"
 
-        # Get Protocols and Modulation Types
-        get_protocol = []
-        get_modulation = []
-        if attack_type == "Single-Stage":
-            get_protocol.append(str(dashboard.ui.comboBox_library_pd_protocol.currentText()))
-            get_modulation.append(str(dashboard.ui.comboBox_library_attacks_modulation.currentText()))
+        # Get Modulation Type
+        if get_attack_type == "Single-Stage":
+            get_modulation = str(dashboard.ui.comboBox_library_attacks_modulation.currentText())
 
             # No Modulation Type
-            if len(get_modulation[0]) == 0:
-                fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'Requires modulation type.')
+            if len(get_modulation) == 0:
+                await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'Requires modulation type.')
                 return
-
-        # elif attack_type == "Multi-Stage":
-            # # Read the File
-            # f = open(get_filepath, "rb")
-            # data = yaml.load(f.read(), yaml.FullLoader)
-            # attack_table_row_list = data[0]
-            # f.close()
-
-            # # Get the Protocols and Modulation Types
-            # for rows in attack_table_row_list:
-                # get_protocol.append(rows[0])
-                # get_modulation.append(rows[1])
 
         # Check if File Already Exists
         if os.path.isfile(os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "Single-Stage Flow Graphs", get_new_filename)):
-            fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'File already exists in "Single-Stage Flow Graphs" folder.')
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, 'File already exists in "Single-Stage Flow Graphs" folder.')
             return
-        else:
-            # Check if Attack Already Exists for the Protocol, Modulation, and Hardware Combination
-            protocol_attack_exists = False
-            current_protocol_attacks = []
-            for m in range(0,len(get_protocol)):
-                try:
-                    current_protocol_attacks = dashboard.backend.library["Protocols"][get_protocol[m]]["Attacks"]
-                    for n in current_protocol_attacks:
-                        if n == get_attack_name:
-                            if dashboard.backend.library["Protocols"][get_protocol[m]]["Attacks"][n][get_modulation[m]["Hardware"][get_hardware]] != None:
-                                protocol_attack_exists = True
-                                break
-                except:
-                    pass
 
-            # No Previous Attacks Share the Name
-            if protocol_attack_exists == False:
+        # Check if Attack Already Exists for the Protocol, Modulation, and Hardware Combination
+        if fissure.utils.library.getAttackFilename(
+            dashboard.backend.library, 
+            protocol_name, 
+            get_new_filename, 
+            get_modulation, 
+            get_hardware,
+            fissure.utils.get_library_version()
+        ) != None:
+            await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Attack name already exists for this protocol/modulation/hardware combination.")
+            return
 
-                # Check if Parent Already Exists for the Protocol
-                protocol_parent_exists = []
-                for n in current_protocol_attacks:
-                    if n == get_tree_parent:
-                        protocol_parent_exists.append(True)
-                    else:
-                        protocol_parent_exists.append(False)
+        # Assemble Message
+        attack_data["protocol"] = protocol_name
+        attack_data["attack_name"] = get_attack_name
+        attack_data["modulation_type"] = get_modulation
+        attack_data["hardware"] = get_hardware
+        attack_data["attack_type"] = get_file_type
+        attack_data["filename"] = get_new_filename
+        attack_data["category_name"] = get_tree_parent
 
-                ## Check if Attack Already Exists in the Tree Widget
-                #tree_widget_attack_exists = False
-                #if attack_type == "Single-Stage":
-                    #current_tree_attacks = dashboard.backend.library["Attacks"]["Single-Stage Attacks"]
-                #elif attack_type == "Multi-Stage":
-                    #current_tree_attacks = dashboard.backend.library["Attacks"]["Multi-Stage Attacks"]
-                #for n in current_tree_attacks:
-                    #if n.split(",")[0] == get_attack_name.replace("_"," "):
-                        #tree_widget_attack_exists = True
-                #if tree_widget_attack_exists == True:
-                        #fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Warning: Attack already exists in Tree Widget")
-                        #no_errors = False
+        # Add to "Flow Graph Library/Single-Stage Flow Graphs"
+        shutil.copy(get_filepath, os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "Single-Stage Flow Graphs", get_new_filename))
 
-                # Send Message to Protocol Discovery to Update Library
-                attack_list = [get_attack_name, get_modulation[0], "Hardware", get_hardware, get_file_type, get_new_filename, attack_type, get_tree_parent]
-                await dashboard.backend.addToLibrary(get_protocol[0], [], [], [], [], [], [], attack_list, [])
-
-                # Add to "Flow Graph Library/Single-Stage Flow Graphs"
-                shutil.copy(get_filepath, os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "Single-Stage Flow Graphs", get_new_filename))
-
-                # Add .grc File to "Flow Graph Library/Single-Stage Flow Graphs"
-                if dashboard.ui.checkBox_library_attacks_grc_file.isChecked():
-                    shutil.copy(get_filepath.replace(".py",".grc"), os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "Single-Stage Flow Graphs", get_new_filename.replace(".py",".grc")))
-
-                # Success Message and Reset Fields
-                #fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Imported Successfully!")  # Needs to happen on component return message
-                dashboard.ui.label_library_attacks_filepath.setText("")
-                dashboard.ui.textEdit_library_attacks_name.setText("")
-                dashboard.ui.textEdit_library_attacks_new_name.setText("")
-
-            # Attack Already Exists for the Protocol
-            else:
-                fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Attack name already exists for this protocol/modulation/hardware combination.")
-                return
-        return
+        # Add .grc File to "Flow Graph Library/Single-Stage Flow Graphs"
+        if dashboard.ui.checkBox_library_attacks_grc_file.isChecked():
+            shutil.copy(get_filepath.replace(".py",".grc"), os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "Single-Stage Flow Graphs", get_new_filename.replace(".py",".grc")))
 
     # Valid Protocol Name
     if protocol_name != "":
         # Send Message to HIPRFISR/Protocol Discovery
-        await dashboard.backend.addToLibrary(protocol_name, new_packet_name, get_packet_data, get_soi_data, get_statistical_data, get_modulation, demodulation_fg_data, [], [])
-
-
-@qasync.asyncSlot(QtCore.QObject)
-async def _slotLibraryRemoveProtocolClicked(dashboard: QtCore.QObject):
-    """ 
-    Removes all protocol data from the library.yaml.
-    """
-    # Get the Protocol
-    get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-
-    # Get Attacks
-    get_attacks = [str(dashboard.ui.listWidget_library_browse_attacks.item(i).text()) for i in range(0,dashboard.ui.listWidget_library_browse_attacks.count())]
-
-    # Get Modulation Types
-    get_modulation_types = fissure.utils.library.getModulations(dashboard.backend.library, get_protocol)
-
-    # Get Hardware Types
-    get_hardware = []
-    for n in get_attacks:
-        for m in get_modulation_types:
-            if m in dashboard.backend.library["Protocols"][get_protocol]["Attacks"][n]:
-                for x in dashboard.backend.library["Protocols"][get_protocol]["Attacks"][n][m]["Hardware"].keys():
-                    if x not in get_hardware:
-                        get_hardware.append(x)
-
-    # Yes/No Dialog
-    # qm = QtWidgets.QMessageBox
-    # ret = qm.question(dashboard, '', "Remove protocol and all its data from library?", qm.Yes | qm.No)
-    ret = await fissure.Dashboard.UI_Components.Qt5.async_yes_no_dialog(dashboard, "Remove protocol and all its data from library?")
-    if ret == QtWidgets.QMessageBox.Yes:
-        # Send Message to HIPRFISR/Protocol Discovery
-        await dashboard.backend.removeAttackFromLibrary(get_protocol, get_attacks, get_modulation_types, get_hardware, True, True)
-    else:
-        pass
-
-
-@qasync.asyncSlot(QtCore.QObject)
-async def _slotLibraryBrowseRemoveDemodFG_Clicked(dashboard: QtCore.QObject):
-    """ 
-    Removes selected demodulation flow graph from the library.
-    """
-    # Get the Values
-    get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-    get_modulation = str(dashboard.ui.listWidget_library_browse_demod_fgs_modulation.item(dashboard.ui.listWidget_library_browse_demod_fgs_modulation.currentRow()).text())
-    get_hardware = str(dashboard.ui.listWidget_library_browse_demod_fgs_hardware.item(dashboard.ui.listWidget_library_browse_demod_fgs_hardware.currentRow()).text())
-    get_demodulation_fg = str(dashboard.ui.listWidget_library_browse_demod_fgs.item(dashboard.ui.listWidget_library_browse_demod_fgs.currentRow()).text())
-
-    # Send Message to HIPRFISR/Protocol Discovery
-    await dashboard.backend.removeDemodulationFlowGraph(get_protocol, get_modulation, get_hardware, get_demodulation_fg)
-
-    # Update the Demodulation Combo Box
-    _slotPD_DemodHardwareChanged(dashboard)
+        await dashboard.backend.addToLibrary(protocol_name, new_packet_name, get_packet_data, get_soi_data, get_modulation, demodulation_fg_data, attack_data, [])
 
 
 def _slotPD_DemodHardwareChanged(dashboard: QtCore.QObject):
@@ -1192,71 +770,139 @@ def _slotPD_DemodHardwareChanged(dashboard: QtCore.QObject):
     dashboard.ui.listWidget_pd_flow_graphs_all_fgs.clear()
 
     # Get All Demodulation Flow Graphs
-    all_demod_fgs = fissure.utils.library.getDemodulationFlowGraphs(dashboard.backend.library, protocol=None, modulation=None, hardware=get_hardware)
+    all_demod_fgs = fissure.utils.library.getDemodulationFlowGraphFilenames(
+        dashboard.backend.library, 
+        protocol = None, 
+        modulation = None, 
+        hardware = get_hardware,
+        version = fissure.utils.get_library_version()
+    )
 
     # Update the List Widget
     for fg in sorted(all_demod_fgs,key=str.lower):
         dashboard.ui.listWidget_pd_flow_graphs_all_fgs.addItem(fg)
 
 
-@qasync.asyncSlot(QtCore.QObject)
-async def _slotLibraryBrowseRemoveSOI_Clicked(dashboard: QtCore.QObject):
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryBrowseChanged(dashboard: QtCore.QObject):
     """ 
-    Removes selected SOI from the library.
+    Loads a table from the Dashboard's cached version of the FISSURE PostgreSQL database.
     """
-    # Get the Values
-    get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-    get_soi = str(dashboard.ui.listWidget_library_browse_sois.item(dashboard.ui.listWidget_library_browse_sois.currentRow()).text())
+    # Clear the Table
+    dashboard.ui.tableWidget1_library_browse.setRowCount(0)
+    dashboard.ui.tableWidget1_library_browse.setColumnCount(0)
 
-    # Send Message to HIPRFISR/Protocol Discovery
-    await dashboard.backend.removeSOI(get_protocol, get_soi)
+    # Populate the Table
+    get_table_name = str(dashboard.ui.comboBox_library_browse.currentText())
 
-
-@qasync.asyncSlot(QtCore.QObject)
-async def _slotLibraryBrowseRemovePacketTypeClicked(dashboard: QtCore.QObject):
-    """ 
-    Removes the selected packet type from the library.
-    """
-    # Get the Values
-    get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-    get_packet_type = str(dashboard.ui.listWidget_library_browse_packet_types.item(dashboard.ui.listWidget_library_browse_packet_types.currentRow()).text())
-
-    # Send Message to HIPRFISR/Protocol Discovery
-    await dashboard.backend.removePacketType(get_protocol, get_packet_type)
-
-
-@qasync.asyncSlot(QtCore.QObject)
-async def _slotLibraryBrowseRemoveModulationClicked(dashboard: QtCore.QObject):
-    """ 
-    Removes the selected modulation from the library.
-    """
-    # Get the Values
-    get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-    get_modulation = str(dashboard.ui.listWidget_library_browse_modulation_types.item(dashboard.ui.listWidget_library_browse_modulation_types.currentRow()).text())
-
-    # Send Message to HIPRFISR/Protocol Discovery
-    await dashboard.backend.removeModulationType(get_protocol, get_modulation)
-
-
-@qasync.asyncSlot(QtCore.QObject)
-async def _slotLibraryRemoveAttacksRemoveClicked(dashboard: QtCore.QObject):
-    """ 
-    Permanently removes the selected protocol, modulation, and/or attack from the library.
-    """
-    # Get the Values
-    get_protocol = str(dashboard.ui.comboBox_library_browse_protocol.currentText())
-
-    get_attack_name = [str(dashboard.ui.listWidget_library_browse_attacks.item(dashboard.ui.listWidget_library_browse_attacks.currentRow()).text())]
-    get_attack_text = str(dashboard.ui.listWidget_library_browse_attacks3.item(dashboard.ui.listWidget_library_browse_attacks3.currentRow()).text())
-    get_attack_text = get_attack_text.split(':')
-    get_hardware = [get_attack_text[0]]
-    get_modulation = [str(dashboard.ui.listWidget_library_browse_attacks_modulation.item(dashboard.ui.listWidget_library_browse_attacks_modulation.currentRow()).text())]
-
-    if dashboard.ui.checkBox_library_attacks_remove_flow_graphs.isChecked():
-        get_remove_flow_graphs = True
+    if get_table_name == "archive_collection":
+        get_rows = fissure.utils.library.getArchiveCollection(dashboard.backend.library)
+        headers = ["id", "name", "file_list", "filepath", "files", "format", "size", "notes", "parent_id", "created_at"]
+    elif get_table_name == "archive_favorites":
+        get_rows = fissure.utils.library.getArchiveFavorites(dashboard.backend.library)
+        headers = ["id", "file_name", "date", "format", "modulation", "notes", "protocol", "sample_rate", "samples", "size", "tuned_frequency"]
+    elif get_table_name == "attack_categories":
+        get_rows = fissure.utils.library.getAttackCategories(dashboard.backend.library)
+        headers = ["id", "category_name", "parent"]
+    elif get_table_name == "attacks":
+        get_rows = fissure.utils.library.getAttacks(dashboard.backend.library, None, None)
+        headers = ["id", "protocol", "attack_name", "modulation_type", "hardware", "attack_type", "filename", "category_name", "version"]
+    elif get_table_name == "conditioner_flow_graphs":
+        get_rows = fissure.utils.library.getConditionerFlowGraphsTable(dashboard.backend.library)
+        headers = ["id", "isolation_category", "isolation_method", "hardware", "filename", "file_type", "data_type", "version"] 
+    elif get_table_name == "demodulation_flow_graphs":
+        get_rows = fissure.utils.library.getDemodulationFlowGraphs(dashboard.backend.library)
+        headers = ["id", "protocol", "modulation_type", "hardware", "filename", "output_type", "version"]
+    elif get_table_name == "detector_flow_graphs":
+        get_rows = fissure.utils.library.getDetectorFlowGraphsTable(dashboard.backend.library)
+        headers = ["id", "detector_type", "hardware", "filename", "file_type", "version"]
+    elif get_table_name == "inspection_flow_graphs":
+        get_rows = fissure.utils.library.getInspectionFlowGraphs(dashboard.backend.library)
+        headers = ["id", "hardware", "python_file", "version"]
+    elif get_table_name == "modulation_types":
+        get_rows = fissure.utils.library.getModulationTypes(dashboard.backend.library)
+        headers = ["id", "protocol", "modulation_type"]
+    elif get_table_name == "packet_types":
+        get_rows = fissure.utils.library.getPacketTypesTable(dashboard.backend.library)
+        headers = ["id", "protocol", "packet_name", "dissector", "fields", "sort_order"]
+    elif get_table_name == "protocols":
+        get_rows = fissure.utils.library.getProtocolsTable(dashboard.backend.library)
+        headers = ["id", "protocol_name", "data_rates", "median_packet_lengths"]
+    elif get_table_name == "soi_data":
+        get_rows = fissure.utils.library.getSOIs(dashboard.backend.library, None)
+        headers = ["id", "protocol", "soi_name", "center_frequency", "start_frequency", "end_frequency", "bandwidth", "continuous", "modulation", "notes"]   
+    elif get_table_name == "triggers":
+        get_rows = fissure.utils.library.getTriggersTable(dashboard.backend.library)
+        headers = ["id", "category", "trigger_name", "default_settings", "filename", "file_type", "version"]
     else:
-        get_remove_flow_graphs = False
+        return
 
-    # Send Message to HIPRFISR/Protocol Discovery
-    await dashboard.backend.removeAttackFromLibrary(get_protocol, get_attack_name, get_modulation, get_hardware, False, get_remove_flow_graphs)
+    # Create Rows and Columns
+    dashboard.ui.tableWidget1_library_browse.setRowCount(len(get_rows))
+    dashboard.ui.tableWidget1_library_browse.setColumnCount(len(get_rows[0]))
+    
+    # Add Headers
+    for index, header in enumerate(headers):
+        header_item = QtWidgets.QTableWidgetItem(header)
+        header_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        dashboard.ui.tableWidget1_library_browse.setHorizontalHeaderItem(index, header_item)
+
+    # Add Items
+    for r in range(0,len(get_rows)):
+        for c in range(0,len(get_rows[0])):
+            new_item = QtWidgets.QTableWidgetItem(str(get_rows[r][c]))
+            new_item.setTextAlignment(QtCore.Qt.AlignCenter)
+            dashboard.ui.tableWidget1_library_browse.setItem(r,c, QtWidgets.QTableWidgetItem(new_item))
+
+    # Resize the Table
+    dashboard.ui.tableWidget1_library_browse.resizeRowsToContents()
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryBrowsePgAdmin4_Clicked(dashboard: QtCore.QObject):
+    """ 
+    Opens a browser to pgAdmin 4 for viewing the FISSURE PostgreSQL database tables.
+    """
+    # Open a Browser
+    os.system("xdg-open http://localhost:3000/browser/")
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotLibraryBrowseDeleteRowClicked(dashboard: QtCore.QObject):
+    """ 
+    Sends a message to the HIPRFISR to delete a row in the database.
+    """
+    # Get Table and Row ID
+    get_table_name = str(dashboard.ui.comboBox_library_browse.currentText())
+    try:
+        current_row = dashboard.ui.tableWidget1_library_browse.currentRow()
+        get_row_id = str(dashboard.ui.tableWidget1_library_browse.item(current_row, 0).text())
+    except:
+        dashboard.logger.info("Select a table row to delete.")
+
+    # Ask to Delete Row and then Files for Certain Tables
+    delete_files = False
+    ret = await fissure.Dashboard.UI_Components.Qt5.async_yes_no_dialog(dashboard, "Delete row with id: " + get_row_id + "?")
+    if ret == QtWidgets.QMessageBox.Yes:
+        if get_table_name == "demodulation_flow_graphs":
+            get_filename = str(dashboard.ui.tableWidget1_library_browse.item(current_row, 4).text())
+            ret = await fissure.Dashboard.UI_Components.Qt5.async_yes_no_dialog(dashboard, "Also delete filename: " + get_filename + "?")
+            if ret == QtWidgets.QMessageBox.Yes:
+                delete_files = True
+        elif get_table_name == "inspection_flow_graphs":
+            get_filename = str(dashboard.ui.tableWidget1_library_browse.item(current_row, 2).text())
+            ret = await fissure.Dashboard.UI_Components.Qt5.async_yes_no_dialog(dashboard, "Also delete files (.py & .grc) for: " + get_filename + "?")
+            if ret == QtWidgets.QMessageBox.Yes:
+                delete_files = True
+        elif get_table_name == "soi_data":
+            pass  # Delete IQ files
+        elif get_table_name == "triggers":
+            get_filename = str(dashboard.ui.tableWidget1_library_browse.item(current_row, 4).text())
+            ret = await fissure.Dashboard.UI_Components.Qt5.async_yes_no_dialog(dashboard, "Also delete filename: " + get_filename + "?")
+            if ret == QtWidgets.QMessageBox.Yes:
+                delete_files = True
+
+        # Send Message to HIPRFISR/Protocol Discovery
+        if get_row_id is not None:
+            await dashboard.backend.removeFromLibrary(get_table_name, get_row_id, delete_files)
 

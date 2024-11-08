@@ -18,13 +18,35 @@ import socket
 DELAY_SHORT = 0.25  # seconds
 
 
+
+############################### From Dashboard ####################################
+
+async def retrieveDatabaseCache(component: object, refresh_frontend_widgets=False):
+    """
+    Retrieves a copy of important database tables needed for operating the Dashboard.
+    """
+    # Retrieve the Database Cache
+    database_return = fissure.utils.library.cacheTableData(source="Dashboard")
+
+    # Return to the Dashboard (or other component?)
+    PARAMETERS = {
+        "database_return": database_return, 
+        "refresh_frontend_widgets": refresh_frontend_widgets
+    }
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "retrieveDatabaseCacheReturn",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+
 async def addToLibrary(
     component: object,
     protocol_name="",
     packet_name="",
     packet_data="",
     soi_data="",
-    statistical_data="",
     modulation_type="",
     demodulation_fg_data="",
     attack="",
@@ -33,374 +55,143 @@ async def addToLibrary(
     """
     Adds new data to the library.
     """
-    # Make a Backup of the Current Library
-    stream = open(os.path.join(fissure.utils.YAML_DIR, "Library Backups", "library_backup_add.yaml"), "w")
-    yaml.dump(component.library, stream, default_flow_style=False, indent=5)
+    # # Make a Backup of the Current Library
+    # stream = open(os.path.join(fissure.utils.YAML_DIR, "Library Backups", "library_backup_add.yaml"), "w")
+    # yaml.dump(component.library, stream, default_flow_style=False, indent=5)
 
-    # Check Protocol
-    protocol_exists = False
-    for protocol in fissure.utils.library.getProtocols(component.library):
-        # Existing Protocol
-        if protocol == protocol_name:
-            protocol_exists = True
+    # Maintain a Connection to the Database
+    conn = fissure.utils.library.openDatabaseConnection()
 
-            # Add New Modulation Type
-            if len(modulation_type) > 0:
-                if modulation_type not in fissure.utils.library.getModulations(component.library, protocol):
-                    fissure.utils.library.addModulation(component.library, protocol, modulation_type)
+    try:  
+        # Check Protocol
+        protocol_exists = False
+        all_protocols = fissure.utils.library.getProtocolNamesDirect(conn)
+        for protocol in all_protocols:
+            # Existing Protocol
+            if protocol == protocol_name:
+                protocol_exists = True
 
-            # Add New Packet Type
-            if len(packet_data) > 0:
-                all_new_fields = {}
-                for n in range(0, len(packet_data)):
-                    field_name = packet_data[n][0]
-                    field_length = packet_data[n][1]
-                    field_default = packet_data[n][2]
-                    field_order = n + 1
-                    is_crc = packet_data[n][3]
-                    crc_range = packet_data[n][4]
+                # Add New Modulation Type
+                if len(modulation_type) > 0:
+                    get_modulations = fissure.utils.library.getModulationTypesDirect(conn, protocol)
+                    if modulation_type not in get_modulations:
+                        fissure.utils.library.addModulationType(conn, protocol, modulation_type)
 
-                    field_to_add = fissure.utils.library.newField(
-                        field_name, field_default, field_length, field_order, is_crc, crc_range
+                # Add New Packet Type
+                if len(packet_data) > 0:
+                    all_new_fields = {}
+                    for n in range(0, len(packet_data)):
+                        field_name = packet_data[n][0]
+                        field_length = packet_data[n][1]
+                        field_default = packet_data[n][2]
+                        field_order = n + 1
+                        is_crc = packet_data[n][3]
+                        crc_range = packet_data[n][4]
+
+                        field_to_add = fissure.utils.library.newField(
+                            field_name, field_default, field_length, field_order, is_crc, crc_range
+                        )
+                        all_new_fields.update(field_to_add)
+
+                    sort_order = len(fissure.utils.library.getPacketTypesDirect(conn, protocol)) + 1  # Makes the packet appear on the bottom of any list
+                    fissure.utils.library.addPacketType(conn, protocol, packet_name, {"Port": None, "Filename": None}, all_new_fields, sort_order)
+
+                # Add Dissector
+                if len(dissector) > 0:
+                    fissure.utils.library.addDissector(conn, protocol, packet_name, dissector[0], dissector[1])
+
+                # Add SOI Data
+                if len(soi_data) > 0:
+                    fissure.utils.library.addSOI(
+                        conn, 
+                        protocol, 
+                        soi_data["soi_name"], 
+                        soi_data["center_frequency"], 
+                        soi_data["start_frequency"], 
+                        soi_data["end_frequency"], 
+                        soi_data["bandwidth"], 
+                        soi_data["continuous"], 
+                        soi_data["modulation"],
+                        soi_data["notes"]
                     )
-                    all_new_fields.update(field_to_add)
 
-                # Create New Packet Type
-                packet_to_add = fissure.utils.library.newPacket(packet_name, all_new_fields)
-                packet_to_add[packet_name]["Sort Order"] = (
-                    len(fissure.utils.library.getPacketTypes(component.library, protocol)) + 1
-                )  # Makes the packet appear on the bottom of any list
+                # Add Demodulation Flow Graph
+                if len(demodulation_fg_data) > 0:
+                    if (
+                        (len(demodulation_fg_data["modulation_type"]) > 0)
+                        and (len(demodulation_fg_data["hardware"]) > 0)
+                        and (len(demodulation_fg_data["filename"]) > 0)
+                        and (len(demodulation_fg_data["output_type"]) > 0)
+                    ):
+                        fissure.utils.library.addDemodulationFlowGraph(
+                            conn,
+                            protocol_name,
+                            demodulation_fg_data["modulation_type"],
+                            demodulation_fg_data["hardware"],
+                            demodulation_fg_data["filename"],
+                            demodulation_fg_data["output_type"],
+                        )
 
-                # Add it to the Protocol
-                fissure.utils.library.addPacketType(component.library, protocol, packet_to_add)
-                fissure.utils.library.addDissector(component.library, protocol, packet_name, None, None)
+                # Add Attack
+                if len(attack) > 0:
+                    fissure.utils.library.addAttack(
+                        conn, 
+                        protocol_name, 
+                        attack["attack_name"], 
+                        attack["modulation_type"],
+                        attack["hardware"],
+                        attack["attack_type"],
+                        attack["filename"],
+                        attack["category_name"]
+                    )
 
-            # Add Dissector
-            if len(dissector) > 0:
-                fissure.utils.library.addDissector(
-                    component.library, protocol, packet_name, dissector[0], dissector[1]
-                )
+        # New Protocol
+        if not protocol_exists:
+            print("Protocol not found")
+            # make_new_protocol = fissure.utils.library.newProtocol(protocolname=protocol_name)
+            fissure.utils.library.addProtocol(conn, protocol_name, None, None)
 
-            # Add SOI Data
-            if len(soi_data) > 0:
-                soi = fissure.utils.library.newSOI(
-                    soi_data[0],
-                    soi_data[1],
-                    soi_data[2],
-                    soi_data[3],
-                    soi_data[4],
-                    soi_data[5],
-                    soi_data[6],
-                    soi_data[7],
-                )
-                fissure.utils.library.addSOI(component.library, protocol, soi)
+        # Send Message to PD to Update Library
+        await retrieveDatabaseCachePD(component)
+        
+        # Send Message to Dashboard to Update Library
+        await retrieveDatabaseCache(component, True)
 
-            # Add Demodulation Flow Graph
-            if len(demodulation_fg_data) > 0:
-                if (
-                    (len(demodulation_fg_data[0]) > 0)
-                    and (len(demodulation_fg_data[1]) > 0)
-                    and (len(demodulation_fg_data[2]) > 0)
-                    and (len(demodulation_fg_data[3]) > 0)
-                ):
-                    fissure.utils.library.addDemodulationFlowGraph(
-                        component.library,
-                        protocol,
-                        demodulation_fg_data[0],
-                        demodulation_fg_data[1],
-                        demodulation_fg_data[2],
-                        demodulation_fg_data[3],
-                    )  # [0] = mod. type, [1] = flow graph name, [2] = hardware
-
-            # Add Attack
-            if len(attack) > 0:
-                # attack_dict = {attack[0]: {attack[1]: {attack[2]: {attack[3]: {attack[4]: attack[5]}}}}}
-                fissure.utils.library.addAttack(component.library, protocol_name, attack)
-
-    # New Protocol
-    if not protocol_exists:
-        make_new_protocol = fissure.utils.library.newProtocol(protocolname=protocol_name)
-        fissure.utils.library.addProtocol(component.library, make_new_protocol)
-
-    # Save File
-    fissure.utils.save_library(component.library, component.os_info)
-
-    # Send Message to PD to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.backend_router.send_msg(fissure.comms.MessageTypes.COMMANDS, msg, target_ids=[component.pd_id])
-    
-    # Send Message to Dashboard to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
-
-
-async def removeDemodulationFlowGraph(
-    component: object, protocol_name="", modulation_type="", hardware="", demodulation_fg=""
-):
-    """
-    Removes demodulation flow graph from the library.
-    """
-    # Make a Backup of the Current Library
-    stream = open(os.path.join(fissure.utils.YAML_DIR, "Library Backups", "library_backup_remove.yaml"), "w")
-    yaml.dump(component.library, stream, default_flow_style=False, indent=5)
-
-    # Delete Demodulation Flow Graph From Library
-    fissure.utils.library.removeDemodulationFlowGraph(component.library, protocol_name, modulation_type, hardware, demodulation_fg)
-
-    # Delete Files (*.py, *.pyc, *.grc) from Flow Graph Library
-    if demodulation_fg is not None:
-        try:
-            os.remove(os.path.join(fissure.utils.get_fg_library_dir(component.os_info), "PD Flow Graphs", demodulation_fg))
-        except:
-            pass
-        try:
-            os.remove(os.path.join(fissure.utils.get_fg_library_dir(component.os_info), "PD Flow Graphs", demodulation_fg.replace(".py", ".pyc")))
-        except:
-            pass
-        try:
-            os.remove(os.path.join(fissure.utils.get_fg_library_dir(component.os_info), "PD Flow Graphs", demodulation_fg.replace(".py", ".grc")))
-        except:
-            pass
-
-    # Save File
-    fissure.utils.save_library(component.library, component.os_info)
-
-    # Send Message to PD to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.backend_router.send_msg(fissure.comms.MessageTypes.COMMANDS, msg, target_ids=[component.pd_id])
-    
-    # Send Message to Dashboard to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
-
-
-async def removeSOI(component: object, protocol_name="", soi=""):
-    """
-    Removes SOI from the library.
-    """
-    # Make a Backup of the Current Library
-    stream = open(os.path.join(fissure.utils.YAML_DIR, "Library Backups", "library_backup_remove.yaml"), "w")
-    yaml.dump(component.library, stream, default_flow_style=False, indent=5)
-
-    # Delete SOI From Library
-    fissure.utils.library.removeSOI(component.library, protocol_name, soi)
-
-    # Save File
-    fissure.utils.save_library(component.library, component.os_info)
-
-    # Send Message to PD to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.backend_router.send_msg(fissure.comms.MessageTypes.COMMANDS, msg, target_ids=[component.pd_id])
-    
-    # Send Message to Dashboard to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
-
-
-async def removePacketType(component: object, protocol_name="", packet_type=""):
-    """
-    Removes packet type from the library.
-    """
-    # Make a Backup of the Current Library
-    stream = open(os.path.join(fissure.utils.YAML_DIR, "Library Backups", "library_backup_remove.yaml"), "w")
-    yaml.dump(component.library, stream, default_flow_style=False, indent=5)
-
-    # Delete Packet Type From Library
-    fissure.utils.library.removePacketType(component.library, protocol_name, packet_type)
-
-    # Save File
-    fissure.utils.save_library(component.library, component.os_info)
-
-    # Send Message to PD to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.backend_router.send_msg(fissure.comms.MessageTypes.COMMANDS, msg, target_ids=[component.pd_id])
-    
-    # Send Message to Dashboard to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
-
-
-async def removeModulationType(component: object, protocol_name="", modulation_type=""):
-    """Removes modulation type from the library."""
-    # Make a Backup of the Current Library
-    stream = open(os.path.join(fissure.utils.YAML_DIR, "Library Backups", "library_backup_remove.yaml"), "w")
-    yaml.dump(component.library, stream, default_flow_style=False, indent=5)
-
-    # Delete Modulation Type From Library
-    fissure.utils.library.removeModulationType(component.library, protocol_name, modulation_type)
-
-    # Save File
-    fissure.utils.save_library(component.library, component.os_info)
-
-    # Send Message to PD to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.backend_router.send_msg(fissure.comms.MessageTypes.COMMANDS, msg, target_ids=[component.pd_id])
-    
-    # Send Message to Dashboard to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
-
-
-async def removeAttackFromLibrary(
-    component: object,
-    protocol_name="",
-    attacks=[],
-    modulations=[],
-    hardware=[],
-    all_content=False,
-    remove_flow_graphs=False,
-):
-    """
-    Removes attacks from the library.
-    """
-    # Make a Backup of the Current Library
-    stream = open(os.path.join(fissure.utils.YAML_DIR, "Library Backups", "library_backup_remove.yaml"), "w")
-    yaml.dump(component.library, stream, default_flow_style=False, indent=5)
-
-    # Delete Attacks From Library
-    flow_graph_delete_list = []
-    for a in attacks:
-        for m in modulations:
-            if len(component.library["Protocols"][protocol_name]["Attacks"][a]) > 0:
-                if m in component.library["Protocols"][protocol_name]["Attacks"][a]:
-                    for h in hardware:
-                        if len(component.library["Protocols"][protocol_name]["Attacks"][a][m]) > 0:
-                            if h in list(
-                                component.library["Protocols"][protocol_name]["Attacks"][a][m]["Hardware"].keys()
-                            ):
-                                # Get the Flow Graph Name
-                                get_file_type = list(
-                                    component.library["Protocols"][protocol_name]["Attacks"][a][m]["Hardware"][
-                                        h
-                                    ].keys()
-                                )[0]
-                                flow_graph_delete_list.append(
-                                    component.library["Protocols"][protocol_name]["Attacks"][a][m]["Hardware"][h][
-                                        get_file_type
-                                    ]
-                                )
-                                del component.library["Protocols"][protocol_name]["Attacks"][a][m]["Hardware"][h]
-                                if (
-                                    len(component.library["Protocols"][protocol_name]["Attacks"][a][m]["Hardware"])
-                                    == 0
-                                ):
-                                    del component.library["Protocols"][protocol_name]["Attacks"][a][m]["Hardware"]
-                    if len(component.library["Protocols"][protocol_name]["Attacks"][a][m]) == 0:
-                        del component.library["Protocols"][protocol_name]["Attacks"][a][m]
-        if len(component.library["Protocols"][protocol_name]["Attacks"][a]) == 0:
-            del component.library["Protocols"][protocol_name]["Attacks"][a]
-    try:
-        if len(component.library["Protocols"][protocol_name]["Attacks"]) == 0:
-            del component.library["Protocols"][protocol_name]["Attacks"]
     except:
-        # Avoids ["Attacks"] Key Errors
-        pass
+        component.logger.error("Failure adding data to the FISSURE library.")
 
-    # Determine if Deleted Attack was the Last of its Name
-    no_more_attacks = len(attacks) * [False]
-    for n in range(0, len(attacks)):
-        try:
-            if len(component.library["Protocols"][protocol_name]["Attacks"][n]) == 0:
-                no_more_attacks[n] = True
-        except KeyError:
-            no_more_attacks[n] = True
+    finally:
+        conn.close()
 
-    # Delete Attacks from Library Tree
-    for n in range(0, len(no_more_attacks)):
-        if no_more_attacks[n] is True:
-            try:
-                component.library["Attacks"]["Single-Stage Attacks"].remove(
-                    [
-                        item
-                        for item in component.library["Attacks"]["Single-Stage Attacks"]
-                        if item.split(",")[0] == attacks[n]
-                    ][0]
-                )
-                component.library["Attacks"]["Multi-Stage Attacks"].remove(
-                    [
-                        item
-                        for item in component.library["Attacks"]["Multi-Stage Attacks"]
-                        if item.split(",")[0] == attacks[n]
-                    ][0]
-                )
-                component.library["Attacks"]["Fuzzing Attacks"].remove(
-                    [
-                        item
-                        for item in component.library["Attacks"]["Fuzzing Attacks"]
-                        if item.split(",")[0] == attacks[n]
-                    ][0]
-                )
-            except:
-                pass
 
-    # Delete Files (*.py, *.pyc, *.grc) from Flow Graph Library
-    if remove_flow_graphs is True:
-        if len(flow_graph_delete_list) > 0:
-            for f in flow_graph_delete_list:
-                if f != "None":
-                    try:
-                        os.remove(os.path.join(fissure.utils.get_fg_library_dir(component.os_info), "Single-Stage Flow Graphs", f))
-                    except:
-                        pass
-                    try:
-                        os.remove(os.path.join(fissure.utils.get_fg_library_dir(component.os_info), "Single-Stage Flow Graphs", f.replace(".py", ".pyc")))
-                    except:
-                        pass
-                    try:
-                        os.remove(os.path.join(fissure.utils.get_fg_library_dir(component.os_info), "Single-Stage Flow Graphs", f.replace(".py", ".grc")))
-                    except:
-                        pass
+async def removeFromLibrary(
+    component: object,
+    table_name = "",
+    row_id = "",
+    delete_files = False
+):
+    """
+    Removes a row from the library/database table.
+    """
+    # Maintain a Connection to the Database
+    conn = fissure.utils.library.openDatabaseConnection()
 
-    # Delete All Protocol Content
-    if all_content is True:
-        del component.library["Protocols"][protocol_name]
+    try:
+        # Remove the Row/Files
+        if (len(table_name) > 0) and (len(row_id) > 0):
+            fissure.utils.library.removeFromTable(conn, table_name, row_id, delete_files, component.os_info)
 
-    # Save File
-    fissure.utils.save_library(component.library, component.os_info)
+        # Send Message to PD to Update Library
+        await retrieveDatabaseCachePD(component)
 
-    # Send Message to PD to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.backend_router.send_msg(fissure.comms.MessageTypes.COMMANDS, msg, target_ids=[component.pd_id])
-    
-    # Send Message to Dashboard to Update Library
-    msg = {
-        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
-        fissure.comms.MessageFields.MESSAGE_NAME: "setFullLibrary",
-    }
-    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+        # Send Message to Dashboard to Update Library
+        await retrieveDatabaseCache(component, True)
+ 
+    except:
+        component.logger.error("Failure removing data from the FISSURE library.")
+
+    finally:
+        conn.close()
 
 
 async def shutdown(component: object, identifiers: List[str]):
@@ -510,7 +301,8 @@ async def startPD(component: object, sensor_node_id=0):
     await component.backend_router.send_msg(fissure.comms.MessageTypes.COMMANDS, msg, target_ids=[component.pd_id])
 
     # Send Message to Sensor Node
-    await component.sensor_nodes[sensor_node_id].listener.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+    if sensor_node_id >= 0:
+        await component.sensor_nodes[sensor_node_id].listener.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
 
 
 async def stopPD(component: object, sensor_node_id=0):
@@ -527,7 +319,8 @@ async def stopPD(component: object, sensor_node_id=0):
     await component.backend_router.send_msg(fissure.comms.MessageTypes.COMMANDS, msg, target_ids=[component.pd_id])
 
     # Send Message to Sensor Node
-    await component.sensor_nodes[sensor_node_id].listener.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+    if sensor_node_id >= 0:
+        await component.sensor_nodes[sensor_node_id].listener.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
 
 
 async def pdBitsReturn(component: object, bits_message=""):
@@ -686,6 +479,25 @@ async def removePubSocket(component: object, address=""):
 
 
 # ############################### From PD ################################
+
+async def retrieveDatabaseCachePD(component: object):
+    """
+    Retrieves a copy of important database tables needed for operating Protocol Discovery.
+    """
+    # Retrieve the Database Cache
+    database_return = fissure.utils.library.cacheTableData(source="Protocol Discovery")
+
+    # Return to the Dashboard (or other component?)
+    PARAMETERS = {
+        "database_return": database_return, 
+    }
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "retrieveDatabaseCacheReturnPD",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.backend_router.send_msg(fissure.comms.MessageTypes.COMMANDS, msg, target_ids=[component.pd_id])
+
 
 async def findPreamblesReturn(component: object, slice_medians, candidate_preambles, min_std_dev_max_length_preambles):
     """
@@ -2246,7 +2058,7 @@ async def SOI_Check(component: object, trigger_mode=""):
                     fissure.comms.MessageFields.MESSAGE_NAME: "SOI Chosen",
                     fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
                 }
-                component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+                await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
 
     # SOI quantity reached
     elif trigger_mode == 2:
@@ -2265,7 +2077,7 @@ async def SOI_Check(component: object, trigger_mode=""):
                 fissure.comms.MessageFields.MESSAGE_NAME: "SOI Chosen",
                 fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
             }
-            component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+            await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
 
     return returned_SOI
 

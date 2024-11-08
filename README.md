@@ -341,7 +341,7 @@ FISSURE comes with several helpful guides to become familiar with different tech
 
 - [x] Transition the main FISSURE components to a generic sensor node deployment scheme
 - [ ] Increase automation and information exchange between components
-- [ ] Transition the FISSURE library into a database
+- [x] Transition the FISSURE library into a database
 - [ ] Support alternative FISSURE packaging options
 - [ ] Add automatic modulation classification (AMC) techniques to the feature extractor
 - [ ] Support user selection of binary data and pattern analysis techniques

@@ -928,8 +928,11 @@ def _slotIQ_InspectionHardwareChanged(dashboard: QtCore.QObject):
 
     # Update Flow Graphs
     if len(get_hardware_type) > 0:
-        get_fgs = []
-        get_fgs.extend(dashboard.backend.library["Inspection Flow Graphs"][get_hardware_type])
+        get_fgs = fissure.utils.library.getInspectionFlowGraphFilename(
+            dashboard.backend.library, 
+            get_hardware_type, 
+            fissure.utils.get_library_version()
+        )
         for n in sorted(get_fgs,key=str.lower):
             if n != "None":
                 dashboard.ui.listWidget_iq_inspection_flow_graphs.addItem(n)
@@ -1704,19 +1707,23 @@ def _slotIQ_DeleteClicked(dashboard: QtCore.QObject):
         get_index = int(dashboard.ui.listWidget_iq_files.currentRow())
         get_file = str(dashboard.ui.listWidget_iq_files.currentItem().text())
         get_folder = str(dashboard.ui.label_iq_folder.text())
-        delete_filepath = get_folder + '/' + get_file
+        delete_filepath = os.path.join(get_folder, get_file)
 
-        # Delete
-        os.system('rm "' + delete_filepath + '"')
-        if ".sigmf-data" in delete_filepath:
-            if os.path.isfile(delete_filepath.replace(".sigmf-data",".sigmf-meta")):
-                os.system('rm "' + delete_filepath.replace(".sigmf-data",".sigmf-meta") + '"')
+        # Confirm deletion for files and folders
+        qm = QtWidgets.QMessageBox
+        ret = qm.question(dashboard, '', "Delete this file?", qm.Yes | qm.No)
+        if ret == qm.Yes:
+            # Delete
+            os.system('rm "' + delete_filepath + '"')
+            if ".sigmf-data" in delete_filepath:
+                if os.path.isfile(delete_filepath.replace(".sigmf-data",".sigmf-meta")):
+                    os.system('rm "' + delete_filepath.replace(".sigmf-data",".sigmf-meta") + '"')
 
-        # Refresh
-        _slotIQ_RefreshClicked(dashboard)
-        if get_index == dashboard.ui.listWidget_iq_files.count():
-            get_index = get_index -1
-        dashboard.ui.listWidget_iq_files.setCurrentRow(get_index)
+            # Refresh
+            _slotIQ_RefreshClicked(dashboard)
+            if get_index == dashboard.ui.listWidget_iq_files.count():
+                get_index = get_index -1
+            dashboard.ui.listWidget_iq_files.setCurrentRow(get_index)
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -2336,14 +2343,14 @@ def _slotIQ_RenameClicked(dashboard: QtCore.QObject):
     except:
         fissure.Dashboard.UI_Components.Qt5.errorMessage("No File Selected.")
         return
-    get_file_path = str(dashboard.ui.label_iq_folder.text() + "/" + get_file)
+    get_file_path = os.path.join(str(dashboard.ui.label_iq_folder.text()), get_file)
 
     # Open the GUI
-    text, ok = QtWidgets.QInputDialog.getText(dashboard, 'Rename', 'Enter new name:',QtWidgets.QLineEdit.Normal,get_file)
+    text, ok = QtWidgets.QInputDialog.getText(dashboard, 'Rename', 'Enter new name:', QtWidgets.QLineEdit.Normal, get_file)
 
     # Ok Clicked
     if ok:
-        os.rename(get_file_path,str(dashboard.ui.label_iq_folder.text() + "/"+text))
+        os.rename(get_file_path, os.path.join(str(dashboard.ui.label_iq_folder.text(), text)))
         _slotIQ_RefreshClicked(dashboard)
 
 
@@ -3139,7 +3146,7 @@ def _slotIQ_SigMF_Clicked(dashboard: QtCore.QObject):
     Opens the SigMF metadata file in a text editor.
     """
     # Open the File
-    get_iq_file = '"' + str(dashboard.ui.comboBox3_iq_folders.currentText()) + "/" + str(dashboard.ui.listWidget_iq_files.currentItem().text()) + '"'
+    get_iq_file = os.path.join(str(dashboard.ui.comboBox3_iq_folders.currentText()), str(dashboard.ui.listWidget_iq_files.currentItem().text()))
     if ".sigmf-data" in get_iq_file:
         get_meta_file = get_iq_file.replace('.sigmf-data','.sigmf-meta')
         if os.path.isfile(get_meta_file.replace('"','')):
@@ -3671,6 +3678,9 @@ def _slotIQ_SplitClicked(dashboard: QtCore.QObject):
         else:
             os.system('dd if="'+ get_input_file + '" of="' + new_output_file + '" bs=' + bs + ' skip=' + str(start_location) + ' count=' + str(block_size))
         start_location = start_location + block_size
+    
+    # Refresh the List
+    _slotIQ_RefreshClicked(dashboard)
 
 
 @QtCore.pyqtSlot(QtCore.QObject)

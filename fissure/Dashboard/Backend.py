@@ -79,7 +79,9 @@ class DashboardBackend:
         self.shutting_down_message_received = False
 
         # Load Library
-        self.library = fissure.utils.load_library(self.os_info)
+        self.library = None
+        self.frontend_initialized = False
+        self.initial_database_retrieval = False
 
         self.frontend = frontend
 
@@ -164,6 +166,14 @@ class DashboardBackend:
 
             if self.hiprfisr_connected:
                 await self.read_hiprfisr_messages()
+
+                # Retrieve Initial Database Cache from HIPRFISR
+                if self.initial_database_retrieval == False:
+                    self.initial_database_retrieval = True
+                    await self.retrieveDatabaseCache(False)
+                if self.library != None and self.frontend_initialized == False:
+                    self.frontend_initialized = True
+                    self.frontend.__init2__()
             else:
                 # yield to pass control flow back to event loop
                 await asyncio.sleep(1)
@@ -850,7 +860,6 @@ class DashboardBackend:
         packet_name="",
         packet_data="",
         soi_data="",
-        statistical_data="",
         modulation_type="",
         demodulation_fg_data="",
         attack="",
@@ -866,7 +875,6 @@ class DashboardBackend:
                 "packet_name": packet_name,
                 "packet_data": packet_data,
                 "soi_data": soi_data,
-                "statistical_data": statistical_data,
                 "modulation_type": modulation_type,
                 "demodulation_fg_data": demodulation_fg_data,
                 "attack": attack,
@@ -880,111 +888,25 @@ class DashboardBackend:
             await self.hiprfisr_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
 
 
-    async def removeAttackFromLibrary(
+    async def removeFromLibrary(
         self,
-        protocol_name="",
-        attacks=[],
-        modulations=[],
-        hardware=[],
-        all_content=False,
-        remove_flow_graphs=False,
+        table_name = "",
+        row_id = "",
+        delete_files = False
     ):
         """
-        Removes attacks from the library.
+        Removes a row (and files) from the library database
         """
         # Send the Message
         if self.hiprfisr_connected is True:
             PARAMETERS = {
-                "protocol_name": protocol_name,
-                "attacks": attacks,
-                "modulations": modulations,
-                "hardware": hardware,
-                "all_content": all_content,
-                "remove_flow_graphs": remove_flow_graphs,
+                "table_name": table_name,
+                "row_id": row_id,
+                "delete_files": delete_files
             }
             msg = {
                     fissure.comms.MessageFields.IDENTIFIER: fissure.comms.Identifiers.DASHBOARD,
-                    fissure.comms.MessageFields.MESSAGE_NAME: "removeAttackFromLibrary",
-                    fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
-            }
-            await self.hiprfisr_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
-
-
-    async def removeDemodulationFlowGraph(
-        self,
-        protocol_name="", 
-        modulation_type="", 
-        hardware="", 
-        demodulation_fg=""
-    ):
-        """
-        Removes demodulation flow graph from the library.
-        """
-        # Send the Message
-        if self.hiprfisr_connected is True:
-            PARAMETERS = {
-                "protocol_name": protocol_name,
-                "modulation_type": modulation_type,
-                "hardware": hardware,
-                "demodulation_fg": demodulation_fg,
-            }
-            msg = {
-                    fissure.comms.MessageFields.IDENTIFIER: fissure.comms.Identifiers.DASHBOARD,
-                    fissure.comms.MessageFields.MESSAGE_NAME: "removeDemodulationFlowGraph",
-                    fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
-            }
-            await self.hiprfisr_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
-
-
-    async def removeSOI(self, protocol_name="", soi=""):
-        """
-        Removes SOI from the library.
-        """
-        # Send the Message
-        if self.hiprfisr_connected is True:
-            PARAMETERS = {
-                "protocol_name": protocol_name,
-                "soi": soi,
-            }
-            msg = {
-                    fissure.comms.MessageFields.IDENTIFIER: fissure.comms.Identifiers.DASHBOARD,
-                    fissure.comms.MessageFields.MESSAGE_NAME: "removeSOI",
-                    fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
-            }
-            await self.hiprfisr_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
-
-
-    async def removePacketType(self, protocol_name="", packet_type=""):
-        """
-        Removes packet type from the library.
-        """
-        # Send the Message
-        if self.hiprfisr_connected is True:
-            PARAMETERS = {
-                "protocol_name": protocol_name,
-                "packet_type": packet_type,
-            }
-            msg = {
-                    fissure.comms.MessageFields.IDENTIFIER: fissure.comms.Identifiers.DASHBOARD,
-                    fissure.comms.MessageFields.MESSAGE_NAME: "removePacketType",
-                    fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
-            }
-            await self.hiprfisr_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
-
-    
-    async def removeModulationType(self, protocol_name="", modulation_type=""):
-        """
-        Removes modulation type from the library.
-        """
-        # Send the Message
-        if self.hiprfisr_connected is True:
-            PARAMETERS = {
-                "protocol_name": protocol_name,
-                "modulation_type": modulation_type,
-            }
-            msg = {
-                    fissure.comms.MessageFields.IDENTIFIER: fissure.comms.Identifiers.DASHBOARD,
-                    fissure.comms.MessageFields.MESSAGE_NAME: "removeModulationType",
+                    fissure.comms.MessageFields.MESSAGE_NAME: "removeFromLibrary",
                     fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
             }
             await self.hiprfisr_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
@@ -1656,3 +1578,18 @@ class DashboardBackend:
             }
             await self.hiprfisr_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
 
+
+    async def retrieveDatabaseCache(self, refresh_frontend_widgets=False):
+        """
+        Retrieves a copy of important database tables needed for operating the Dashboard.
+        """
+        # Send the Message
+        if self.hiprfisr_connected is True:
+            PARAMETERS = {
+                "refresh_frontend_widgets": refresh_frontend_widgets,
+            }
+            msg = {
+                    fissure.comms.MessageFields.IDENTIFIER: fissure.comms.Identifiers.DASHBOARD,
+                    fissure.comms.MessageFields.MESSAGE_NAME: "retrieveDatabaseCache",
+            }
+            await self.hiprfisr_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)

@@ -1191,6 +1191,14 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <property name="text">
+          <string>RSPdx</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>RSPdx R2</string>
          </property>
          <property name="checkState">
@@ -3282,6 +3290,14 @@ p, li { white-space: pre-wrap; }
           <enum>Unchecked</enum>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>RSPdx R2</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
        </widget>
        <widget class="QPushButton" name="pushButton_scan_2">
         <property name="enabled">
@@ -4621,6 +4637,14 @@ p, li { white-space: pre-wrap; }
         <item>
          <property name="text">
           <string>RSPdx</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>RSPdx R2</string>
          </property>
          <property name="checkState">
           <enum>Unchecked</enum>
@@ -6364,6 +6388,14 @@ p, li { white-space: pre-wrap; }
           <enum>Unchecked</enum>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>RSPdx R2</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
        </widget>
        <widget class="QPushButton" name="pushButton_scan_4">
         <property name="enabled">
@@ -8075,6 +8107,14 @@ p, li { white-space: pre-wrap; }
         <item>
          <property name="text">
           <string>RSPdx</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>RSPdx R2</string>
          </property>
          <property name="checkState">
           <enum>Unchecked</enum>

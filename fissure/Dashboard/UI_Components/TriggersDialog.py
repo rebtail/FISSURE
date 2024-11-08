@@ -1,6 +1,7 @@
 from ..Slots import TriggersDialogSlots
 from .UI_Types import UI_Types
 from PyQt5 import QtCore, QtWidgets
+import fissure.utils
 
 # import fissure.comms
 # import os
@@ -26,8 +27,7 @@ class TriggersDialog(QtWidgets.QDialog, UI_Types.Triggers):
         # Fill Comboboxes
         self.comboBox_category.clear()
         self.comboBox_trigger.clear()
-        category_list = list(dashboard.backend.library['Triggers'].keys())
-        trigger_list = list(dashboard.backend.library['Triggers'][category_list[0]].keys())
+        category_list = fissure.utils.library.getTriggerCategories(dashboard.backend.library, fissure.utils.get_library_version())
         self.comboBox_category.addItems(sorted(category_list))
         # self._slotCategoryChanged()
         TriggersDialogSlots._slotCategoryChanged(self)

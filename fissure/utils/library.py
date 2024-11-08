@@ -1,23 +1,1175 @@
 #!/usr/bin/env python3
 import copy
+import os
+from dotenv import load_dotenv
+import psycopg2
+from psycopg2 import sql
+from fissure.utils import FISSURE_ROOT, get_fg_library_dir
+from decimal import Decimal
+from datetime import datetime, date
+import json
 
-# convenience function to keep from having to re-write the library schema
+
+def openDatabaseConnection():
+    """
+    Connects to the FISSURE database at the HIPRFISR computer/network.
+    """
+    # Load environment variables from .env file
+    load_dotenv(os.path.join(FISSURE_ROOT,".env"))
+
+    # Connect to PostgreSQL database
+    conn = psycopg2.connect(
+        dbname = os.getenv('POSTGRES_DB'),
+        user = os.getenv('POSTGRES_USER'),
+        password = os.getenv('POSTGRES_PASSWORD'),
+        host = os.getenv('POSTGRES_HOST', 'localhost'),
+        port = os.getenv('POSTGRES_PORT', '5432')
+    )
+    return conn
 
 
-def getFields(library, protocol, packet_type):
-    """ """
+def cacheTableData(source="Dashboard"):
+    """
+    Loads a copy of frequently used tables for local access and to avoid network queries to the database.
+    """
+    if source == "Dashboard":
+        tables_to_load = [
+            "archive_collection", 
+            "archive_favorites", 
+            "attack_categories",
+            "conditioner_flow_graphs",
+            "detector_flow_graphs",
+            "inspection_flow_graphs",
+            "triggers",
+            "protocols",
+            "attacks",
+            "demodulation_flow_graphs",
+            "modulation_types",
+            "packet_types",
+            "soi_data"
+        ]
+    elif source == "Protocol Discovery":
+        tables_to_load = [
+            "protocols",
+            "demodulation_flow_graphs",
+            "modulation_types",
+            "packet_types",
+            "soi_data"
+        ]
+    else:
+        tables_to_load = [
+            "archive_collection", 
+            "archive_favorites", 
+            "attack_categories",
+            "conditioner_flow_graphs",
+            "detector_flow_graphs",
+            "inspection_flow_graphs",
+            "triggers",
+            "protocols",
+            "attacks",
+            "demodulation_flow_graphs",
+            "modulation_types",
+            "packet_types",
+            "soi_data"
+        ]
+
+    # Load environment variables from .env file
+    load_dotenv(os.path.join(FISSURE_ROOT,".env"))
+
     try:
-        fields = sorted(
-            library["Protocols"][protocol]["Packet Types"][packet_type]["Fields"],
-            key=lambda x: library["Protocols"][protocol]["Packet Types"][packet_type]["Fields"][x]["Sort Order"],
-        )
-    except KeyError:
-        fields = []
-    return fields
+        # Connect to PostgreSQL database
+        conn = openDatabaseConnection()
 
+        # Read Data
+        table_data = {}
+        with conn.cursor() as cur:
+            for table_name in tables_to_load:
+                query = f"SELECT * FROM {table_name};"
+                cur.execute(query)
+                rows = cur.fetchall()
+                table_data[table_name] = [convert_data_types(row) for row in rows]
+    
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+
+    finally:
+        # Close the connection if it was successfully opened
+        if conn is not None:
+            conn.close()
+
+    return table_data
+
+
+def convert_data_types(row):
+    """
+    FissureZMQNode uses json.dumps() which needs decimal types to be converted to floats and datetimes to strings.
+    """
+    return [
+        float(item) if isinstance(item, Decimal) 
+        else item.isoformat() if isinstance(item, (datetime, date))
+        else item
+        for item in row
+    ]
+
+
+# =============================================================
+#                   GET Direct Functions
+# =============================================================
+# This section contains functions for retrieving values 
+# directly from the database accessed from inside the HIPRFISR 
+# component.
+# =============================================================
+
+
+def getProtocolsDirect(conn):
+    """
+    Returns a list of protocol rows directly from the protocols table.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT protocol_name FROM protocols")
+        rows = cur.fetchall()
+        cur.close()
+
+        return rows
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+    finally:
+        if cur is not None:
+            cur.close()
+
+
+def getProtocolNamesDirect(conn):
+    """
+    Returns a sorted list of protocol names directly from the protocols table.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT protocol_name FROM protocols")
+        rows = cur.fetchall()
+        cur.close()
+
+        # Convert list of tuples into a simple list
+        protocol_names = sorted([row[0] for row in rows])
+
+        return protocol_names
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+    finally:
+        if cur is not None:
+            cur.close()
+
+
+def getModulationTypesDirect(conn, protocol):
+    """
+    Returns the modulation types for a protocol directly from the modulation_types table.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT modulation_type FROM modulation_types WHERE protocol = %s", (protocol,))
+        get_modulation_types = cur.fetchall()
+        cur.close()
+
+        # Convert list of tuples into a simple list
+        sorted_modulation_types = sorted(item[0] for item in get_modulation_types)
+
+        return sorted_modulation_types
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+    finally:
+        if cur is not None:
+            cur.close()
+
+
+def getPacketTypesDirect(conn, protocol):
+    """
+    Returns a list of sorted packet types for a protocol from the packet_types table.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT packet_name FROM packet_types WHERE protocol = %s", (protocol,))
+        get_packet_types = cur.fetchall()
+        cur.close()
+
+        # Convert list of tuples into a simple list
+        sort_order_packet_types = [(int(row[5]), str(row[2])) for row in get_packet_types]
+        sorted_packet_names = [string for _, string in sorted(sort_order_packet_types)]
+
+        return sorted_packet_names
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+    finally:
+        if cur is not None:
+            cur.close()
+
+    
+
+
+# =============================================================
+#                   GET Indirect Functions
+# =============================================================
+# This section contains functions for retrieving values from 
+# the smaller cached FISSURE library/database accessed from
+# outside the HIPRFISR component.
+# =============================================================
+
+def getConditionerIsolationMethod(library, isolation_category, version):
+    """
+    Returns a list of filename values for a detector type, hardware type, and version from the detector_flow_graphs table.
+    """
+    return sorted([str(row[2]) for row in library["conditioner_flow_graphs"] if row[1] == isolation_category and row[7] == version])
+
+
+def getDetectorFlowGraphsFilename(library, detector_type, hardware, version):
+    """
+    Returns a list of filename values for a detector type, hardware type, and version from the detector_flow_graphs table.
+    """
+    return [str(row[3]) for row in library["detector_flow_graphs"] if row[1] == detector_type and row[2] == hardware and row[5] == version]
+
+
+def getInspectionFlowGraphs(library):
+    """
+    Returns the inspection_flow_graphs table contents.
+    """
+    return [row for row in library["inspection_flow_graphs"]]
+
+
+def getInspectionFlowGraphFilename(library, hardware, version):
+    """
+    Returns a list of python_file values for a hardware type and version from the inspection_flow_graphs table.
+    """
+    return [str(row[2]) for row in library["inspection_flow_graphs"] if row[1] == hardware and row[3] == version]
+
+
+def getProtocolsTable(library):
+    """
+    Returns the protocols table contents.
+    """
+    return [row for row in library["protocols"]]
+
+
+def getProtocols(library):
+    """
+    Returns a list of protocols from the protocols table.
+    """
+    return [str(row[1]) for row in library["protocols"]]
+
+
+def getProtocolDataRates(library, protocol):
+    """
+    Returns a list of data rates for a protocol from the protocols table.
+    """
+    data_rates = [row[2] for row in library["protocols"] if row[1] == protocol]
+
+    return data_rates
+
+
+def getProtocolMedianPacketLengths(library, protocol, statistic):
+    """
+    Returns a list of median packet lengths for a protocol from the protocols table.
+    """
+    median_packet_lengths = [row[3] for row in library["protocols"] if row[1] == protocol]
+
+    return median_packet_lengths
+
+
+def getPacketTypesTable(library):
+    """
+    Returns the packet_types table contents.
+    """
+    return [row for row in library["packet_types"]]
+
+
+def getPacketTypes(library, protocol):
+    """
+    Returns a list of sorted packet types for a protocol from the packet_types table.
+    """
+    sort_order_packet_types = [(int(row[5]), str(row[2])) for row in library["packet_types"] if row[1] == protocol]
+    sorted_packet_types = [string for _, string in sorted(sort_order_packet_types)]
+
+    return sorted_packet_types
+
+
+def getArchiveFavorites(library):
+    """
+    Returns a list of sorted Archive favorites from the archive_favorites table.
+    """
+    return sorted(library["archive_favorites"], key=lambda x: x[1])
+
+
+def getArchiveCollection(library):
+    """
+    Returns a list of Archive collections with no parent IDs (parent folder).
+    """
+    return [row for row in library["archive_collection"]]
+
+
+def getArchiveCollectionParent(library):
+    """
+    Returns a list of Archive collections with no parent IDs (parent folder).
+    """
+    return sorted([row for row in library["archive_collection"] if row[8] is None], key=lambda x: x[1])
+
+
+def getArchiveCollectionSubdirectory(library, parent_id):
+    """
+    Returns a list of Archive collection subdirectories from a parent ID.
+    """
+    return sorted([row for row in library["archive_collection"] if row[8] == parent_id], key=lambda x: x[1])
+
+
+def getArchiveCollectionFilepath(library, name, parent1, parent2):
+    """
+    Returns the filepath (zipped, .tar) of a collection filtered by (unique) name from the archive_collection table).
+    """
+    # Root Tar File
+    if parent1 == None:
+        get_filepath = next((row[3] for row in library["archive_collection"] if row[1] == name), None)
+        if get_filepath == None:
+            return None
+
+    elif parent2 == None:
+        if '.sigmf-data' in name:
+            # Single Data File with a Single Parent (1MSps_Exampes/avent_scd560_1922_5MHz_1MSps_1.sigmf-data)
+            parent1_filepath = next((row[3] for row in library["archive_collection"] if row[1] == parent1), None)
+            if parent1_filepath == None:
+                return None
+            
+            get_filepath = parent1_filepath.replace('.tar','') + '/' + name
+        else:
+            # Child Collection (Avent_SCD560, CW_Morse_Code, etc.)
+            parent1_filepath = next((row[3] for row in library["archive_collection"] if row[1] == parent1), None)
+            if parent1_filepath == None:
+                return None
+
+            get_filepath = parent1_filepath.replace('.tar','') + '/' + name + '.tar'
+
+    else:
+        # Single Data File with Two Parents (X3xx_1MSps_All/Avent_SCD560/avent_scd560_1922_5MHz_1MSps_1.sigmf-data)
+        if parent1 == None or parent2 == None:
+            return None 
+        
+        parent2_filepath = next((row[3] for row in library["archive_collection"] if row[1] == parent2), None)
+        if parent2_filepath == None:
+            return None
+        
+        get_filepath = parent2_filepath.replace('.tar','') + '/' + parent1 + '/' + name
+    
+    return get_filepath
+
+
+def getAttackNames(library, protocol, version):
+    """
+    Returns the attack_name for a protocol and version in the attacks table.
+    """
+    exclude_list = [
+        "Single-Stage",
+        "Denial of Service",
+        "Jamming",
+        "Spoofing",
+        "Sniffing/Snooping",
+        "Probe Attacks",
+        "Installation of Malware",
+        "Misuse of Resources",
+        "File",
+        "Multi-Stage",
+        "New Multi-Stage",
+        "Fuzzing",
+        "Variables",
+    ]
+    attack_names = [row[2] for row in library["attacks"] if row[1] == protocol and row[2] not in exclude_list and row[8] == version]
+
+    return attack_names
+
+
+def getAttackType(library, protocol, attack_name, modulation_type, hardware, version):
+    """
+    Returns the attack_type for an attack in the attacks table.
+    """
+    attack_name = attack_name.split(' - ')[-1].strip()  # Avoids "X10 - On" in attack tree when entered as "On" in attacks table
+    attack_type = next((row[5] for row in library["attacks"] if row[1] == protocol and row[2] == attack_name and row[3] == modulation_type and row[4] == hardware and row[8] == version), None)
+
+    return attack_type
+
+
+def getAttackFilename(library, protocol, attack_name, modulation_type, hardware, version):
+    """
+    Returns the filename for an attack in the attacks table.
+    """
+    attack_name = attack_name.split(' - ')[-1].strip()  # Avoids "X10 - On" in attack tree when entered as "On" in attacks table
+    attack_filename = next((row[6] for row in library["attacks"] if row[1] == protocol and row[2] == attack_name and row[3] == modulation_type and row[4] == hardware and row[8] == version), None)
+
+    return attack_filename
+
+
+def getAttacks(library, protocol, version):
+    """
+    Returns the rows of attack data for a protocol in the attacks table.
+    """
+    if protocol == None:
+        if version == None:
+            attack_rows = [row for row in library["attacks"]]
+        else:
+            attack_rows = [row for row in library["attacks"] if row[8] == version]
+    else:
+        if version == None:
+            attack_rows = [row for row in library["attacks"] if row[1] == protocol]
+        else:
+            attack_rows = [row for row in library["attacks"] if row[1] == protocol and row[8] == version]
+
+    return attack_rows
+
+
+def getAttackCategories(library):
+    """
+    Returns the rows of attack categories from the attack_categories table.
+    """
+    attack_categories_rows = [row for row in library["attack_categories"]]
+
+    return attack_categories_rows
+
+
+def getAttackCategoryNames(library):
+    """
+    Returns the names of the attack categories from the attack_categories table.
+    """
+    attack_category_names = [row[1] for row in library["attack_categories"]]
+
+    return attack_category_names
+
+
+def getSingleStageAttacks(library, version):
+    """
+    Returns the contents of the attacks table (id, attack_name, and tree_indent).
+    """
+    return library["attacks"]
+
+
+def getSingleStageAttackNames(library, version):
+    """
+    Returns the attack_name of each row in the attacks table.
+    """
+    return [row[1] + ' - ' + row[2] for row in library["attacks"]]
+
+
+def getMultiStageAttackNames(library, version):
+    """
+    Returns the attack_name of each row in the attacks table if the category is "Multi-Stage".
+    """
+    return [row[2] for row in library["attacks"] if row[7] == "Multi-Stage"]
+
+
+def getFuzzingAttackNames(library, version):
+    """
+    Returns the attack_name of each row in the attacks table if the category is "Fuzzing".
+    """
+    return [row[1] + ' - ' + row[2] for row in library["attacks"] if row[7] == "Fuzzing"]
+
+
+def getFields(library, protocol, packet_name):
+    """
+    Returns the sorted field names (no data) for a protocol and packet type from the packet_types table.
+    """
+    if len(protocol) == 0 or len(packet_name) == 0:
+        return []
+    
+    fields = next(packet_type[4] for packet_type in library["packet_types"]
+                  if packet_type[1] == protocol and 
+                  packet_type[2] == packet_name)
+
+    sorted_fields_list = sorted(fields, key=lambda x: fields[x]["Sort Order"])
+
+    return sorted_fields_list
+
+
+def getFieldData(library, protocol, packet_name, field_name):
+    """
+    Returns the field dictionary for a protocol, packet_name, and field_name from the packet_types table.
+    """
+    fields = next(packet_type[4] for packet_type in library["packet_types"]
+                  if packet_type[1] == protocol and 
+                  packet_type[2] == packet_name)
+    
+    field_dictionary = fields[field_name]
+
+    return field_dictionary
+
+
+def getDemodulationFlowGraphs(library):
+    """
+    Returns the demdulation_flow_graph table contents.
+    """
+    return [row for row in library["demodulation_flow_graphs"]]
+
+
+def getDemodulationFlowGraphFilenames(library, protocol=None, modulation=None, hardware=None, version=None):
+    """
+    Returns the demdulation flow graph filename for a protocol, modulation, hardware type, and version combination.
+    """
+    # Start with all flow graphs
+    demod_flowgraphs = library["demodulation_flow_graphs"]
+    # Filter based on provided arguments
+    if protocol:
+        demod_flowgraphs = [row for row in demod_flowgraphs if row[1] == protocol]
+    if modulation:
+        demod_flowgraphs = [row for row in demod_flowgraphs if row[2] == modulation]
+    if hardware:
+        demod_flowgraphs = [row for row in demod_flowgraphs if row[3] == hardware]
+    if version:
+        demod_flowgraphs = [row for row in demod_flowgraphs if row[6] == version]
+
+    return [row[4] for row in demod_flowgraphs]
+
+
+def getDemodulationFlowGraphsModulation(library, protocol=None, version=None):
+    """
+    Returns the modulation types for a protocol's demodulation flow graphs in the demodulation_flow_graphs table.
+    """
+    get_modulation_types = []
+    if protocol:
+        get_modulation_types = [row[2] for row in library["demodulation_flow_graphs"] if row[1] == protocol and row[6] == version]
+    else:
+        get_modulation_types = [row[2] for row in library["demodulation_flow_graphs"] if row[6] == version]
+
+    return get_modulation_types
+
+
+def getDemodulationFlowGraphsSnifferType(library, filename, version):
+    """
+    Returns the sniffer types for a protocol's demodulation flow graph filename in the demodulation_flow_graphs table.
+    """
+    get_sniffer_types = []
+    if filename:
+        get_sniffer_types = [row[5] for row in library["demodulation_flow_graphs"] if row[4] == filename and row[6] == version]
+    else:
+        get_sniffer_types = [row[5] for row in library["demodulation_flow_graphs"] if row[6] == version]
+
+    return get_sniffer_types
+
+
+def getDemodulationFlowGraphsHardware(library, protocol=None, modulation=None, version=None):
+    """
+    Returns the demodulation flow graph hardware types for a protocol, modulation type, and version in the demodulation_flow_graphs table.
+    """
+    # Start with all flow graphs
+    hardware_list = library["demodulation_flow_graphs"]
+    
+    # Filter based on provided arguments
+    if protocol:
+        hardware_list = [row[3] for row in hardware_list if row[1] == protocol]
+    if modulation:
+        hardware_list = [row[3] for row in hardware_list if row[2] == modulation]
+    if version:
+        hardware_list = [row[3] for row in hardware_list if row[6] == version]
+
+    return hardware_list
+
+
+def getDissector(library, protocol, packet_name):
+    """
+    Returns the dissector filename and port of a dissector for a packet type with a matching protocol and packet_name.
+    """
+    dissectors = [row[3] for row in library["packet_types"] if row[1] == protocol and row[2] == packet_name]
+    
+    if dissectors:
+        return dissectors[0]  # Return the first matching result
+    else:
+        return None  # Or handle the case when nothing is found
+
+
+def getNextDissectorPort(library):
+    """
+    Returns an unassigned dissector UDP port.
+    """
+    all_dissector_ports = [
+        int(row[3]["Port"]) for row in library["packet_types"] 
+        if row[3].get("Port") not in [None, 'None']  # Filter out both None and 'None'
+    ]
+
+    if all_dissector_ports:  # Ensure the list is not empty
+        max_value = max(all_dissector_ports)
+        return max_value + 1
+    else:
+        # Handle the case when there are no valid ports
+        return 1  # Return 1 or any default starting port number
+
+
+def getFieldProperties(library, protocol, packet_name, field):
+    """
+    Returns a field value from the fields dictionary in the packet_types table.
+    """
+    field_properties = [row[4][field] for row in library["packet_types"] if row[1] == protocol and row[2] == packet_name and field in row[4]]
+    
+    return field_properties
+
+
+def getDefaults(library, protocol, packet_name):
+    """
+    Returns default values for fields in the fields dictionary sorted by field sort order in the packet_types table.
+    """
+    sorted_fields = getFields(protocol, packet_name)
+    
+    default_field_data = []
+    for field in default_field_data:
+        default_field_data.append(row[4][field]["Default Value"] for row in library["packet_types"] if row[1] == protocol and row[2] == packet_name and field in row[4])
+
+    return default_field_data
+
+
+def getModulationTypes(library):
+    """
+    Returns the modulation_types table contents.
+    """
+    return [row for row in library["modulation_types"]]
+
+
+def getModulations(library, protocol):
+    """
+    Returns the modulation types for a protocol from the modulation_types table.
+    """
+    modulations = [row[2] for row in library["modulation_types"] if row[1] == protocol]
+
+    return modulations
+
+
+def getSOI_Names(library, protocol):
+    """
+    Returns a list of all soi_name values for a protocol from the soi_data table.
+    """
+    all_soi_names = [row[2] for row in library["soi_data"] if row[1] == protocol]
+
+    return all_soi_names
+
+
+def getSOIs(library, protocol=None):
+    """
+    Returns a list of all the SOIs for a protocol from the soi_data table.
+    """
+    if protocol == None:
+        protocol_sois = [row for row in library["soi_data"]]
+    else:
+        protocol_sois = [row for row in library["soi_data"] if row[1] == protocol]
+
+    return protocol_sois
+
+
+def getTriggersTable(library):
+    """
+    Returns the trigger table contents.
+    """
+    return [row for row in library["triggers"]]
+
+
+def getTriggerCategories(library, version):
+    """
+    Returns a sorted unique list of trigger categories from the triggers table.
+    """
+    return sorted(list(set([row[1] for row in library["triggers"] if row[6] == version])))
+
+
+def getTriggerNames(library, category, version):
+    """
+    Returns a sorted unique list of trigger names filtered by category from the triggers table.
+    """
+    return sorted(list(set([row[2] for row in library["triggers"] if row[1] == category and row[6] == version])))
+
+
+def getTriggerFilename(library, category, trigger_name, version):
+    """
+    Returns the trigger filename filtered by category and trigger_name from the triggers table.
+    """
+    return next((row[4] for row in library["triggers"] if row[1] == category and row[2] == trigger_name and row[6] == version), None)
+
+
+def getTriggerFileType(library, category, trigger_name, version):
+    """
+    Returns the trigger file_type filtered by category and trigger_name from the triggers table.
+    """
+    return next((row[5] for row in library["triggers"] if row[1] == category and row[2] == trigger_name and row[6] == version), None)
+
+
+def getTriggerDefaultSettings(library, category, trigger_name, version):
+    """
+    Returns the trigger file_type filtered by category and trigger_name from the triggers table.
+    """
+    return next((row[3] for row in library["triggers"] if row[1] == category and row[2] == trigger_name and row[6] == version), None)
+
+
+def getConditionerFlowGraphsTable(library):
+    """
+    Returns all rows in the conditioner_flow_graphs table.
+    """
+    return [row for row in library["conditioner_flow_graphs"]]
+
+
+def getDetectorFlowGraphsTable(library):
+    """
+    Returns all rows in the detector_flow_graphs table.
+    """
+    return [row for row in library["detector_flow_graphs"]]
+
+
+# =============================================================
+#                        ADD Functions
+# =============================================================
+# This section contains functions for adding values to the 
+# FISSURE library/database.
+# =============================================================
+
+def addArchiveCollection(name, file_list, filepath, files, format, size, notes, parent_id):
+    """
+    Adds a new archive_collection table to the FISSURE PostgreSQL library.
+    """
+    # Load environment variables from .env file
+    load_dotenv(os.path.join(FISSURE_ROOT,".env"))
+
+    # Connect to PostgreSQL database
+    conn = psycopg2.connect(
+        dbname = os.getenv('POSTGRES_DB'),
+        user = os.getenv('POSTGRES_USER'),
+        password = os.getenv('POSTGRES_PASSWORD'),
+        host = os.getenv('POSTGRES_HOST', 'localhost'),
+        port = os.getenv('POSTGRES_PORT', '5432')
+    )
+    cur = conn.cursor()
+
+    # SQL Insert command
+    insert_query = """
+        INSERT INTO archive_collection (name, file_list, filepath, files, format, size, notes, parent_id)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """
+
+    # Data to be inserted
+    get_data = (name, file_list, filepath, files, format, size, notes, parent_id)
+    # data = [
+    #     ('X3xx_10MSps_All', None, '/X3xx/10MSps.tar', 75, 'Complex Float 32', 1.8, 
+    #     'A collection of signals from miscellaneous devices recorded by Assured Information Security.', 
+    #     None),
+    #     ('Avent_SCD560', 
+    #     ['avent_scd560_1922_5MHz_10MSps_1.sigmf-data', 
+    #     'avent_scd560_1922_5MHz_10MSps_2.sigmf-data', 
+    #     'avent_scd560_1922_5MHz_10MSps_3.sigmf-data', 
+    #     'avent_scd560_1922_5MHz_10MSps_4.sigmf-data', 
+    #     'avent_scd560_1922_5MHz_10MSps_5.sigmf-data'], 
+    #     None, 5, 'Complex Float 32', 0.1796, '', 1)
+    # ]
+
+    # Execute the query
+    cur.execute(insert_query, get_data)
+
+    # Commit the transaction
+    conn.commit()
+
+    # Close communication
+    cur.close()
+    conn.close()
+
+
+def addArchiveFavorite(file_name, date, format, modulation, notes, protocol, sample_rate, samples, size, tuned_frequency):
+    """
+    Adds a new entry to the archive_favorites table in the FISSURE PostgreSQL library.
+    """
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Connect to PostgreSQL database
+    conn = psycopg2.connect(
+        dbname=os.getenv('POSTGRES_DB'),
+        user=os.getenv('POSTGRES_USER'),
+        password=os.getenv('POSTGRES_PASSWORD'),
+        host=os.getenv('POSTGRES_HOST', 'localhost'),
+        port=os.getenv('POSTGRES_PORT', '5432')
+    )
+    cur = conn.cursor()
+
+    # SQL Insert command for the archive_favorites table
+    insert_query = """
+        INSERT INTO archive_favorites (file_name, date, format, modulation, notes, protocol, sample_rate, samples, size, tuned_frequency)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+
+    # Data to be inserted
+    get_data = (file_name, date, format, modulation, notes, protocol, sample_rate, samples, size, tuned_frequency)
+
+    # Execute the query
+    cur.execute(insert_query, get_data)
+
+    # Commit the transaction
+    conn.commit()
+
+    # Close communication
+    cur.close()
+    conn.close()
+
+
+def addProtocol(conn, protocol, data_rates, median_packet_lengths):
+    """
+    Adds a new protocol to the protocols table.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+
+        # Check if the second column already has the value
+        check_query = sql.SQL("SELECT 1 FROM protocols WHERE protocol_name = %s")
+        cur.execute(check_query, (protocol,))
+        result = cur.fetchone()
+
+        # If no matching value in column2, insert the new row
+        if result is None:
+            insert_query = sql.SQL(
+                "INSERT INTO {} (protocol_name, data_rates, median_packet_lengths) VALUES (%s, %s, %s)"
+            ).format(sql.Identifier("protocols"))
+            
+            cur.execute(insert_query, (protocol, None, None))
+            conn.commit()
+            print("Row inserted successfully.")
+        else:
+            print("Row with protocol_name value '{}' already exists.".format(protocol))
+
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+
+
+def addModulationType(conn, protocol, modulation):
+    """
+    Adds a new modulation type to the modulation_types table.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+
+        # Check if the columns already have the values
+        check_query = sql.SQL("SELECT 1 FROM modulation_types WHERE protocol = %s AND modulation_type = %s")
+        cur.execute(check_query, (protocol, modulation))
+        result = cur.fetchone()
+
+        # If no matching value, insert the new row
+        if result is None:
+            insert_query = sql.SQL(
+                "INSERT INTO {} (protocol, modulation_type) VALUES (%s, %s)"
+            ).format(sql.Identifier("modulation_types"))
+            
+            cur.execute(insert_query, (protocol, modulation))
+            conn.commit()
+            print("Row inserted successfully.")
+        else:
+            print(f"Row with modulation_type '{modulation}' for protocol '{protocol}' already exists.")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+
+
+def addPacketType(conn, protocol, packet_name, dissector, fields, sort_order):
+    """
+    Adds a new packet type to the packet_types table.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+
+        # Check if the columns already has the values
+        check_query = sql.SQL("SELECT 1 FROM packet_types WHERE protocol = %s AND packet_name = %s")
+        cur.execute(check_query, (protocol, packet_name))
+        result = cur.fetchone()
+
+        # If no matching value, insert the new row
+        if result is None:
+            # Convert dictionaries to JSON strings
+            dissector_json = json.dumps(dissector)
+            fields_json = json.dumps(fields)
+
+            insert_query = sql.SQL(
+                "INSERT INTO packet_types (protocol, packet_name, dissector, fields, sort_order) VALUES (%s, %s, %s, %s, %s)"
+            )
+            
+            cur.execute(insert_query, (protocol, packet_name, dissector_json, fields_json, sort_order))
+            conn.commit()
+            print("Row inserted successfully.")
+        else:
+            print(f"Row with packet name '{packet_name}' for protocol '{protocol}' already exists.")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+
+
+def addSOI(conn, protocol, soi_name, center_frequency, start_frequency, end_frequency, bandwidth, continuous, modulation, notes):
+    """
+    Adds a signal of interest (SOI) to the soi_data table.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+
+        # Check if the columns already has the values
+        check_query = sql.SQL("SELECT 1 FROM soi_data WHERE protocol = %s AND soi_name = %s")
+        cur.execute(check_query, (protocol, soi_name))
+        result = cur.fetchone()
+
+        # If no matching value, insert the new row
+        if result is None:
+            insert_query = sql.SQL(
+                """
+                INSERT INTO soi_data (
+                    protocol,
+                    soi_name,
+                    center_frequency,
+                    start_frequency,
+                    end_frequency,
+                    bandwidth,
+                    continuous,
+                    modulation,
+                    notes
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """
+            )
+            
+            cur.execute(insert_query, (protocol, soi_name, center_frequency, start_frequency, end_frequency, bandwidth, continuous, modulation, notes))
+            conn.commit()
+            print("Row inserted successfully.")
+        else:
+            print(f"Row with SOI name '{soi_name}' for protocol '{protocol}' already exists.")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+
+
+def addDemodulationFlowGraph(conn, protocol, modulation_type, hardware, filename, output_type):
+    """
+    Adds a demodulation flow graph to the demodulation_flow_graphs table.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+
+        # Check if the columns already has the values
+        check_query = sql.SQL("SELECT 1 FROM demodulation_flow_graphs WHERE protocol = %s AND filename = %s")
+        cur.execute(check_query, (protocol, filename))
+        result = cur.fetchone()
+
+        # If no matching value, insert the new row
+        if result is None:
+            insert_query = sql.SQL(
+                """
+                INSERT INTO demodulation_flow_graphs (
+                    protocol,
+                    modulation_type,
+                    hardware,
+                    filename,
+                    output_type
+                ) VALUES (%s, %s, %s, %s, %s)
+                """
+            )
+            
+            cur.execute(insert_query, (protocol, modulation_type, hardware, filename, output_type))
+            conn.commit()
+            print("Row inserted successfully.")
+        else:
+            print(f"Row with filename '{filename}' for protocol '{protocol}' already exists.")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+
+
+def addAttack(conn, protocol, attack_name, modulation_type, hardware, attack_type, filename, category_name):
+    """
+    Adds a new attack to the attacks table.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+
+        # Check if the columns already has the values
+        check_query = sql.SQL("SELECT 1 FROM attacks WHERE protocol = %s AND filename = %s")
+        cur.execute(check_query, (protocol, filename))
+        result = cur.fetchone()
+
+        # If no matching value, insert the new row
+        if result is None:
+            insert_query = sql.SQL(
+                """
+                INSERT INTO attacks (
+                    protocol,
+                    attack_name,
+                    modulation_type,
+                    hardware,
+                    attack_type,
+                    filename,
+                    category_name
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """
+            )
+            
+            cur.execute(insert_query, (protocol, attack_name, modulation_type, hardware, attack_type, filename, category_name))
+            conn.commit()
+            print("Row inserted successfully.")
+        else:
+            print(f"Row with filename '{filename}' for protocol '{protocol}' already exists.")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+
+
+def addDissector(conn, protocol, packet_name, dissector_filename, dissector_port):
+    """
+    Replaces the dissector filename and port for a packet type in the packet_types table. 
+    There should only be one dissector per packet type.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+
+        new_value = json.dumps({"Port": int(dissector_port), "Filename": str(dissector_filename)})
+
+        # Construct the SQL query
+        update_query = """
+        UPDATE packet_types
+        SET dissector = %s
+        WHERE protocol = %s AND packet_name = %s;
+        """
+
+        # Execute the query with the appropriate parameters
+        cur.execute(update_query, (
+            new_value,
+            protocol,
+            packet_name
+        ))
+        conn.commit()
+
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+
+
+# def newProtocol(protocolname="", attacks={}, demodflowgraph="", modtype="", pkttypes=newPacket()):
+#     """Adds an empty protocol to a library."""
+
+#     new_protocol_dict = {protocolname: {"Null Placeholder": None}}
+
+#     return new_protocol_dict
+
+# =============================================================
+#                        REMOVE Functions
+# =============================================================
+# This section contains functions for removing values from the
+# FISSURE library/database.
+# =============================================================
+
+def removeFromTable(conn, table_name, row_id, delete_files, os_version):
+    """
+    Removes a row from a table in the database.
+    """
+    cur = None
+    try:
+        cur = conn.cursor()
+
+        # Use parameterized query to prevent SQL injection
+        query = f"DELETE FROM {table_name} WHERE id = %s;"
+        cur.execute(query, (row_id,))
+        conn.commit()
+        print(f"Row with ID {row_id} deleted from {table_name}.")
+
+        # Remove Files
+        if delete_files == True:
+            if table_name == "demodulation_flow_graphs":
+                # Use parameterized query to prevent SQL injection
+                query = f"SELECT filename FROM {table_name} WHERE id = %s;"
+                cur.execute(query, (row_id,))
+                result = cur.fetchone()
+                
+                # If the row exists, fetch the filename, delete the file
+                if result:
+                    get_filename = result[0]
+                    get_filepath = os.path.join(get_fg_library_dir(os_version), "PD Flow Graphs", get_filename)
+                    os.system('rm "' + get_filepath + '"' )
+
+            elif table_name == "inspection_flow_graphs":
+                # Use parameterized query to prevent SQL injection
+                query = f"SELECT python_file FROM {table_name} WHERE id = %s;"
+                cur.execute(query, (row_id,))
+                result = cur.fetchone()
+                
+                # If the row exists, fetch the filename, delete the file
+                if result:
+                    get_filename = result[0]
+                    get_filepath = os.path.join(get_fg_library_dir(os_version), "Inspection Flow Graphs", get_filename)
+                    os.system('rm "' + get_filepath + '"' )
+                    os.system('rm "' + get_filepath.replace(".py",".grc") + '"' )
+
+            elif table_name == "soi_data":
+                pass  # Delete IQ files
+
+            elif table_name == "triggers":
+                # Use parameterized query to prevent SQL injection
+                query = f"SELECT filename FROM {table_name} WHERE id = %s;"
+                cur.execute(query, (row_id,))
+                result = cur.fetchone()
+                
+                # If the row exists, fetch the filename, delete the file
+                if result:
+                    get_filename = result[0]
+                    get_filepath = os.path.join(get_fg_library_dir(os_version), "Triggers", get_filename)
+                    os.system('rm "' + get_filepath + '"' )
+
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+
+
+
+# =============================================================
+#                        OTHER Functions
+# =============================================================
+# This section contains other supporting functions for 
+# interacting with the library. .
+# =============================================================
 
 def newField(fieldname="", defaultvalue="", length=0, sortorder=1, iscrc="False", crcrange=""):
-    """ """
+    """
+    Constructs a field dictionary for fields in stored in a packet type.
+    """
     if not fieldname:
         fieldname = "New Field"
     if not length:
@@ -50,654 +1202,8 @@ def newField(fieldname="", defaultvalue="", length=0, sortorder=1, iscrc="False"
     return new_field_subdict
 
 
-def newPacket(pkttype="", fields=newField()):
-    """ """
-    if not pkttype:
-        pkttype = "New Packet"
-    new_packet_type_dict = {
-        pkttype: {"Fields": fields, "Dissector": {"Filename": None, "Port": None}, "Sort Order": -1}
-    }
-    return new_packet_type_dict
 
-
-def getPacketTypes(library, protocol):
-    """ """
-    try:
-        packettypes = sorted(
-            library["Protocols"][protocol]["Packet Types"],
-            key=lambda x: library["Protocols"][protocol]["Packet Types"][x]["Sort Order"],
-        )
-    except KeyError:
-        packettypes = []
-    return packettypes
-
-
-def getFieldProperties(library, protocol, packet_type, field):
-    """ """
-    try:
-        field_properties = library["Protocols"][protocol]["Packet Types"][packet_type]["Fields"][field]
-    except KeyError:
-        field_properties = []
-    return field_properties
-
-
-def getDefaults(library, protocol, packet_type):
-    """ """
-    try:
-        fields = sorted(
-            library["Protocols"][protocol]["Packet Types"][packet_type]["Fields"],
-            key=lambda x: library["Protocols"][protocol]["Packet Types"][packet_type]["Fields"][x]["Sort Order"],
-        )
-        default_field_data = [
-            library["Protocols"][protocol]["Packet Types"][packet_type]["Fields"][field]["Default Value"]
-            for field in fields
-        ]
-    except KeyError:
-        fields = []
-        default_field_data = []
-    return default_field_data
-
-
-def newProtocol(protocolname="", attacks={}, demodflowgraph="", modtype="", pkttypes=newPacket()):
-    """Adds an empty protocol to a library."""
-
-    new_protocol_dict = {protocolname: {"Null Placeholder": None}}
-
-    return new_protocol_dict
-
-
-def getProtocols(library):
-    """ """
-    try:
-        protocols = [protocols for protocols in library["Protocols"]]
-    except KeyError:
-        protocols = []
-    return protocols
-
-
-def getProtocol(library, protocol_name):
-    """ """
-    try:
-        protocol = library["Protocols"][protocol_name]
-    except KeyError:
-        protocol = []
-    return protocol
-
-
-def getDemodulationFlowGraphsModulation(library, protocol=None):
-    """Returns the modulation types for a protocol's demodulation flow graphs."""
-    get_modulation = []
-    if protocol:
-        try:
-            get_modulation.extend(library["Protocols"][protocol]["Demodulation Flow Graphs"])
-        except KeyError:
-            pass
-    else:
-        for protocol in getProtocols(library):
-            try:
-                get_modulation.extend(library["Protocols"][protocol]["Demodulation Flow Graphs"])
-            except KeyError:
-                pass
-
-    return list(set(get_modulation))
-
-
-def findValueByKey(d, tag):
-    for k, v in d.items():
-        if isinstance(v, dict):
-            for i in findValueByKey(v, tag):
-                yield i
-        elif k == tag:
-            yield v
-
-
-def getDemodulationFlowGraphsSnifferType(library, flow_graph):
-    """Returns the sniffer types for a protocol's demodulation flow graphs."""
-    get_sniffer_type = ""
-
-    for x in findValueByKey(library, flow_graph):
-        get_sniffer_type = x[0]
-        break
-
-    return get_sniffer_type
-
-
-def getDemodulationFlowGraphsHardware(library, protocol=None, modulation=None):
-    """Returns the hardware types for demodulation flow graphs of a library."""
-    get_hardware = []
-    if protocol:
-        try:
-            if modulation:
-                library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation]
-                get_hardware.extend(library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation])
-            else:
-                for m in library["Protocols"][protocol]["Demodulation Flow Graphs"]:
-                    get_hardware.extend(library["Protocols"][protocol]["Demodulation Flow Graphs"][m])
-        except KeyError:
-            pass
-    else:
-        for protocol in getProtocols(library):
-            try:
-                if modulation:
-                    get_hardware.extend(library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation])
-                else:
-                    for m in library["Protocols"][protocol]["Demodulation Flow Graphs"]:
-                        get_hardware.extend(library["Protocols"][protocol]["Demodulation Flow Graphs"][m])
-            except KeyError:
-                pass
-
-    return list(set(get_hardware))
-
-
-def getDemodulationFlowGraphs(library, protocol=None, modulation=None, hardware=None):
-    """ """
-    demod_flowgraphs = []
-    if protocol:
-        try:
-            if modulation:
-                if hardware:
-                    try:
-                        demod_flowgraphs.extend(
-                            library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation][hardware]
-                        )
-                    except:
-                        pass
-                else:
-                    for h in library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation]:
-                        demod_flowgraphs.extend(
-                            library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation][h]
-                        )
-            else:
-                for m in library["Protocols"][protocol]["Demodulation Flow Graphs"]:
-                    if hardware:
-                        try:
-                            demod_flowgraphs.extend(
-                                library["Protocols"][protocol]["Demodulation Flow Graphs"][m][hardware]
-                            )
-                        except:
-                            pass
-                    else:
-                        for h in library["Protocols"][protocol]["Demodulation Flow Graphs"][m]:
-                            demod_flowgraphs.extend(library["Protocols"][protocol]["Demodulation Flow Graphs"][m][h])
-        except KeyError:
-            # print("Error: No Demodulation Flowgraph Defined ",e, "for protocol", protocol)
-            pass
-    else:
-        for protocol in getProtocols(library):
-            try:
-                if modulation:
-                    if hardware:
-                        try:
-                            demod_flowgraphs.extend(
-                                library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation][hardware]
-                            )
-                        except:
-                            pass
-                    else:
-                        for h in library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation]:
-                            demod_flowgraphs.extend(
-                                library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation][h]
-                            )
-                else:
-                    for m in library["Protocols"][protocol]["Demodulation Flow Graphs"]:
-                        if hardware:
-                            try:
-                                demod_flowgraphs.extend(
-                                    library["Protocols"][protocol]["Demodulation Flow Graphs"][m][hardware]
-                                )
-                            except:
-                                pass
-                        else:
-                            for h in library["Protocols"][protocol]["Demodulation Flow Graphs"][m]:
-                                demod_flowgraphs.extend(
-                                    library["Protocols"][protocol]["Demodulation Flow Graphs"][m][h]
-                                )
-            except KeyError:
-                # print("Error: No Demodulation Flowgraph Defined ",e, "for protocol", protocol)
-                pass
-
-    return list(set(demod_flowgraphs))  # Only the Unique Values
-
-
-def newSOI(
-    frequency=0,
-    modulation="",
-    bandwidth=0,
-    continuous="False",
-    start_frequency=0,
-    end_frequency=0,
-    notes="",
-    subtype="",
-):
-    """ """
-    if continuous == "True":
-        continuous = True
-    else:
-        continuous = False
-
-    new_soi_dict = {
-        str(subtype): {
-            "Frequency": float(frequency),
-            "Modulation": str(modulation),
-            "Bandwidth": float(bandwidth),
-            "Continuous": bool(continuous),
-            "Start Frequency": float(start_frequency),
-            "End Frequency": float(end_frequency),
-            "Notes": str(notes),
-        }
-    }
-    return new_soi_dict
-
-
-def newStatistics(datarates=[], packetlengths=[]):
-    """ """
-    new_statistics_dict = {"Statistics": {"Data Rates": datarates, "Median Packet Lengths": packetlengths}}
-    return new_statistics_dict
-
-
-def getAllSOIs(library):
-    """ """
-    sois = {}
-    for protocol in getProtocols(library):
-        try:
-            sois.update({protocol: library["Protocols"][protocol]["SOI Data"]})
-        except KeyError:
-            pass
-            # print("Error: No Key ",e, "for protocol", protocol)
-
-    return sois
-
-
-def getSOIs(library, protocol):
-    """Returns the SOIs of a protocol."""
-    sois = {}
-    try:
-        sois = library["Protocols"][protocol]["SOI Data"]
-    except KeyError:
-        pass
-        # print("Error: No Key ",e, "for protocol", protocol)
-
-    return sois
-
-
-def getAttacks(library, protocol):
-    """Returns the attacks for a protocol."""
-    attacks = {}
-    updated_attacks = []
-    try:
-        attacks = library["Protocols"][protocol]["Attacks"]
-        exclude_list = [
-            "Single-Stage",
-            "Denial of Service",
-            "Jamming",
-            "Spoofing",
-            "Sniffing/Snooping",
-            "Probe Attacks",
-            "Installation of Malware",
-            "Misuse of Resources",
-            "File",
-            "Multi-Stage",
-            "New Multi-Stage",
-            "Fuzzing",
-            "Variables",
-        ]
-        for n in attacks:
-            if n not in exclude_list:
-                updated_attacks.append(n)
-    except KeyError:
-        pass
-        # print("Error: No Key ",e, "for protocol", protocol)
-
-    return updated_attacks
-
-
-def getStatistics(library, protocol):
-    """Returns the statistical categories for a protocol."""
-    statistics = {}
-    try:
-        statistics = library["Protocols"][protocol]["Statistics"]
-    except KeyError:
-        pass
-        # print("Error: No Key ",e, "for protocol", protocol)
-
-    return statistics
-
-
-def getStatisticValues(library, protocol, statistic):
-    """Returns the values for a statistic."""
-    values = []
-    try:
-        if library["Protocols"][protocol]["Statistics"][statistic] != "None":
-            values = library["Protocols"][protocol]["Statistics"][statistic]
-    except KeyError:
-        pass
-        # print("Error: No Key ",e, "for protocol", protocol)
-
-    return values
-
-
-def getModulations(library, protocol):
-    """ """
-    modulations = []
-    try:
-        modulations = library["Protocols"][protocol]["Modulation Types"]
-    except KeyError:
-        pass
-        # print("Error: No Key ",e, "for protocol", protocol)
-
-    return modulations
-
-
-def getDissector(library, protocol, packet_type):
-    """Returns the name and port of a dissector for a particular packet type."""
-    dissector = library["Protocols"][protocol]["Packet Types"][packet_type]["Dissector"]
-
-    return dissector
-
-
-def getNextDissectorPort(library):
-    """Returns an unassigned dissector UDP port."""
-    max_dissector_port = -1
-    for protocol in getProtocols(library):
-        for packet_type in getPacketTypes(library, protocol):
-            try:
-                get_port = int(library["Protocols"][protocol]["Packet Types"][packet_type]["Dissector"]["Port"])
-                if get_port > max_dissector_port:
-                    max_dissector_port = get_port + 1
-            except:
-                pass
-
-    return max_dissector_port
-
-
-def addPacketType(library, protocol, packet_type):
-    """ """
-    try:
-        library["Protocols"][protocol]["Packet Types"].update(packet_type)
-    except KeyError:
-        library["Protocols"][protocol].update({"Packet Types": packet_type})
-
-
-def addDissector(library, protocol, packet_type, dissector_filename, dissector_port):
-    """
-    Replaces the dissector filename and port for a packet type. There should only be one dissector per packet type.
-    """
-    try:
-        dissector_dict = {"Filename": dissector_filename, "Port": dissector_port}
-        library["Protocols"][protocol]["Packet Types"][packet_type]["Dissector"].update(dissector_dict)
-    except KeyError:
-        library["Protocols"][protocol]["Packet Types"][packet_type].update({"Dissector": dissector_dict})
-
-
-def addProtocol(library, protocol=newProtocol()):
-    """ """
-    library["Protocols"].update(protocol)
-
-
-def addModulation(library, protocol, modulation):
-    """Adds a new modulation type to a library."""
-    # Check if Template Exists
-    try:
-        library["Protocols"][protocol]["Modulation Types"].append(modulation)
-    except KeyError:
-        library["Protocols"][protocol].update({"Modulation Types": [modulation]})
-
-    # Add Initial Template
-    # empty = ""
-    # try:
-    # empty = library['Protocols'][protocol]['Attack Categories']['Single-Stage']
-    # except KeyError:
-    # Default Attack Categories
-    # attack_dict = {'Single-Stage':{modulation:{'Hardware':{'USRP X310':'None'}}}}
-    # attack_dict['Single-Stage'][modulation]['Hardware'].update({'USRP XB210':'None'})
-    # attack_dict['Single-Stage'][modulation]['Hardware'].update({'HackRF':'None'})
-    # attack_dict['Single-Stage'][modulation]['Hardware'].update({'RTL2832U':'None'})
-    # attack_dict['Single-Stage'][modulation]['Hardware'].update({'802.11x Adapter':'None'})
-
-    # attack_dict.update({'Multi-Stage':{modulation:{'Hardware':{'USRP X310':'None'}}}})
-    # attack_dict['Multi-Stage'][modulation]['Hardware'].update({'USRP XB210':'None'})
-    # attack_dict['Multi-Stage'][modulation]['Hardware'].update({'HackRF':'None'})
-    # attack_dict['Multi-Stage'][modulation]['Hardware'].update({'RTL2832U':'None'})
-    # attack_dict['Multi-Stage'][modulation]['Hardware'].update({'802.11x Adapter':'None'})
-
-    # attack_dict.update({'New Multi-Stage':{modulation:{'Hardware':{'USRP X310':'None'}}}})
-    # attack_dict['New Multi-Stage'][modulation]['Hardware'].update({'USRP XB210':'None'})
-    # attack_dict['New Multi-Stage'][modulation]['Hardware'].update({'HackRF':'None'})
-    # attack_dict['New Multi-Stage'][modulation]['Hardware'].update({'RTL2832U':'None'})
-    # attack_dict['New Multi-Stage'][modulation]['Hardware'].update({'802.11x Adapter':'None'})
-
-    # attack_dict.update({'Fuzzing':{modulation:{'Hardware':{'USRP X310':'None'}}}})
-    # attack_dict['Fuzzing'][modulation]['Hardware'].update({'USRP XB210':'None'})
-    # attack_dict['Fuzzing'][modulation]['Hardware'].update({'HackRF':'None'})
-    # attack_dict['Fuzzing'][modulation]['Hardware'].update({'RTL2832U':'None'})
-    # attack_dict['Fuzzing'][modulation]['Hardware'].update({'802.11x Adapter':'None'})
-
-    # attack_dict.update({'Variables':{modulation:{'Hardware':{'USRP X310':'None'}}}})
-    # attack_dict['Variables'][modulation]['Hardware'].update({'USRP XB210':'None'})
-    # attack_dict['Variables'][modulation]['Hardware'].update({'HackRF':'None'})
-    # attack_dict['Variables'][modulation]['Hardware'].update({'RTL2832U':'None'})
-    # attack_dict['Variables'][modulation]['Hardware'].update({'802.11x Adapter':'None'})
-
-    # library['Protocols'][protocol].update({'Attack Categories':attack_dict})
-
-    # Do Other Attempts
-    # if len(empty) > 0:
-    # library['Protocols'][protocol]['Attacks']['Single-Stage'].update({modulation:{'Hardware':{'USRP X310':'None'}}})
-    # library['Protocols'][protocol]['Attacks']['Single-Stage'][modulation]['Hardware'].update({'USRP XB210':'None'})
-    # library['Protocols'][protocol]['Attacks']['Single-Stage'][modulation]['Hardware'].update({'HackRF':'None'})
-    # library['Protocols'][protocol]['Attacks']['Single-Stage'][modulation]['Hardware'].update({'RTL2832U':'None'})
-    # library["Protocols"][protocol]["Attacks"]["Single-Stage"][modulation]["Hardware"].update(
-    #     {"802.11x Adapter": "None"}
-    # )
-
-    # library['Protocols'][protocol]['Attacks']['Multi-Stage'].update({modulation:{'Hardware':{'USRP X310':'None'}}})
-    # library['Protocols'][protocol]['Attacks']['Multi-Stage'][modulation]['Hardware'].update({'USRP XB210':'None'})
-    # library['Protocols'][protocol]['Attacks']['Multi-Stage'][modulation]['Hardware'].update({'HackRF':'None'})
-    # library['Protocols'][protocol]['Attacks']['Multi-Stage'][modulation]['Hardware'].update({'RTL2832U':'None'})
-    # library["Protocols"][protocol]["Attacks"]["Multi-Stage"][modulation]["Hardware"].update(
-    #     {"802.11x Adapter": "None"}
-    # )
-
-    # library["Protocols"][protocol]["Attacks"]["New Multi-Stage"].update(
-    #     {modulation: {"Hardware": {"USRP X310": "None"}}}
-    # )
-    # library['Protocols'][protocol]['Attacks']['New Multi-Stage'][modulation]['Hardware'].update({'USRP XB210':'None'})
-    # library['Protocols'][protocol]['Attacks']['New Multi-Stage'][modulation]['Hardware'].update({'HackRF':'None'})
-    # library['Protocols'][protocol]['Attacks']['New Multi-Stage'][modulation]['Hardware'].update({'RTL2832U':'None'})
-    # library["Protocols"][protocol]["Attacks"]["New Multi-Stage"][modulation]["Hardware"].update(
-    #     {"802.11x Adapter": "None"}
-    # )
-
-    # library['Protocols'][protocol]['Attacks']['Fuzzing'].update({modulation:{'Hardware':{'USRP X310':'None'}}})
-    # library['Protocols'][protocol]['Attacks']['Fuzzing'][modulation]['Hardware'].update({'USRP XB210':'None'})
-    # library['Protocols'][protocol]['Attacks']['Fuzzing'][modulation]['Hardware'].update({'HackRF':'None'})
-    # library['Protocols'][protocol]['Attacks']['Fuzzing'][modulation]['Hardware'].update({'RTL2832U':'None'})
-    # library['Protocols'][protocol]['Attacks']['Fuzzing'][modulation]['Hardware'].update({'802.11x Adapter':'None'})
-
-    # library['Protocols'][protocol]['Attacks']['Variables'].update({modulation:{'Hardware':{'USRP X310':'None'}}})
-    # library['Protocols'][protocol]['Attacks']['Variables'][modulation]['Hardware'].update({'USRP XB210':'None'})
-    # library['Protocols'][protocol]['Attacks']['Variables'][modulation]['Hardware'].update({'HackRF':'None'})
-    # library['Protocols'][protocol]['Attacks']['Variables'][modulation]['Hardware'].update({'RTL2832U':'None'})
-    # library['Protocols'][protocol]['Attacks']['Variables'][modulation]['Hardware'].update({'802.11x Adapter':'None'})
-
-
-def addAttack(library, protocol, attack):
-    """Adds a new attack to a library."""
-    attack_dict = {attack[0]: {attack[1]: {attack[2]: {attack[3]: {attack[4]: attack[5]}}}}}
-    file_type = attack[6]
-    tree_parent = attack[7]
-
-    # Check if Attack, Modulation, Hardware Exists
-    attacks_key_exists = []
-    attack_exists = []
-    modulation_exists = []
-    hardware_exists = []
-    try:
-        # Check if 'Attacks' Key Exists
-        library["Protocols"][protocol]["Attacks"]
-        attacks_key_exists = [1]
-
-        # Check if Attack Exists
-        library["Protocols"][protocol]["Attacks"][attack[0]]
-        attack_exists = [1]
-
-        # Check if Modulation Type Exists
-        library["Protocols"][protocol]["Attacks"][attack[0]][attack[1]]
-        modulation_exists = [1]
-
-        # Check if Hardware Exists
-        library["Protocols"][protocol]["Attacks"][attack[0]][attack[1]]["Hardware"][attack[3]]
-        hardware_exists = [1]
-    except KeyError:
-        pass
-
-    # Add Attack and 'Attack' Key if not Already Present
-    if len(attacks_key_exists) > 0:
-        if len(attack_exists) > 0:
-            if len(modulation_exists) > 0:
-                if len(hardware_exists) > 0:
-                    pass  # Should not get here: Error
-                else:
-                    library["Protocols"][protocol]["Attacks"][attack[0]][attack[1]]["Hardware"].update(
-                        attack_dict[attack[0]][attack[1]][attack[2]]
-                    )
-            else:
-                library["Protocols"][protocol]["Attacks"][attack[0]].update(attack_dict[attack[0]])
-        else:
-            library["Protocols"][protocol]["Attacks"].update(attack_dict)
-    else:
-        library["Protocols"][protocol].update({"Attacks": attack_dict})
-
-    # Add Attack to the Attacks Section (Whole Attack List) of the Library
-    attack_list = copy.deepcopy(library["Attacks"][file_type + " Attacks"])
-    for attack_item in attack_list:
-        if tree_parent == attack_item.split(",")[0]:
-            index_value = library["Attacks"][file_type + " Attacks"].index(attack_item) + 1
-            level = int(attack_item.split(",")[1]) + 1
-            new_attack = list(attack_dict.keys())[0] + "," + str(level)
-            if new_attack not in library["Attacks"][file_type + " Attacks"]:
-                library["Attacks"][file_type + " Attacks"].insert(index_value, new_attack)
-
-
-def addSOI(library, protocol, soi):
-    """Adds an SOI to a library."""
-    # Renumerate Existing SOIs
-    existing_sois = getSOIs(library, protocol)
-    # temp_soi_dict = {}
-    # for s in existing_sois:
-    # new_key = "SOI " + str(len(temp_soi_dict) + 1)
-    # temp_soi_dict[new_key] = existing_sois[s]
-
-    # New SOI
-    existing_sois[list(soi.keys())[0]] = list(soi.values())[0]
-
-    # Add SOI
-    try:
-        check_key = library["Protocols"][protocol]["SOI Data"]
-    except KeyError:
-        check_key = None
-
-    if check_key is None:
-        library["Protocols"][protocol].update({"SOI Data": existing_sois})
-    else:
-        library["Protocols"][protocol]["SOI Data"].update(existing_sois)
-
-
-def removeSOI(library, protocol, soi):
-    """Removes an SOI from a library."""
-    # Remove SOI from a Copy
-    existing_sois = getSOIs(library, protocol)
-    existing_sois.pop(soi)
-
-    # # Renumerate Existing SOIs
-    # temp_soi_dict = {}
-    # for s in existing_sois:
-    # new_key = "SOI " + str(len(temp_soi_dict) + 1)
-    # temp_soi_dict[new_key] = existing_sois[s]
-
-    # Update the Library
-    library["Protocols"][protocol]["SOI Data"] = existing_sois
-    if len(existing_sois) == 0:
-        del library["Protocols"][protocol]["SOI Data"]
-
-
-def removePacketType(library, protocol, packet_type):
-    """Removes packet type from a library."""
-    # Update the Library
-    del library["Protocols"][protocol]["Packet Types"][packet_type]
-
-    if len(library["Protocols"][protocol]["Packet Types"]) == 0:
-        del library["Protocols"][protocol]["Packet Types"]
-
-
-def removeDemodulationFlowGraph(library, protocol, modulation_type, hardware, demodulation_fg):
-    """Removes demodulation flow graph from a library."""
-    # Update the Library
-    for n in range(0, len(library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation_type][hardware])):
-        if demodulation_fg == library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation_type][hardware][n]:
-            del library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation_type][hardware][n]
-            break
-
-    if len(library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation_type][hardware]) == 0:
-        del library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation_type][hardware]
-
-    if len(library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation_type]) == 0:
-        del library["Protocols"][protocol]["Demodulation Flow Graphs"][modulation_type]
-
-    if len(library["Protocols"][protocol]["Demodulation Flow Graphs"]) == 0:
-        del library["Protocols"][protocol]["Demodulation Flow Graphs"]
-
-
-def removeModulationType(library, protocol, modulation_type):
-    """Removes modulation type from a library."""
-    # Update the Library
-    for n in range(0, len(library["Protocols"][protocol]["Modulation Types"])):
-        if library["Protocols"][protocol]["Modulation Types"][n] == modulation_type:
-            del library["Protocols"][protocol]["Modulation Types"][n]
-
-    if len(library["Protocols"][protocol]["Modulation Types"]) == 0:
-        del library["Protocols"][protocol]["Modulation Types"]
-
-    # Delete Attacks from Library
-    try:
-        attack_dict = copy.deepcopy(library["Protocols"][protocol]["Attacks"])
-        for n in attack_dict:
-            if modulation_type in attack_dict[n].keys():
-                del library["Protocols"][protocol]["Attacks"][n][modulation_type]
-
-                if len(library["Protocols"][protocol]["Attacks"][n]) == 0:
-                    del library["Protocols"][protocol]["Attacks"][n]
-
-                if len(library["Protocols"][protocol]["Attacks"]) == 0:
-                    del library["Protocols"][protocol]["Attacks"]
-    except:
-        # To Avoid ['Attacks'] Key Errors
-        pass
-
-
-def addDemodulationFlowGraph(library, protocol, demodulation_type, flow_graph, hardware_type, sniffer_type):
-    """Adds to the list of demodulation flow graphs for a protocol/modulation combination."""
-    # Add Modulation Type if not Already Present
-    try:
-        check_key = library["Protocols"][protocol]["Demodulation Flow Graphs"]
-    except KeyError:
-        check_key = None
-    try:
-        library["Protocols"][protocol]["Demodulation Flow Graphs"][demodulation_type][hardware_type][flow_graph].append(
-            sniffer_type
-        )
-    except KeyError:
-        if check_key is None:
-            library["Protocols"][protocol].update(
-                {"Demodulation Flow Graphs": {demodulation_type: {hardware_type: {flow_graph: [sniffer_type]}}}}
-            )
-        else:
-            library["Protocols"][protocol]["Demodulation Flow Graphs"][demodulation_type].update(
-                {hardware_type: {flow_graph: [sniffer_type]}}
-            )
-
-
-###################################
+####################################################################################################
 # These were copied over, check these two functions.
 def SOI_AutoSelect(list1, SOI_priorities, SOI_filters):
     """
@@ -799,22 +1305,3 @@ def SOI_LibraryCheck(soi):
 
 if __name__ == "__main__":
     pass
-    # print("Testing  Lib Utils with current library...")
-    # filename1='/home/user/FISSURE/YAML/library.yaml'
-    # with open(filename1) as library:
-    # pd_library=yaml.load(library)
-    # prots=getProtocols(pd_library)
-    # print(prots)
-    # sois = getSOIs(pd_library)
-    # print(sois)
-    # demods = getDemodulationFlowGraphs(pd_library)
-    # print(demods)
-    # for prot in prots:
-    # print("Protocol :", prot)
-    # pkts=getPacketTypes(pd_library,prot)
-    # print("Packets in ", prot, ": ",pkts)
-    # for pkt in pkts:
-    # flds = getFields(pd_library, prot, pkt)
-    # defaults = getDefaults(pd_library, prot, pkt)
-    # for i in range(len(flds)):
-    # print("Fields ",i, ": ", flds[i], "default = ", defaults[i])

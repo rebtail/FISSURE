@@ -65,7 +65,7 @@ class ProtocolDiscovery:
         self.settings = fissure.utils.get_fissure_config()
         self.ip_address = "localhost"
         self.os_info = fissure.utils.get_os_info()
-        self.pd_library = fissure.utils.load_library(self.os_info)
+        self.library = None
 
         # Initialize Connection/Heartbeat Variables
         self.heartbeats = {
@@ -163,6 +163,9 @@ class ProtocolDiscovery:
 
         # Start Heartbeat Loop
         heartbeat_task = asyncio.create_task(self.heartbeat_loop())
+
+        # Load Database Cache
+        await self.retrieveDatabaseCachePD()
 
         # Main Event Loop
         while self.shutdown is False:
@@ -275,6 +278,23 @@ class ProtocolDiscovery:
                     self.logger.parent.handlers[n].level = 40
 
 
+    async def retrieveDatabaseCachePD(self):
+        """
+        Retrieves a copy of important database tables needed for operating the Dashboard.
+        """
+        # Send the Message
+        # if self.hiprfisr_connected is True:
+        try:
+            msg = {
+                fissure.comms.MessageFields.IDENTIFIER: self.identifier,
+                fissure.comms.MessageFields.MESSAGE_NAME: "retrieveDatabaseCachePD",
+                fissure.comms.MessageFields.PARAMETERS: "",
+            }
+            await self.hiprfisr_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+        except:
+            self.logger.error("Unable to connect to HIPRFISR to retrieve database cache for Protocol Discovery")
+
+
     def update_FISSURE_Configuration(self):
         """Reload fissure_config.yaml after changes."""
         # Update PD Dictionary
@@ -351,8 +371,12 @@ class ProtocolDiscovery:
         if soi_data[1] == "":
             for s in get_sois:
                 flow_graph_names.extend(
-                    fissure.utils.library.getDemodulationFlowGraphs(
-                        self.pd_library, s[list(s.keys())[0]]["Protocol"], None, hardware
+                    fissure.utils.library.getDemodulationFlowGraphFilenames(
+                        self.library, 
+                        s[1], 
+                        None, 
+                        hardware,
+                        fissure.utils.get_library_version()
                     )
                 )
 
@@ -360,8 +384,12 @@ class ProtocolDiscovery:
         else:
             for s in get_sois:
                 flow_graph_names.extend(
-                    fissure.utils.library.getDemodulationFlowGraphs(
-                        self.pd_library, s[list(s.keys())[0]]["Protocol"], soi_data[1], hardware
+                    fissure.utils.library.getDemodulationFlowGraphFilenames(
+                        self.library, 
+                        s[1], 
+                        soi_data[1], 
+                        hardware,
+                        fissure.utils.get_library_version()
                     )
                 )
 
@@ -441,122 +469,109 @@ class ProtocolDiscovery:
 
         if not soi_data_empty:
             # Get the SOI Data from the Library
-            all_soi = fissure.utils.library.getAllSOIs(self.pd_library)
+            all_soi = fissure.utils.library.getSOIs(self.library)  # [id, protocol, soi_name, center_frequency, start_frequency, end_frequency, bandwidth, continuous, modulation, notes]
 
-            # Cycle through each Protocol
-            for protocol, soi_items in all_soi.items():
+            # Cycle through each Row
+            soi_data_item_found = [False, False, False, False, False, False]
+            and_cases = [True, True, True, True, True, True]
+            for row in all_soi:
+                # Cycle through each SOI Data Element
+                for n in range(0, len(soi_data_item_found)):
+                    # Check if the Element is Empty (Don't Search For It)
+                    if soi_data[n] == "":
+                        soi_data_item_found[n] = False
+                        and_cases[n] = False
+                    else:
+                        # Center Frequency
+                        if n == 0:
+                            if (
+                                float(soi_data[n]) - float(soi_data[6]) <= float(row[3])
+                            ) and (
+                                float(soi_data[n]) + float(soi_data[6]) >= float(row[3])
+                            ):
+                                soi_data_item_found[n] = True
+
+                        # Modulation
+                        if n == 1:
+                            if (
+                                soi_data[n].lower() in row[8].lower()
+                            ):  # Not case-specific
+                                soi_data_item_found[n] = True
+
+                        # Bandwidth
+                        if n == 2:
+                            if (
+                                float(soi_data[n]) - float(soi_data[7]) <= float(row[6])
+                            ) and (
+                                float(soi_data[n]) + float(soi_data[7]) >= float(row[6])
+                            ):
+                                soi_data_item_found[n] = True
+
+                        # Continuous
+                        if n == 3:
+                            if str(soi_data[n]).lower() == str(row[7]):
+                                soi_data_item_found[n] = True
+
+                        # Start Frequency
+                        if n == 4:
+                            if (
+                                float(soi_data[n]) - float(soi_data[8])
+                                <= float(row[4])
+                            ) and (
+                                float(soi_data[n]) + float(soi_data[8])
+                                >= float(row[4])
+                            ):
+                                soi_data_item_found[n] = True
+
+                        # End Frequency
+                        if n == 5:
+                            if (
+                                float(soi_data[n]) - float(soi_data[9])
+                                <= float(row[5])
+                            ) and (
+                                float(soi_data[n]) + float(soi_data[9])
+                                >= float(row[5])
+                            ):
+                                soi_data_item_found[n] = True
+
+                # Save the SOI if there is a Match
+                if and_cases == soi_data_item_found:
+                    # soi_items[soi_item]["Protocol"] = protocol
+                    # return_dict = {}
+                    # return_dict.update({soi_item: soi_items[soi_item]})
+                    return_list.append(row)
+
+                # Reset
                 soi_data_item_found = [False, False, False, False, False, False]
-                and_cases = [True, True, True, True, True, True]
-
-                # Cycle through each SOI
-                for soi_item in soi_items:
-
-                    # Cycle through each SOI Data Element
-                    for n in range(0, len(soi_data_item_found)):
-                        # Check if the Element is Empty (Don't Search For It)
-                        if soi_data[n] == "":
-                            soi_data_item_found[n] = False
-                            and_cases[n] = False
-                        else:
-                            # Frequency
-                            if n == 0:
-                                if (
-                                    float(soi_data[n]) - float(soi_data[6]) <= float(soi_items[soi_item]["Frequency"])
-                                ) and (
-                                    float(soi_data[n]) + float(soi_data[6]) >= float(soi_items[soi_item]["Frequency"])
-                                ):
-                                    soi_data_item_found[n] = True
-                            # Modulation
-                            if n == 1:
-                                if (
-                                    soi_data[n].lower() in soi_items[soi_item]["Modulation"].lower()
-                                ):  # Not case-specific
-                                    soi_data_item_found[n] = True
-                            # Bandwidth
-                            if n == 2:
-                                if (
-                                    float(soi_data[n]) - float(soi_data[7]) <= float(soi_items[soi_item]["Bandwidth"])
-                                ) and (
-                                    float(soi_data[n]) + float(soi_data[7]) >= float(soi_items[soi_item]["Bandwidth"])
-                                ):
-                                    soi_data_item_found[n] = True
-                            # Continuous
-                            if n == 3:
-                                if soi_data[n] == str(soi_items[soi_item]["Continuous"]):
-                                    soi_data_item_found[n] = True
-                            # Start Frequency
-                            if n == 4:
-                                if (
-                                    float(soi_data[n]) - float(soi_data[8])
-                                    <= float(soi_items[soi_item]["Start Frequency"])
-                                ) and (
-                                    float(soi_data[n]) + float(soi_data[8])
-                                    >= float(soi_items[soi_item]["Start Frequency"])
-                                ):
-                                    soi_data_item_found[n] = True
-                            # End Frequency
-                            if n == 5:
-                                if (
-                                    float(soi_data[n]) - float(soi_data[9])
-                                    <= float(soi_items[soi_item]["End Frequency"])
-                                ) and (
-                                    float(soi_data[n]) + float(soi_data[9])
-                                    >= float(soi_items[soi_item]["End Frequency"])
-                                ):
-                                    soi_data_item_found[n] = True
-
-                    # Save the SOI if there is a Match
-                    if and_cases == soi_data_item_found:
-                        soi_items[soi_item]["Protocol"] = protocol
-                        return_dict = {}
-                        return_dict.update({soi_item: soi_items[soi_item]})
-                        return_list.append(return_dict)
-
-                    # Reset
-                    soi_data_item_found = [False, False, False, False, False, False]
 
         # Find Matching Field Data
-        # Check if Field Data is Empty
-        field_data_empty = True
-        packet_type_protocol_dict = {}
+        print(field_data)
         if field_data != "":
-            field_data_empty = False
-
-            # Get the Defaults from the Library
-            def_dict = {}
-            for prots in fissure.utils.library.getProtocols(self.pd_library):
-                for pkts in fissure.utils.library.getPacketTypes(self.pd_library, prots):
-                    mydefs = fissure.utils.library.getDefaults(self.pd_library, prots, pkts)
-                    mydefs = "".join(mydefs).replace(" ", "")
-                    if mydefs:
-                        # ~ mydefs = str(hex(int(mydefs,2))[2:-1])  # Convert to Hex
-
-                        # Update the Complete "Protocol:Packet Type:Default Hex Values" Dictionary
-                        if prots in def_dict.keys():
-                            def_dict[prots].update({pkts: mydefs})
-                        else:
-                            def_dict.update({prots: {pkts: mydefs}})
-
-            # Search for Field Data Instances in the Entire Hex Dictionary of the Packet Types,
-            # Returns {Packet Type: Protocol}
-            for protocols, vals in def_dict.items():
-                for packets, packet_vals in vals.items():
-                    if field_data in packet_vals:
-                        packet_type_protocol_dict[packets] = {
-                            "End Frequency": "",
-                            "Protocol": protocols,
-                            "Modulation": "",
-                            "Notes": "",
-                            "Continuous": "",
-                            "Bandwidth": "",
-                            "Frequency": "",
-                            "Start Frequency": "",
-                        }
-
-        # field_data Attempted to Search
-        if not field_data_empty:
-            return_list.append(packet_type_protocol_dict)
-
+            # Get the Field Defaults from the packet_types table
+            # matches = []
+            field_data = field_data.replace(" ","")
+            for row in fissure.utils.library.getPacketTypesTable(self.library):
+                # Search "fields" Item in Row
+                for key, value in row[4].items():
+                    # Remove spaces from "Default Value" and check if the bit pattern is present
+                    default_value_no_spaces = value["Default Value"].replace(" ", "")
+                    if field_data in default_value_no_spaces:
+                        # Store matches
+                        # matches[key] = value
+                        # matches.append(row[1])
+                        soi_return_item = [
+                            "",                   # id
+                            row[1],               # protocol
+                            key,                   # soi_name
+                            "",                   # center_frequency
+                            "",                   # start_frequency
+                            "",                   # end_frequency
+                            "",                   # bandwidth
+                            "",                   # continuous
+                            "",                   # modulation
+                            "",                  # notes
+                        ]
+                        return_list.append(soi_return_item)
 
         return return_list
 

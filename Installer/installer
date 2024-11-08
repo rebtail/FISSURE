@@ -23,7 +23,7 @@ larger_categories = ['Minimum Install','Hardware','Out-of-Tree Modules','Compile
 
 
 ########################################################################
-############################ Ubuntu 20.04 ############################
+############################ Ubuntu 20.04 ##############################
 ########################################################################
 
 programs_ubuntu20_04 = []
@@ -169,6 +169,39 @@ mkdir -p ~/.config/wireshark/plugins
 cp -a """ + fissure_directory + """/Dissectors/. ~/.config/wireshark/plugins
 ########## Verify ##########
 wireshark --help
+""",True,'Minimum Install'))
+
+# PostgreSQL Database 
+programs_ubuntu20_04.append(('PostgreSQL Database',
+"""sudo python3 -m pip install python-dotenv
+sudo apt-get install -y libpq-dev
+sudo python3 -m pip install psycopg2
+sudo apt-get install -y docker.io docker-compose-v2  # docker-compose-v2 or docker-compose-plugin?
+sudo usermod -aG docker ${USER}  # Reboot computer to use docker commands without sudo
+sudo apt install -y postgresql-client
+cd '""" + fissure_directory + """'
+cp example.env .env
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    until pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT; do
+        echo "Waiting for PostgreSQL to be ready..."
+        sleep 2
+    done
+    pg_restore -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -v db/fissure_db_dump.sql
+'
+########## Verify ##########
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT COUNT(*) FROM pg_tables;"
+'
 """,True,'Minimum Install'))
 
 # Network Certificates 
@@ -2295,6 +2328,39 @@ cp -a """ + fissure_directory + """/Dissectors/. ~/.config/wireshark/plugins
 wireshark --help
 """,True,"Minimum Install"))
 
+# PostgreSQL Database 
+programs_parrot_os_6_1.append(('PostgreSQL Database',
+"""sudo python3 -m pip install python-dotenv
+sudo apt-get install -y libpq-dev
+sudo python3 -m pip install psycopg2
+sudo apt-get install -y docker.io docker-compose-v2
+sudo usermod -aG docker ${USER}  # Reboot computer to use docker commands without sudo
+sudo apt install -y postgresql-client
+cd '""" + fissure_directory + """'
+cp example.env .env
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    until pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT; do
+        echo "Waiting for PostgreSQL to be ready..."
+        sleep 2
+    done
+    pg_restore -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -v db/fissure_db_dump.sql
+'
+########## Verify ##########
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT COUNT(*) FROM pg_tables;"
+'
+""",True,'Minimum Install'))
+
 # Network Certificates 
 programs_parrot_os_6_1.append(('Network Certificates',
 """cd '""" + fissure_directory + """'
@@ -4390,6 +4456,39 @@ cp -a """ + fissure_directory + """/Dissectors/. ~/.config/wireshark/plugins
 wireshark --help
 """,True,"Minimum Install"))
 
+# PostgreSQL Database 
+programs_ubuntu22_04.append(('PostgreSQL Database',
+"""sudo python3 -m pip install python-dotenv
+sudo apt-get install -y libpq-dev
+sudo python3 -m pip install psycopg2
+sudo apt-get install -y docker.io docker-compose-v2
+sudo usermod -aG docker ${USER}  # Reboot computer to use docker commands without sudo
+sudo apt install -y postgresql-client
+cd '""" + fissure_directory + """'
+cp example.env .env
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    until pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT; do
+        echo "Waiting for PostgreSQL to be ready..."
+        sleep 2
+    done
+    pg_restore -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -v db/fissure_db_dump.sql
+'
+########## Verify ##########
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT COUNT(*) FROM pg_tables;"
+'
+""",True,'Minimum Install'))
+
 # Network Certificates 
 programs_ubuntu22_04.append(('Network Certificates',
 """cd '""" + fissure_directory + """'
@@ -6476,6 +6575,39 @@ cp -a """ + fissure_directory + """/Dissectors/. ~/.config/wireshark/plugins
 ########## Verify ##########
 wireshark --help
 """, True, "Minimum Install"))
+
+# PostgreSQL Database 
+programs_dragonOS_focalx.append(('PostgreSQL Database',
+"""sudo python3 -m pip install python-dotenv
+sudo apt-get install -y libpq-dev
+sudo python3 -m pip install psycopg2
+sudo apt-get install -y docker.io docker-compose-v2
+sudo usermod -aG docker ${USER}  # Reboot computer to use docker commands without sudo
+sudo apt install -y postgresql-client
+cd '""" + fissure_directory + """'
+cp example.env .env
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    until pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT; do
+        echo "Waiting for PostgreSQL to be ready..."
+        sleep 2
+    done
+    pg_restore -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -v db/fissure_db_dump.sql
+'
+########## Verify ##########
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT COUNT(*) FROM pg_tables;"
+'
+""",True,'Minimum Install'))
 
 # Network Certificates 
 programs_dragonOS_focalx.append(('Network Certificates',
@@ -8567,6 +8699,39 @@ python2 -c "import scapy" && python3 -c "import scapy"
 # ~ ########## Verify ##########
 # ~ wireshark --help
 # ~ """,True,"Minimum Install"))
+
+# PostgreSQL Database 
+programs_kali.append(('PostgreSQL Database',
+"""sudo python3 -m pip install python-dotenv --break-system-packages
+sudo apt-get install -y libpq-dev
+sudo python3 -m pip install psycopg2 --break-system-packages
+sudo apt-get install -y docker.io docker-compose-v2
+sudo usermod -aG docker ${USER}  # Reboot computer to use docker commands without sudo
+sudo apt install -y postgresql-client
+cd '""" + fissure_directory + """'
+cp example.env .env
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    until pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT; do
+        echo "Waiting for PostgreSQL to be ready..."
+        sleep 2
+    done
+    pg_restore -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -v db/fissure_db_dump.sql
+'
+########## Verify ##########
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT COUNT(*) FROM pg_tables;"
+'
+""",True,'Minimum Install'))
 
 # Network Certificates 
 programs_kali.append(('Network Certificates (1.79 MB)',
@@ -10667,6 +10832,39 @@ cp -a """ + fissure_directory + """/Dissectors/. ~/.config/wireshark/plugins
 wireshark --help
 """,True,"Minimum Install"))
 
+# PostgreSQL Database 
+programs_backbox_linux_8.append(('PostgreSQL Database',
+"""sudo python3 -m pip install python-dotenv
+sudo apt-get install -y libpq-dev
+sudo python3 -m pip install psycopg2
+sudo apt-get install -y docker.io docker-compose-v2
+sudo usermod -aG docker ${USER}  # Reboot computer to use docker commands without sudo
+sudo apt install -y postgresql-client
+cd '""" + fissure_directory + """'
+cp example.env .env
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    until pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT; do
+        echo "Waiting for PostgreSQL to be ready..."
+        sleep 2
+    done
+    pg_restore -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -v db/fissure_db_dump.sql
+'
+########## Verify ##########
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT COUNT(*) FROM pg_tables;"
+'
+""",True,'Minimum Install'))
+
 # Network Certificates 
 programs_backbox_linux_8.append(('Network Certificates',
 """cd '""" + fissure_directory + """'
@@ -12750,6 +12948,39 @@ cp -a """ + fissure_directory + """/Dissectors/. ~/.config/wireshark/plugins
 ########## Verify ##########
 wireshark --help
 """,True,"Minimum Install"))
+
+# PostgreSQL Database 
+programs_raspberry_pi_os.append(('PostgreSQL Database',
+"""sudo python3 -m pip install python-dotenv --break-system-packages
+sudo apt-get install -y libpq-dev
+sudo python3 -m pip install psycopg2 --break-system-packages
+sudo apt-get install -y docker.io docker-compose-v2
+sudo usermod -aG docker ${USER}  # Reboot computer to use docker commands without sudo
+sudo apt install -y postgresql-client
+cd '""" + fissure_directory + """'
+cp example.env .env
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    until pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT; do
+        echo "Waiting for PostgreSQL to be ready..."
+        sleep 2
+    done
+    pg_restore -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -v db/fissure_db_dump.sql
+'
+########## Verify ##########
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT COUNT(*) FROM pg_tables;"
+'
+""",True,'Minimum Install'))
 
 # Network Certificates 
 programs_raspberry_pi_os.append(('Network Certificates',
@@ -14836,6 +15067,39 @@ cp -a """ + fissure_directory + """/Dissectors/. ~/.config/wireshark/plugins
 ########## Verify ##########
 wireshark --help
 """,True,"Minimum Install"))
+
+# PostgreSQL Database 
+programs_ubuntu22_04_arm.append(('PostgreSQL Database',
+"""sudo python3 -m pip install python-dotenv
+sudo apt-get install -y libpq-dev
+sudo python3 -m pip install psycopg2
+sudo apt-get install -y docker.io docker-compose-v2
+sudo usermod -aG docker ${USER}  # Reboot computer to use docker commands without sudo
+sudo apt install -y postgresql-client
+cd '""" + fissure_directory + """'
+cp example.env .env
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    until pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT; do
+        echo "Waiting for PostgreSQL to be ready..."
+        sleep 2
+    done
+    pg_restore -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -v db/fissure_db_dump.sql
+'
+########## Verify ##########
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT COUNT(*) FROM pg_tables;"
+'
+""",True,'Minimum Install'))
 
 # Network Certificates 
 programs_ubuntu22_04_arm.append(('Network Certificates',
@@ -16929,6 +17193,39 @@ cp -a """ + fissure_directory + """/Dissectors/. ~/.config/wireshark/plugins
 ########## Verify ##########
 wireshark --help
 """,True,"Minimum Install"))
+
+# PostgreSQL Database 
+programs_ubuntu24_04.append(('PostgreSQL Database',
+"""sudo python3 -m pip install python-dotenv --break-system-packages
+sudo apt-get install -y libpq-dev
+sudo python3 -m pip install psycopg2 --break-system-packages
+sudo apt-get install -y docker.io docker-compose-v2
+sudo usermod -aG docker ${USER}  # Reboot computer to use docker commands without sudo
+sudo apt install -y postgresql-client
+cd '""" + fissure_directory + """'
+cp example.env .env
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    until pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT; do
+        echo "Waiting for PostgreSQL to be ready..."
+        sleep 2
+    done
+    pg_restore -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -v db/fissure_db_dump.sql
+'
+########## Verify ##########
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT COUNT(*) FROM pg_tables;"
+'
+""",True,'Minimum Install'))
 
 # Network Certificates 
 programs_ubuntu24_04.append(('Network Certificates (3.51 kB)',
@@ -19032,6 +19329,39 @@ cp -a """ + fissure_directory + """/Dissectors/. ~/.config/wireshark/plugins
 wireshark --help
 """,True,"Minimum Install"))
 
+# PostgreSQL Database 
+programs_arch_linux.append(('PostgreSQL Database',
+"""sudo python3 -m pip install python-dotenv --break-system-packages
+sudo apt-get install -y libpq-dev
+sudo python3 -m pip install psycopg2 --break-system-packages
+sudo apt-get install -y docker.io docker-compose-v2
+sudo usermod -aG docker ${USER}  # Reboot computer to use docker commands without sudo
+sudo apt install -y postgresql-client
+cd '""" + fissure_directory + """'
+cp example.env .env
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    until pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT; do
+        echo "Waiting for PostgreSQL to be ready..."
+        sleep 2
+    done
+    pg_restore -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -v db/fissure_db_dump.sql
+'
+########## Verify ##########
+bash -c '
+    set -o allexport
+    source .env
+    set +o allexport
+    export PGPASSWORD=$POSTGRES_PASSWORD
+    sudo docker compose up -d
+    psql -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT -c "SELECT COUNT(*) FROM pg_tables;"
+'
+""",True,'Minimum Install'))
+
 # Network Certificates 
 programs_arch_linux.append(('Network Certificates (3.51 kB)',
 """cd '""" + fissure_directory + """'
@@ -20990,7 +21320,7 @@ class InstallDialog2(QtWidgets.QDialog, form_class2):
         self.setupUi(self)
         
         # Prevent Resizing/Maximizing
-        self.setFixedSize(920, 630)     
+        self.setFixedSize(920, 650)     
 
         # Hide Progress Bar
         self.progressBar1.hide()   

@@ -19,10 +19,17 @@ def _slotPD_DemodHardwareChanged(dashboard: QtCore.QObject):
     dashboard.ui.listWidget_pd_flow_graphs_all_fgs.clear()
 
     # Get All Demodulation Flow Graphs
-    all_demod_fgs = fissure.utils.library.getDemodulationFlowGraphs(dashboard.backend.library,protocol=None,modulation=None,hardware=get_hardware)
-
+    all_demod_fgs = fissure.utils.library.getDemodulationFlowGraphFilenames(
+        dashboard.backend.library,
+        protocol = None,
+        modulation = None,
+        hardware = get_hardware,
+        version = fissure.utils.get_library_version()
+    )
+    all_demod_fgs = sorted([item for item in all_demod_fgs])
+    
     # Update the List Widget
-    for fg in sorted(all_demod_fgs,key=str.lower):
+    for fg in all_demod_fgs:
         dashboard.ui.listWidget_pd_flow_graphs_all_fgs.addItem(fg)
 
 
@@ -112,10 +119,12 @@ def _slotPD_DissectorsPacketTypeChanged(dashboard: QtCore.QObject):
         dashboard.ui.comboBox_pd_dissectors_existing_dissectors.addItem('None')
         get_dissectors = []
         for n in get_packet_types:
-            get_dissectors.append(fissure.utils.library.getDissector(dashboard.backend.library, protocol, n)['Filename'])
+            dissector = fissure.utils.library.getDissector(dashboard.backend.library, protocol, n)
+            if dissector and dissector.get('Filename'):  # Ensure 'Filename' exists and is not None
+                get_dissectors.append(dissector['Filename'])
+
+        # Filter out None values and sort
         get_dissectors = sorted(list(set(get_dissectors)))
-        if 'None' in get_dissectors:
-            get_dissectors.remove('None')
         dashboard.ui.comboBox_pd_dissectors_existing_dissectors.addItems(get_dissectors)
 
         # Populate Existing Dissectors
@@ -125,18 +134,18 @@ def _slotPD_DissectorsPacketTypeChanged(dashboard: QtCore.QObject):
             if dissector_index > 0:
                 dashboard.ui.comboBox_pd_dissectors_existing_dissectors.setCurrentIndex(dissector_index)
 
-        get_fields = fissure.utils.library.getFields(dashboard.backend.library, protocol, packet_type)
-        for n in range(0,len(get_fields)):
+        get_field_names = fissure.utils.library.getFields(dashboard.backend.library, protocol, packet_type)
+        for n in range(0,len(get_field_names)):
             # Add Row
             _slotPD_DissectorsAddFieldClicked(dashboard)
 
             # Display Name
-            table_item = QtWidgets.QTableWidgetItem(get_fields[n])
+            table_item = QtWidgets.QTableWidgetItem(get_field_names[n])
             table_item.setTextAlignment(QtCore.Qt.AlignCenter)
             dashboard.ui.tableWidget_pd_dissectors.setItem(n,0,table_item)
 
             # Filter Name
-            table_item = QtWidgets.QTableWidgetItem(get_fields[n].replace(" ","_").lower())
+            table_item = QtWidgets.QTableWidgetItem(get_field_names[n].replace(" ","_").lower())
             table_item.setTextAlignment(QtCore.Qt.AlignCenter)
             dashboard.ui.tableWidget_pd_dissectors.setItem(n,1,table_item)  # No Spaces, Lower-Case
 
@@ -1832,12 +1841,52 @@ def _slotPD_DemodulationViewFlowGraphClicked(dashboard: QtCore.QObject):
     try:
         # Get the Flow Graph Name
         loaded_flow_graph = str(dashboard.ui.textEdit_pd_flow_graphs_filepath.toPlainText())
-        loaded_flow_graph = loaded_flow_graph.replace(' ','\ ')
-        loaded_flow_graph = loaded_flow_graph.rpartition('.')[0] + '.grc'
 
         # Open the Flow Graph in GNU Radio Companion
-        osCommandString = 'gnuradio-companion ' + loaded_flow_graph
+        osCommandString = 'gnuradio-companion "' + loaded_flow_graph.replace(".py",".grc") + '"'
         os.system(osCommandString + ' &')
+
+    except:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage("Error loading flow graph in GNU Radio Companion")
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotPD_DemodulationLookupViewClicked(dashboard: QtCore.QObject):
+    """ 
+    Views the currently selected flow graph in GNU Radio Companion.
+    """
+    try:
+        if dashboard.ui.listWidget_pd_flow_graphs_recommended_fgs.count() > 0:
+            # Get the File Name
+            fname = dashboard.ui.listWidget_pd_flow_graphs_recommended_fgs.currentItem().text()
+
+            # Get the Flow Graph Name
+            filepath = os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "PD Flow Graphs", fname)
+
+            # Open the Flow Graph in GNU Radio Companion
+            osCommandString = 'gnuradio-companion "' + filepath.replace(".py",".grc") + '"'
+            os.system(osCommandString + ' &')
+
+    except:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage("Error loading flow graph in GNU Radio Companion")
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotPD_DemodulationAllFGsViewClicked(dashboard: QtCore.QObject):
+    """ 
+    Views the currently selected flow graph in GNU Radio Companion.
+    """
+    try:
+        if dashboard.ui.listWidget_pd_flow_graphs_all_fgs.count() > 0:
+            # Get the File Name
+            fname = dashboard.ui.listWidget_pd_flow_graphs_all_fgs.currentItem().text()
+
+            # Get the Flow Graph Name
+            filepath = os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "PD Flow Graphs", fname)
+
+            # Open the Flow Graph in GNU Radio Companion
+            osCommandString = 'gnuradio-companion "' + filepath.replace(".py",".grc") + '"'
+            os.system(osCommandString + ' &')
 
     except:
         fissure.Dashboard.UI_Components.Qt5.errorMessage("Error loading flow graph in GNU Radio Companion")
@@ -1858,7 +1907,11 @@ def _slotPD_DemodulationLoadFlowGraphClicked(dashboard: QtCore.QObject, fname=''
         flow_graph_directory = os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "PD Flow Graphs")
 
         # Enable/Disable the Sniffer Buttons
-        get_sniffer_type = fissure.utils.library.getDemodulationFlowGraphsSnifferType(dashboard.backend.library, fname)
+        get_sniffer_type = fissure.utils.library.getDemodulationFlowGraphsSnifferType(
+            dashboard.backend.library, 
+            fname,
+            version = fissure.utils.get_library_version()
+        )
         dashboard.ui.pushButton_pd_sniffer_stream.setEnabled(False)
         dashboard.ui.pushButton_pd_sniffer_tagged_stream.setEnabled(False)
         dashboard.ui.pushButton_pd_sniffer_msg_pdu.setEnabled(False)
@@ -2651,13 +2704,13 @@ def _slotPD_BitViewerApplyClicked(dashboard: QtCore.QObject):
         else:
             try:
                 # Fields
-                fields = fissure.utils.library.getFields(dashboard.backend.library, get_protocol, get_subcategory)
-                dashboard.ui.tableWidget_pd_bit_viewer_hex.setColumnCount(len(fields)+1)
+                field_names = fissure.utils.library.getFields(dashboard.backend.library, get_protocol, get_subcategory)
+                dashboard.ui.tableWidget_pd_bit_viewer_hex.setColumnCount(len(field_names)+1)
 
                 # Lengths
                 get_lengths = []
-                for n in range(0,len(fields)):
-                    get_lengths.append(dashboard.backend.library["Protocols"][get_protocol]['Packet Types'][get_subcategory]['Fields'][fields[n]]['Length'])
+                for n in range(0,len(field_names)):
+                    get_lengths.append(fissure.utils.library.getFieldData(dashboard.backend.library, get_protocol, get_subcategory, field_names[n])["Length"])
 
             except KeyError:
                 #No Fields Defined!
@@ -2671,10 +2724,10 @@ def _slotPD_BitViewerApplyClicked(dashboard: QtCore.QObject):
                     col_offset = 0
                 else:
                     col_offset = 1
-                for col in range(0,len(fields)):
+                for col in range(0,len(field_names)):
                     # Add Column
                     new_color = dashboard.suitable_colors[0]
-                    header_item = QtWidgets.QTableWidgetItem(fields[col])
+                    header_item = QtWidgets.QTableWidgetItem(field_names[col])
                     header_item.setTextAlignment(QtCore.Qt.AlignCenter)
                     header_item.setForeground(QtGui.QColor(255,0,0))
                     dashboard.ui.tableWidget_pd_bit_viewer_hex.setHorizontalHeaderItem(col+col_offset,header_item)
@@ -2687,7 +2740,7 @@ def _slotPD_BitViewerApplyClicked(dashboard: QtCore.QObject):
                 header_item.setTextAlignment(QtCore.Qt.AlignCenter)
                 header_item.setForeground(QtGui.QColor(255,0,0))
                 if get_alignment == 'left':
-                    dashboard.ui.tableWidget_pd_bit_viewer_hex.setHorizontalHeaderItem(len(fields),header_item)
+                    dashboard.ui.tableWidget_pd_bit_viewer_hex.setHorizontalHeaderItem(len(field_names),header_item)
                 else:
                     dashboard.ui.tableWidget_pd_bit_viewer_hex.setHorizontalHeaderItem(0,header_item)
                     
@@ -2701,8 +2754,8 @@ def _slotPD_BitViewerApplyClicked(dashboard: QtCore.QObject):
 
                     # Populate the Row
                     if get_alignment == 'left':
-                        for col in range(0,len(fields)+1):
-                            if col == len(fields):
+                        for col in range(0,len(field_names)+1):
+                            if col == len(field_names):
                                 data_item = QtWidgets.QTableWidgetItem(bin_str[bit_index::])
                             else:
                                 data_item = QtWidgets.QTableWidgetItem(bin_str[bit_index:bit_index+get_lengths[col]])
@@ -2713,7 +2766,7 @@ def _slotPD_BitViewerApplyClicked(dashboard: QtCore.QObject):
                         data_item = QtWidgets.QTableWidgetItem('')
                         data_item.setTextAlignment(QtCore.Qt.AlignCenter)
                         dashboard.ui.tableWidget_pd_bit_viewer_hex.setItem(row,0,data_item)   
-                        for col in reversed(range(0,len(fields)+1)):
+                        for col in reversed(range(0,len(field_names)+1)):
                             if col == 0:
                                 if len(bin_str)-bit_index > 0:
                                     data_item = QtWidgets.QTableWidgetItem(bin_str[0:bit_index])
@@ -3231,12 +3284,12 @@ def _slotPD_DissectorsDownClicked(dashboard: QtCore.QObject):
         dashboard.ui.tableWidget_pd_dissectors.resizeRowsToContents()
 
 
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotPD_DissectorsPreviewClicked(dashboard: QtCore.QObject):
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotPD_DissectorsPreviewClicked(dashboard: QtCore.QObject):
     """ 
     Opens a message box with the code for the dissector and for the known-protocols.py cases.
     """
-    _slotPD_DissectorsConstructClicked(dashboard, preview=True)
+    await _slotPD_DissectorsConstructClicked(dashboard, preview=True)
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -3666,7 +3719,7 @@ async def _slotPD_DissectorsConstructClicked(dashboard: QtCore.QObject, preview 
             my_error = "Filter Name must not contain upper-case letters, numbers, spaces, or symbols other than '-', '_', and '.'."
             raise NameError
     except:
-        fissure.Dashboard.UI_Components.Qt5.errorMessage(my_error)
+        ret = await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, my_error)
 
     # Get the Table Values
     get_display_names = []
@@ -3712,35 +3765,22 @@ async def _slotPD_DissectorsConstructClicked(dashboard: QtCore.QObject, preview 
     # Save the File
     else:
         # Select a Filepath
-        directory = os.path.join(fissure.utils.FISSURE_ROOT, "Dissectors")  # Default Directory
-
-        # This Method Allows ".lua" to be Added to the End of the Name
-        dialog = QtWidgets.QFileDialog()
-        dialog.setDirectory(directory)
-        dialog.setFilter(dialog.filter() | QtCore.QDir.Hidden)
-        dialog.setDefaultSuffix('lua')
-        dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
-        dialog.setNameFilters(['Lua Dissectors (*.lua)'])
-        if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            fileName = str(dialog.selectedFiles()[0])
-        else:
-            fileName = ""
+        directory = os.path.join(fissure.utils.FISSURE_ROOT, "Dissectors")
+        file_name = await fissure.Dashboard.UI_Components.Qt5.async_save_file_dialog(dashboard, directory, 'lua', 'Lua Dissectors (*.lua)')
 
         # Valid file
-        if fileName:
-            # Write to File
-            file = open(fileName,"wb")
-            file.write(dissector_text)
-            file.close()
+        if file_name:
+            with open(file_name, "w") as file:
+                file.write(dissector_text)
 
             # Update Library
             get_protocol = str(dashboard.ui.comboBox_pd_dissectors_protocol.currentText())
             get_packet_type = str(dashboard.ui.comboBox_pd_dissectors_packet_type.currentText())
-            if len(get_protocol) > 0 and len(get_packet_type) > 0:
-                dissector_file = fileName.rsplit('/')[-1]
+            if get_protocol and get_packet_type:
+                dissector_file = os.path.basename(file_name)
                 dissector_port = int(get_udp_port)
                 new_dissector = [dissector_file, dissector_port]
-                await dashboard.backend.addToLibrary(get_protocol, get_packet_type, [], [], [], [], [], [], new_dissector)
+                await dashboard.backend.addToLibrary(get_protocol, get_packet_type, [], [], [], [], [], new_dissector)
 
 
 @qasync.asyncSlot(QtCore.QObject)
@@ -4204,7 +4244,7 @@ def _slotPD_BitSlicingAddToLibraryClicked(dashboard: QtCore.QObject):
         dashboard.ui.tableWidget_library_pd_packet.horizontalHeader().setSectionResizeMode(2,QtWidgets.QHeaderView.Stretch)
 
         # Change the Tab
-        dashboard.ui.tabWidget_library.setCurrentIndex(4)
+        dashboard.ui.tabWidget_library.setCurrentIndex(3)
         dashboard.ui.tabWidget.setCurrentIndex(7)
 
 

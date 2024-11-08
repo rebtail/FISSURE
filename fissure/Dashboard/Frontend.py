@@ -65,17 +65,21 @@ class Dashboard(QtWidgets.QMainWindow):
     def __init__(self, parent: QtWidgets.QWidget = None):
         self.logger.info("=== INITIALIZING ===")
 
+        self.splash = SplashScreen()
+        self.splash.show()
+        # QtWidgets.QApplication.processEvents()
+
         super().__init__(parent)
-        self.__init_window__()
 
         # Initialize signals
         self.__init_signals__()
+        self.__init_window__()
+        
+        self.server_process = None
 
         # Create Backend
         self.backend = DashboardBackend(frontend=self)
         self.backend.start()
-
-        self.server_process = None
 
         # Closing Variables
         self.all_closed_down = False
@@ -120,25 +124,40 @@ class Dashboard(QtWidgets.QMainWindow):
         # Load FISSURE Logo
         self.ui.label_diagram.setPixmap(QtGui.QPixmap(os.path.join(fissure.utils.UI_DIR, "Icons", "logo.png")))
 
-        # Initialize Tabs
-        TopBarSlots.sensor_node_rightClick(self, -1)
-        self.__init_Automation__()
-        self.__init_TSI__()
-        self.__init_PD__()
-        self.__init_Attack__()
-        self.__init_IQ__()
-        self.__init_Archive__()
-        self.__init_Sensor_Nodes__()
-        self.__init_Library__()
-
         # Auto Connect HIPRFISR
         if self.backend.settings["auto_connect_hiprfisr"] == True:
             self.window.actionAuto_Connect_HIPRFISR.setChecked(True)
             StatusBarSlots.startLocalSession(self)
+            self.splash.progressBar.setValue(50)
         else:
+            self.splash.progressBar.setValue(50)
             self.window.actionAuto_Connect_HIPRFISR.setChecked(False)
+            self.__init2__()
 
         self.logger.info("=== READY ===")
+        
+    
+    def __init2__(self):
+
+        # Initialize Tabs
+        if self.backend.library != None:
+            TopBarSlots.sensor_node_rightClick(self, -1)
+            self.__init_Automation__()
+            self.__init_TSI__()
+            self.__init_PD__()
+            self.__init_Attack__()
+            self.__init_IQ__()
+            self.__init_Archive__()
+            self.__init_Sensor_Nodes__()
+            self.__init_Library__()
+
+        # Hide the Splash Screen
+        self.splash.progressBar.setValue(100)
+        time.sleep(0.1)
+        self.splash.close()        
+
+        # Show the Dialog
+        self.show()
 
 
     def __init_Automation__(self):
@@ -411,7 +430,7 @@ class Dashboard(QtWidgets.QMainWindow):
         self.ui.comboBox_pd_sniffer_protocols.clear()
         protocols_with_demod_fgs = []
         for p in protocols:
-            if len(fissure.utils.library.getDemodulationFlowGraphs(self.backend.library, p, "", "")) > 0:
+            if len(fissure.utils.library.getDemodulationFlowGraphFilenames(self.backend.library, p, "", "", version=fissure.utils.get_library_version())) > 0:
                 protocols_with_demod_fgs.append(p)
         self.ui.comboBox_pd_sniffer_protocols.addItems(sorted(protocols_with_demod_fgs))
 
@@ -514,7 +533,7 @@ class Dashboard(QtWidgets.QMainWindow):
         self.ui.comboBox_attack_protocols.clear()
         protocols_with_attacks = []
         for p in protocols:
-            if len(fissure.utils.library.getAttacks(self.backend.library, p)) > 0:
+            if len(fissure.utils.library.getAttackNames(self.backend.library, p, fissure.utils.get_library_version())) > 0:
                 protocols_with_attacks.append(p)
         self.ui.comboBox_attack_protocols.addItems(sorted(protocols_with_attacks))
 
@@ -649,10 +668,13 @@ class Dashboard(QtWidgets.QMainWindow):
         )
 
         # Load Inspection File Flow Graphs
-        get_inspection_file_fgs = []
-        get_inspection_file_fgs.extend(self.backend.library["Inspection Flow Graphs"]["File"])
+        get_inspection_file_fgs = fissure.utils.library.getInspectionFlowGraphFilename(
+            self.backend.library, 
+            "File", 
+            fissure.utils.get_library_version()
+        )
         for n in sorted(get_inspection_file_fgs, key=str.lower):
-            if n != "None":
+            if len(n) > 0:
                 self.ui.listWidget_iq_inspection_fg_file.addItem(n)
         self.ui.listWidget_iq_inspection_fg_file.setCurrentRow(0)
 
@@ -681,7 +703,6 @@ class Dashboard(QtWidgets.QMainWindow):
         # #### Archive #####
         self.ui.comboBox3_archive_download_folder.addItem(fissure.utils.ARCHIVE_DIR)
         self.ui.comboBox3_archive_download_folder.addItem(fissure.utils.IQ_RECORDINGS_DIR)
-        ArchiveTabSlots._slotArchiveDownloadRefreshClicked(self)
         self.populateArchive()
         self.ui.label2_archive_replay_status.setVisible(False)
         self.ui.tableWidget_archive_replay.setColumnHidden(9, True)
@@ -737,19 +758,9 @@ class Dashboard(QtWidgets.QMainWindow):
                 protocols_with_images.append(p)
         self.ui.comboBox_library_gallery_protocol.addItems(sorted(protocols_with_images))
 
-        # Select Default Library File to Display
-        get_os = fissure.utils.get_os_info()
-        if any(keyword == get_os for keyword in fissure.utils.OS_3_8_KEYWORDS):
-            self.ui.comboBox_library_browse_yaml.setCurrentIndex(0)
-        else:
-            self.ui.comboBox_library_browse_yaml.setCurrentIndex(1)
-
         # Load Protocols into Add to Library ComboBox
         self.ui.comboBox_library_pd_protocol.addItem("-- New Protocol --")
         self.ui.comboBox_library_pd_protocol.addItems(sorted(protocols))
-
-        # Load Protocols into Search Library ComboBox
-        self.ui.comboBox_library_browse_protocol.addItems(sorted(protocols))
 
         # Configure PD\Construct Packet Tables
         self.ui.tableWidget_library_pd_packet.resizeRowsToContents()
@@ -778,8 +789,8 @@ class Dashboard(QtWidgets.QMainWindow):
             ]
         )
 
-        # Configure Attack TreeWidget
-        LibraryTabSlots._slotLibraryBrowseYAML_Changed(self)
+        # Refresh Browse Table
+        LibraryTabSlots._slotLibraryBrowseChanged(self)
 
 
     def __init_signals__(self):
@@ -1181,22 +1192,22 @@ class Dashboard(QtWidgets.QMainWindow):
         Populates the Archive tables from library.yaml.
         """
         # Populate the File Table
-        get_archives = [archive for archive in sorted(self.backend.library["Archive"]["File"])]
+        get_archive_favorites = fissure.utils.library.getArchiveFavorites(self.backend.library)
         notes_width = 150
         new_font = QtGui.QFont("Times", 10)
 
-        for n in range(0, len(get_archives)):
+        for n in range(0, len(get_archive_favorites)):
             # Get File Info
-            get_file = str(get_archives[n])
-            get_protocol = str(self.backend.library["Archive"]["File"][get_archives[n]]["Protocol"])
-            get_date = str(self.backend.library["Archive"]["File"][get_archives[n]]["Date"])
-            get_format = str(self.backend.library["Archive"]["File"][get_archives[n]]["Format"])
-            get_sample_rate = str(self.backend.library["Archive"]["File"][get_archives[n]]["Sample Rate"])
-            get_tuned_frequency = str(self.backend.library["Archive"]["File"][get_archives[n]]["Tuned Frequency"])
-            get_samples = str(self.backend.library["Archive"]["File"][get_archives[n]]["Samples"])
-            get_size = str(self.backend.library["Archive"]["File"][get_archives[n]]["Size"])
-            get_modulation = str(self.backend.library["Archive"]["File"][get_archives[n]]["Modulation"])
-            get_notes = str(self.backend.library["Archive"]["File"][get_archives[n]]["Notes"])
+            get_file = str(get_archive_favorites[n][1])
+            get_protocol = str(get_archive_favorites[n][6])
+            get_date = str(get_archive_favorites[n][2])
+            get_format = str(get_archive_favorites[n][3])
+            get_sample_rate = str(get_archive_favorites[n][7])
+            get_tuned_frequency = str(get_archive_favorites[n][10])
+            get_samples = str(get_archive_favorites[n][8])
+            get_size = str(get_archive_favorites[n][9])
+            get_modulation = str(get_archive_favorites[n][4])
+            get_notes = str(get_archive_favorites[n][5])
 
             # Find Maximum Note Width
             if len(get_notes) * 10 > notes_width:
@@ -1276,70 +1287,46 @@ class Dashboard(QtWidgets.QMainWindow):
 
         # Fill in the Collection Tree View
         headers = ["Collection", "Size", "Files", "Format", "Notes"]
-        get_collections = [archive for archive in sorted(self.backend.library["Archive"]["Collection"])]
+        get_collection_parent = fissure.utils.library.getArchiveCollectionParent(self.backend.library)
         tree = []
-        for n in range(0, len(get_collections)):
+        for n in range(0, len(get_collection_parent)):
             # Main Collection Folder
             tree.append(
                 [
                     0,
-                    get_collections[n],
-                    self.backend.library["Archive"]["Collection"][get_collections[n]]["Size"],
-                    self.backend.library["Archive"]["Collection"][get_collections[n]]["Files"],
-                    self.backend.library["Archive"]["Collection"][get_collections[n]]["Format"],
-                    self.backend.library["Archive"]["Collection"][get_collections[n]]["Notes"],
+                    get_collection_parent[n][1],
+                    get_collection_parent[n][6],
+                    get_collection_parent[n][4],
+                    get_collection_parent[n][5],
+                    get_collection_parent[n][7],
                 ]
             )
 
             # Subdirectories
-            try:
-                get_subdirectories = [
-                    subdirectory
-                    for subdirectory in sorted(
-                        self.backend.library["Archive"]["Collection"][get_collections[n]]["Subdirectories"]
-                    )
-                ]
-                for m in range(0, len(get_subdirectories)):
-                    tree.append(
-                        [
-                            1,
-                            get_subdirectories[m],
-                            self.backend.library["Archive"]["Collection"][get_collections[n]]["Subdirectories"][
-                                get_subdirectories[m]
-                            ]["Size"],
-                            self.backend.library["Archive"]["Collection"][get_collections[n]]["Subdirectories"][
-                                get_subdirectories[m]
-                            ]["Files"],
-                            self.backend.library["Archive"]["Collection"][get_collections[n]]["Subdirectories"][
-                                get_subdirectories[m]
-                            ]["Format"],
-                            self.backend.library["Archive"]["Collection"][get_collections[n]]["Subdirectories"][
-                                get_subdirectories[m]
-                            ]["Notes"],
-                        ]
-                    )
+            get_subdirectories = fissure.utils.library.getArchiveCollectionSubdirectory(self.backend.library, int(get_collection_parent[n][0]))
+            for m in range(0, len(get_subdirectories)):
+                tree.append(
+                    [
+                        1,
+                        get_subdirectories[m][1],
+                        get_subdirectories[m][6],
+                        get_subdirectories[m][4],
+                        get_subdirectories[m][5],
+                        get_subdirectories[m][7],
+                    ]
+                )
 
-                    # Files
-                    get_files = self.backend.library["Archive"]["Collection"][get_collections[n]]["Subdirectories"][
-                        get_subdirectories[m]
-                    ]["File List"]
-                    for k in range(0, len(get_files)):
-                        tree.append([2, get_files[k], "", "", "", ""])
+                # Files
+                get_files = get_subdirectories[m][2]
+                for k in range(0, len(get_files)):
+                    tree.append([2, get_files[k], "", "", "", ""])
 
-            except:
-                # Files without a Subdirectory
-                get_files = self.backend.library["Archive"]["Collection"][get_collections[n]]["File List"]
+            # Collections with Files but no Subdirectory/Children
+            get_files = get_collection_parent[n][2]
+            if get_files is not None:
                 for k in range(0, len(get_files)):
                     tree.append([1, get_files[k], "", "", "", ""])
 
-        # tree = [
-        #     [0, "Root", "a", "b", "c", "d"],
-        #     [1, "Collection1", "aa", "bb", "cc", "dd"],
-        #     [1, "Collection2", "aaa", "bbb", "ccc", "ddd"],
-        #     [1, "Collection3", "aaaa", "bbbb", "cccc", "dddd"],
-        #     [0, "Root2", "a", "b", "c", "d"],
-        #     [1, "Collection11", "aa", "bb", "cc", "dd"],
-        # ]
         new_model = TreeModel(headers, tree)
         self.ui.treeView_archive_download_collection.setModel(new_model)
 
@@ -1430,52 +1417,81 @@ class Dashboard(QtWidgets.QMainWindow):
         """
         This adds the complete list of attacks to the Attack TreeWidget.
         """
-        # Populate the Attack TreeWidget
-        all_attacks = (
-            self.backend.library["Attacks"]["Single-Stage Attacks"]
-            + self.backend.library["Attacks"]["Multi-Stage Attacks"]
-            + self.backend.library["Attacks"]["Fuzzing Attacks"]
-        )
-        parent_item_list = []
-        prev_level = 0
-        for n in range(0, len(all_attacks)):
-            # Get the Attack
-            current_attack = all_attacks[n].split(",")
+        # Create all items and store them in a dictionary
+        items_dict = {}
+        get_attack_categories = fissure.utils.library.getAttackCategories(self.backend.library)
+        no_bold_list = ["New Multi-Stage", "Variables"]
+        for row in get_attack_categories:
+            category_name = row[1]  # Column 1 for category_name
+            parent_name = row[2]    # Column 2 for parent
 
-            # Create Item
-            new_item = QtWidgets.QTreeWidgetItem()
-            new_item.setText(0, current_attack[0])
-            new_item.setDisabled(True)
-            current_level = int(current_attack[1])
-
-            # Update Parent List
-            if len(parent_item_list) <= current_level:
-                parent_item_list.append(new_item)
+            # Create a QTreeWidgetItem for each category_name
+            item = QtWidgets.QTreeWidgetItem([category_name])
+            font = QtGui.QFont("Times", 11, QtGui.QFont.Bold)
+            if category_name not in no_bold_list:
+                font.setBold(True)
             else:
-                parent_item_list[current_level] = new_item
+                font.setBold(False)
+            item.setFont(0, font)
+            items_dict[category_name] = (item, parent_name)
 
-            # Add it to Tree
-            if current_level == 0:
-                self.ui.treeWidget_attack_attacks.addTopLevelItem(new_item)
+        # Add items to the tree with proper parent-child structure
+        for category_name, (item, parent_name) in items_dict.items():
+            if parent_name is None:
+                # Top-level item
+                self.ui.treeWidget_attack_attacks.addTopLevelItem(item)
             else:
-                if current_level >= prev_level:
-                    parent_item_list[current_level - 1].addChild(new_item)
-                elif current_level < prev_level:
-                    level_difference = prev_level - current_level
-                    parent_item_list[current_level - level_difference].addChild(new_item)
+                # Child item; find the parent and add it
+                parent_item, _ = items_dict.get(parent_name, (None, None))
+                if parent_item:
+                    parent_item.addChild(item)
 
-            # Update prev_level
-            prev_level = current_level
+        # Add attacks under their corresponding categories
+        get_attack_rows = fissure.utils.library.getAttacks(self.backend.library, None, fissure.utils.get_library_version())
+        for row in get_attack_rows:
+            attack_name = row[1] + ' - ' + row[2]
+            category_name = row[7]
+            category_item, _ = items_dict.get(category_name, (None, None))
+            if category_item:
+                attack_item = QtWidgets.QTreeWidgetItem([attack_name])
+                attack_item.setDisabled(True)
+                category_item.addChild(attack_item)
 
-        # Bold Categories
-        iterator = QtWidgets.QTreeWidgetItemIterator(self.ui.treeWidget_attack_attacks)
-        while iterator.value():
-            item = iterator.value()
-            if item.text(0) in self.backend.library["Attack Categories"]:
-                if item.text(0) not in ["New Multi-Stage", "Variables"]:
-                    item.setFont(0, QtGui.QFont("Times", 11, QtGui.QFont.Bold))
-            iterator += 1
-    
+
+class SplashScreen(QtWidgets.QDialog):
+    def __init__(self):
+        super(SplashScreen, self).__init__()
+        self.setWindowTitle("Splash Screen")
+        # self.setFixedSize(400, 300)
+
+        # Remove the window frame
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+
+        # Load and set the image
+        self.image_label = QtWidgets.QLabel(self)
+        splash_pix = QtGui.QPixmap(QtGui.QPixmap(os.path.join(fissure.utils.UI_DIR, "Icons", "splash.png")))
+        splash_pix = splash_pix.scaled(splash_pix.width() // 2, splash_pix.height() // 2, QtCore.Qt.KeepAspectRatio)
+        self.image_label.setPixmap(splash_pix)
+        self.image_label.setScaledContents(True)
+        # self.image_label.setGeometry(0, 0, 400, 300)
+
+        # Set the size of the dialog to match the size of the image
+        self.resize(splash_pix.size())
+
+        # Create a progress bar
+        self.progressBar = QtWidgets.QProgressBar(self)
+        self.progressBar.setGeometry(50, int(splash_pix.height() - 30), int(splash_pix.width() - 100), 20)
+        self.progressBar.setRange(0, 100)
+        self.progressBar.setValue(0)
+
+        # Create a text label for loading message
+        self.label = QtWidgets.QLabel("Loading...", self)
+        self.label.move(int((splash_pix.width() - 100) / 2), int(splash_pix.height() - 50))
+        self.label.setStyleSheet("color: #f0f0f0; font-size: 16px; font-weight: bold;")
+
+        # Remove the window frame
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+
 
 class DashboardScreen(UI_Types.Dashboard):
     def setupUi(self, dashboardWidget: QtWidgets.QWidget, dashboardFrontend: QtCore.QObject):
@@ -1906,6 +1922,8 @@ def connect_menuBar_slots(dashboard: Dashboard):
     dashboard.window.actionwl_color_picker.triggered.connect(MenuBarSlots._slotMenuWlColorPickerClicked)
     dashboard.window.actiontpms_rx.triggered.connect(MenuBarSlots._slotMenuTpmsRxClicked)
     dashboard.window.actionGraphing_Calculator.triggered.connect(MenuBarSlots._slotMenuGraphingCalculatorClicked)
+    dashboard.window.actionpgAdmin.triggered.connect(MenuBarSlots._slotMenuPgAdminClicked)
+    dashboard.window.actionFIRMS.triggered.connect(MenuBarSlots._slotMenuFIRMS_Clicked)
     
     # Lessons
     dashboard.window.actionLessonOpenBTS.triggered.connect(MenuBarSlots._slotMenuLessonOpenBTS_Clicked)
@@ -2817,6 +2835,12 @@ def connect_pd_slots(dashboard: Dashboard):
     dashboard.ui.pushButton_pd_sniffer_msg_pdu.clicked.connect(
         lambda: PDTabSlots._slotPD_SnifferMsgPduClicked(dashboard)
     )
+    dashboard.ui.pushButton_pd_flow_graphs_lookup_view.clicked.connect(
+        lambda: PDTabSlots._slotPD_DemodulationLookupViewClicked(dashboard)
+    )
+    dashboard.ui.pushButton_pd_flow_graphs_all_fgs_view.clicked.connect(
+        lambda: PDTabSlots._slotPD_DemodulationAllFGsViewClicked(dashboard)
+    )
 
     # Table Widget
     dashboard.ui.tableWidget_pd_flow_graphs_current_values.cellChanged.connect(
@@ -3374,9 +3398,6 @@ def connect_archive_slots(dashboard: Dashboard):
     dashboard.ui.pushButton_archive_download_folder.clicked.connect(
         lambda: ArchiveTabSlots._slotArchiveDownloadFolderClicked(dashboard)
     )
-    dashboard.ui.pushButton_archive_download_refresh.clicked.connect(
-        lambda: ArchiveTabSlots._slotArchiveDownloadRefreshClicked(dashboard)
-    )  # Is this button needed? Does the listView automatically refresh?
     dashboard.ui.pushButton_archive_download_delete.clicked.connect(
         lambda: ArchiveTabSlots._slotArchiveDownloadDeleteClicked(dashboard)
     )
@@ -3452,6 +3473,12 @@ def connect_archive_slots(dashboard: Dashboard):
     )
     dashboard.ui.pushButton_archive_download_plot.clicked.connect(
         lambda: ArchiveTabSlots._slotArchiveDownloadPlotClicked(dashboard)
+    )
+    dashboard.ui.pushButton_archive_download_preview.clicked.connect(
+        lambda: ArchiveTabSlots._slotArchiveDownloadPreviewClicked(dashboard)
+    )
+    dashboard.ui.pushButton_archive_download_rename.clicked.connect(
+        lambda: ArchiveTabSlots._slotArchiveDownloadRenameClicked(dashboard)
     )
 
     # Table Widget
@@ -3538,12 +3565,6 @@ def connect_library_slots(dashboard: Dashboard):
     dashboard.ui.comboBox_library_gallery_protocol.currentIndexChanged.connect(
         lambda: LibraryTabSlots._slotLibraryGalleryProtocolChanged(dashboard)
     )
-    dashboard.ui.comboBox_library_browse_yaml.currentIndexChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseYAML_Changed(dashboard)
-    )
-    dashboard.ui.comboBox_library_browse_protocol.currentIndexChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryRemoveProtocolChanged(dashboard)
-    )
     dashboard.ui.comboBox_library_pd_protocol.currentIndexChanged.connect(
         lambda: LibraryTabSlots._slotPD_AddToLibraryProtocolChanged(dashboard)
     )
@@ -3556,49 +3577,13 @@ def connect_library_slots(dashboard: Dashboard):
     dashboard.ui.comboBox_library_pd_data_type.currentIndexChanged.connect(
         lambda: LibraryTabSlots._slotLibraryAddDataTypeChanged(dashboard)
     )
-
+    dashboard.ui.comboBox_library_browse.currentIndexChanged.connect(
+        lambda: LibraryTabSlots._slotLibraryBrowseChanged(dashboard)
+    )
+    
     # List Widget
     dashboard.ui.listWidget_library_gallery.currentItemChanged.connect(
         lambda: LibraryTabSlots._slotLibraryGalleryImageChanged(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_attacks.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseAttackChanged(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_attacks_modulation.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseAttackModulationChanged(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_sois.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseSOIsChanged(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_packet_types.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowsePacketTypesChanged(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_packet_types2.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowsePacketTypesFieldsChanged(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_statistics.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseStatisticsChanged(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_demod_fgs_modulation.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseDemodFGsModulationClicked(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_demod_fgs_hardware.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseDemodFGsHardwareClicked(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_demod_fgs.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseDemodFGsClicked(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_sois.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseSOIsClicked(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_packet_types.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowsePacketTypesClicked(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_modulation_types.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseModulationsClicked(dashboard)
-    )
-    dashboard.ui.listWidget_library_browse_attacks3.currentItemChanged.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseAttacksClicked(dashboard)
     )
 
     # Push Button
@@ -3617,7 +3602,6 @@ def connect_library_slots(dashboard: Dashboard):
     dashboard.ui.pushButton_library_pd_browse.clicked.connect(
         lambda: LibraryTabSlots._slotLibraryAddBrowseClicked(dashboard)
     )
-
     dashboard.ui.pushButton_library_pd_current_soi.clicked.connect(
         lambda: LibraryTabSlots._slotLibraryAddCurrentSOI_Clicked(dashboard)
     )
@@ -3640,23 +3624,11 @@ def connect_library_slots(dashboard: Dashboard):
     dashboard.ui.pushButton_library_pd_add_to_library.clicked.connect(
         lambda: LibraryTabSlots._slotLibraryAddAddToLibrary_Clicked(dashboard)
     )
-    dashboard.ui.pushButton_library_remove_protocol.clicked.connect(
-        lambda: LibraryTabSlots._slotLibraryRemoveProtocolClicked(dashboard)
+    dashboard.ui.pushButton_library_browse_pgadmin4.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryBrowsePgAdmin4_Clicked(dashboard)
     )
-    dashboard.ui.pushButton_library_browse_remove_demod_fg.clicked.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseRemoveDemodFG_Clicked(dashboard)
-    )
-    dashboard.ui.pushButton_library_browse_remove_soi.clicked.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseRemoveSOI_Clicked(dashboard)
-    )
-    dashboard.ui.pushButton_library_browse_remove_packet_type.clicked.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseRemovePacketTypeClicked(dashboard)
-    )
-    dashboard.ui.pushButton_library_browse_remove_modulation.clicked.connect(
-        lambda: LibraryTabSlots._slotLibraryBrowseRemoveModulationClicked(dashboard)
-    )
-    dashboard.ui.pushButton_library_attacks_remove.clicked.connect(
-        lambda: LibraryTabSlots._slotLibraryRemoveAttacksRemoveClicked(dashboard)
+    dashboard.ui.pushButton_library_browse_delete_row.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryBrowseDeleteRowClicked(dashboard)
     )
 
     # Radio Button

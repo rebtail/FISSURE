@@ -830,6 +830,7 @@
      <addaction name="menuQtDesigner"/>
      <addaction name="actionSystemback"/>
      <addaction name="actionwl_color_picker"/>
+     <addaction name="actionpgAdmin"/>
     </widget>
     <widget class="QMenu" name="menuWeather">
      <property name="title">
@@ -837,6 +838,7 @@
      </property>
      <addaction name="actionwttr_in"/>
      <addaction name="actionOpen_weather"/>
+     <addaction name="actionFIRMS"/>
     </widget>
     <widget class="QMenu" name="menuRailway">
      <property name="title">
@@ -2934,6 +2936,16 @@
   <action name="actionGraphing_Calculator">
    <property name="text">
     <string>Graphing Calculator</string>
+   </property>
+  </action>
+  <action name="actionpgAdmin">
+   <property name="text">
+    <string>pgAdmin 4</string>
+   </property>
+  </action>
+  <action name="actionFIRMS">
+   <property name="text">
+    <string>FIRMS</string>
    </property>
   </action>
  </widget>

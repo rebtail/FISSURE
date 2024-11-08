@@ -9,6 +9,218 @@ import subprocess
 import qasync
 from ..UI_Components import TriggersDialog
 from fissure.Dashboard.UI_Components.Qt5 import MyMessageBox
+import struct
+import matplotlib.pyplot as plt
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotArchiveDownloadPreviewClicked(dashboard: QtCore.QObject):
+    """ 
+    Plots a zoomed out version of the downloaded file.
+    """
+    # Ignore Folders
+    get_index = dashboard.ui.listView_archive.currentIndex()
+    if dashboard.ui.listView_archive.model().isDir(get_index) == True:
+        return
+
+    # Get the Folder and File
+    get_file = str(dashboard.ui.listView_archive.currentIndex().data())
+    get_folder = str(dashboard.ui.listView_archive.model().filePath(dashboard.ui.listView_archive.currentIndex())).rsplit('/',1)[0]
+    get_filepath = os.path.join(get_folder, get_file)
+
+    # Ignore No Selection
+    if (len(get_folder) == 0) or (len(get_file) == 0):
+        return
+
+    # Get the Data Type and File Size
+    get_type = str(dashboard.ui.comboBox_archive_downloaded_data_type.currentText())
+    try:
+        number_of_bytes = os.path.getsize(get_filepath)
+    except:
+        number_of_bytes = -1
+        
+    # Number of Samples
+    if number_of_bytes > 0:            
+        if get_type == "Complex Float 32":
+            num_samples = int(number_of_bytes/8)
+        elif get_type == "Float/Float 32":
+            num_samples = int(number_of_bytes/4)
+        elif get_type == "Short/Int 16":
+            num_samples = int(number_of_bytes/2)
+        elif get_type == "Int/Int 32":
+            num_samples = int(number_of_bytes/4)
+        elif get_type == "Byte/Int 8":
+            num_samples = int(number_of_bytes/1)
+        elif get_type == "Complex Int 16":
+            num_samples = int(number_of_bytes/4)
+        elif get_type == "Complex Int 8":
+            num_samples = int(number_of_bytes/2)
+        elif get_type == "Complex Float 64":
+            num_samples = int(number_of_bytes/16)
+        elif get_type == "Complex Int 64":
+            num_samples = int(number_of_bytes/16)
+    
+    # File with Zero Bytes
+    if number_of_bytes <= 0:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage("File is empty")
+
+    # Skip Bytes if File is Too Large        
+    else:            
+        # Get the Number of Samples
+        start_sample = 1
+    
+        # Get the Size of Each Sample in Bytes   
+        complex_multiple = 1   
+        if get_type == "Complex Float 32":
+            sample_size = 4
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples               
+        elif get_type == "Float/Float 32":
+            sample_size = 4
+        elif get_type == "Short/Int 16":
+            sample_size = 2
+        elif get_type == "Int/Int 32":
+            sample_size = 4
+        elif get_type == "Byte/Int 8":
+            sample_size = 1
+        elif get_type == "Complex Int 16":
+            sample_size = 2
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples                  
+        elif get_type == "Complex Int 8":
+            sample_size = 1
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples   
+        elif get_type == "Complex Float 64":
+            sample_size = 8
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples 
+        elif get_type == "Complex Int 64":
+            sample_size = 8
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples 
+                        
+        # Read the Data 
+        plot_data = b''
+        file = open(get_filepath,"rb")                          # Open the file
+        try:
+            if "Complex" in get_type:
+                starting_byte = 2*(start_sample-1) * sample_size
+            else:
+                starting_byte = (start_sample-1) * sample_size
+                
+            # No Skip
+            if number_of_bytes <= 400000:                   
+                skip = 1
+                file.seek(starting_byte)
+                plot_data = file.read(num_samples * sample_size)    # Read the right number of bytes
+                
+            # Skip
+            else:
+                # Every 10th Sample
+                if number_of_bytes > 400000 and number_of_bytes <= 4000000:
+                    skip = 10
+                    
+                # Every 100th Sample
+                elif number_of_bytes > 4000000 and number_of_bytes <= 40000000:
+                    skip = 100
+                    
+                # Every 1000th Sample
+                elif number_of_bytes > 40000000 and number_of_bytes <= 400000000:
+                    skip = 1000
+                    
+                # Every 10000th Sample
+                elif number_of_bytes > 400000000 and number_of_bytes <= 4000000000:
+                    skip = 10000
+                    
+                # Every 100000th Sample
+                elif number_of_bytes > 4000000000 and number_of_bytes <= 40000000000:
+                    skip = 100000
+                    
+                # Skip 1000000
+                else:
+                    skip = 1000000
+                
+                # Read
+                for n in range(starting_byte,number_of_bytes,(sample_size*skip*complex_multiple)):
+                    file.seek(n)
+                    plot_data = plot_data + file.read(sample_size)
+                    if "Complex" in get_type:
+                        plot_data = plot_data + file.read(sample_size)
+
+        except:
+            # Close the File
+            file.close() 
+        
+        # Close the File
+        file.close()         
+                            
+        # Format the Data
+        if get_type == "Complex Float 32":
+            #plot_data_formatted = struct.unpack(num_samples/skip*'f', plot_data)
+            plot_data_formatted = struct.unpack(int(len(plot_data)/4)*'f', plot_data)
+        elif get_type == "Float/Float 32":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/4)*'f', plot_data)
+        elif get_type == "Short/Int 16":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/2)*'h', plot_data)
+        elif get_type == "Int/Int 32":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/4)*'i', plot_data)
+        elif get_type == "Byte/Int 8":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/1)*'b', plot_data)
+        elif get_type == "Complex Int 16":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/2)*'h', plot_data)
+        elif get_type == "Complex Int 8":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/1)*'b', plot_data)
+        elif get_type == "Complex Float 64":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/8)*'d', plot_data)
+        elif get_type == "Complex Int 64":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/8)*'l', plot_data)
+        
+        # Plot
+        plt.ion()
+        plt.close(1) 
+        if "Complex" in get_type:                    
+            # Plot
+            plt.plot(range(1,len(plot_data_formatted[::2])+1),plot_data_formatted[::2],'b',linewidth=1,zorder=2)
+            plt.plot(range(1,len(plot_data_formatted[::2])+1),plot_data_formatted[1::2],'r',linewidth=1,zorder=2)
+            plt.show()
+        else:
+            plt.plot(range(1,len(plot_data_formatted)+1),plot_data_formatted,'b',linewidth=1,zorder=2)
+            plt.show()
+            
+        # Axes Labels
+        if skip == 1:
+            plt.xlabel('Samples') 
+            plt.ylabel('Amplitude (LSB)') 
+        else:
+            plt.xlabel('Samples/' + str(skip)) 
+            plt.ylabel('Amplitude (LSB)')
+
+        plt.ioff()  # Needed for 22.04, causes warning in 20.04
+        plt.show()  # Needed for 22.04, causes warning in 20.04
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotArchiveDownloadRenameClicked(dashboard: QtCore.QObject):
+    """ 
+    Renames the selected file or folder in the Archive Downloaded listview.
+    """
+    # Get the Folder and File or Folder and Folder
+    get_file = str(dashboard.ui.listView_archive.currentIndex().data())
+    get_folder = str(dashboard.ui.listView_archive.model().filePath(dashboard.ui.listView_archive.currentIndex())).rsplit('/',1)[0]
+    get_filepath = os.path.join(get_folder, get_file)
+
+    # Ignore No Selection
+    if (len(get_folder) == 0) or (len(get_file) == 0):
+        return
+
+    # Open the GUI
+    text, ok = QtWidgets.QInputDialog.getText(dashboard, 'Rename', 'Enter new name:', QtWidgets.QLineEdit.Normal,get_file)
+
+    # Ok Clicked
+    if ok:
+        os.rename(get_filepath, os.path.join(get_folder, text))
+
 
 @QtCore.pyqtSlot(QtCore.QObject)
 def _slotArchiveDownloadRefreshClicked(dashboard: QtCore.QObject):
@@ -225,24 +437,24 @@ def _slotArchiveReplayAddClicked(dashboard: QtCore.QObject):
     get_archive_file = str(dashboard.ui.listView_archive.currentIndex().data())
     get_archive_folder = str(dashboard.ui.listView_archive.model().filePath(dashboard.ui.listView_archive.currentIndex())).rsplit('/',1)[0] + '/'
 
-    get_archives = [archive for archive in dashboard.backend.library['Archive']['File']]
+    get_archives = fissure.utils.library.getArchiveFavorites(dashboard.backend.library)
     
     get_hardware_type = str(dashboard.ui.comboBox_archive_replay_hardware.currentText()).split(' - ')[0]
 
     for n in range(0,len(get_archives)):
         # Get File Info
-        get_file = str(get_archives[n])
+        get_file = str(get_archives[n][1])
         if get_archive_file == get_file:
             # Archive Lookup
-            get_protocol = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Protocol'])
-            #get_date = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Date'])
-            get_format = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Format'])
-            get_sample_rate = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Sample Rate'])
-            get_tuned_frequency = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Tuned Frequency'])
-            #get_samples = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Samples'])
-            #get_size = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Size'])
-            get_modulation = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Modulation'])
-            #get_notes = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Notes'])
+            get_protocol = str(get_archives[n][6])
+            #get_date = str(get_archives[n][2])
+            get_format = str(get_archives[n][3])
+            get_sample_rate = str(get_archives[n][7])
+            get_tuned_frequency = str(get_archives[n][10])
+            #get_samples = str(get_archives[n][8])
+            #get_size = str(get_archives[n][9])
+            get_modulation = str(get_archives[n][4])
+            #get_notes = str(get_archives[n][5])
 
             # Set the Value in the Table
             dashboard.ui.tableWidget_archive_replay.setRowCount(dashboard.ui.tableWidget_archive_replay.rowCount()+1)
@@ -547,16 +759,16 @@ def _slotArchiveDatasetsAddClicked(dashboard: QtCore.QObject, filepath=None):
         get_archive_file = str(filepath).rsplit("/",1)[1]
         get_archive_folder = str(filepath).rsplit("/",1)[0] + '/'
 
-    get_archives = [archive for archive in dashboard.backend.library['Archive']['File']]
+    get_archives = fissure.utils.library.getArchiveFavorites(dashboard.backend.library)
 
     for n in range(0,len(get_archives)):
         # Get File Info
-        get_file = str(get_archives[n])
+        get_file = str(get_archives[n][1])
         if get_archive_file == get_file:
             # Archive Lookup
-            get_truth = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Protocol'])
-            get_sample_rate = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Sample Rate'])
-            get_tuned_frequency = str(dashboard.backend.library['Archive']['File'][get_archives[n]]['Tuned Frequency'])
+            get_truth = str(get_archives[n][6])
+            get_sample_rate = str(get_archives[n][7])
+            get_tuned_frequency = str(get_archives[n][10])
 
             # Set the Value in the Table
             dashboard.ui.tableWidget_archive_datasets.setRowCount(dashboard.ui.tableWidget_archive_datasets.rowCount()+1)
@@ -714,37 +926,42 @@ def _slotArchiveDownloadFolderClicked(dashboard: QtCore.QObject):
 
 @QtCore.pyqtSlot(QtCore.QObject)
 def _slotArchiveDownloadDeleteClicked(dashboard: QtCore.QObject):
-    """ 
-    Deletes an IQ file from the Archive downloaded list.
     """
-    # Get Highlighted File from Listbox
+    Deletes a file or folder from the Archive list and reselects the next or previous item.
+    """
+    # Get the currently selected index and the parent directory
     get_index = dashboard.ui.listView_archive.currentIndex()
     delete_filepath = str(dashboard.ui.listView_archive.model().filePath(get_index))
-    if len(delete_filepath) == 0:
+    if not delete_filepath:
         return
 
-    # Delete Folder
-    if dashboard.ui.listView_archive.model().isDir(get_index) == True:
-        # DotDot
-        if delete_filepath[-2:] == '..':
-            return
+    model = dashboard.ui.listView_archive.model()
+    parent_index = get_index.parent()
+    row_count = model.rowCount(parent_index)
 
-        # Folder
-        else:
-            # Yes/No Dialog
-            qm = QtWidgets.QMessageBox
-            ret = qm.question(dashboard,'', "Delete this folder?", qm.Yes | qm.No)
-            if ret == qm.Yes:
-                os.system('rm -Rf "' + delete_filepath + '"')
-            else:
-                return
-
-    # Delete File
+    # Determine next or previous item to select after deletion
+    if get_index.row() < row_count - 1:
+        next_index = model.index(get_index.row() + 1, 0, parent_index)
+    elif get_index.row() > 0:
+        next_index = model.index(get_index.row() - 1, 0, parent_index)
     else:
-        os.system('rm "' + delete_filepath + '"')
+        next_index = parent_index  # No siblings, fall back to parent directory
 
-    # Refresh
-    _slotArchiveDownloadRefreshClicked(dashboard)
+    # Confirm deletion for files and folders
+    qm = QtWidgets.QMessageBox
+    item_type = "folder" if model.isDir(get_index) else "file"
+    ret = qm.question(dashboard, '', f"Delete this {item_type}?", qm.Yes | qm.No)
+
+    if ret == qm.Yes:
+        # Delete the folder or file
+        if model.isDir(get_index) and not delete_filepath.endswith('..'):
+            os.system(f'rm -Rf "{delete_filepath}"')  # Folder
+        elif not model.isDir(get_index):
+            os.system(f'rm "{delete_filepath}"')  # File
+
+        # Directly set selection to the next item without refreshing
+        if next_index.isValid():
+            dashboard.ui.listView_archive.setCurrentIndex(next_index)
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -763,7 +980,6 @@ def _slotArchiveDownloadClicked(dashboard: QtCore.QObject):
 
         # Download
         os.system('wget -P "' + get_folder + '/"' + ' https://fissure.ainfosec.com/' + get_file)
-        _slotArchiveDownloadRefreshClicked(dashboard)
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -784,27 +1000,27 @@ def _slotArchiveDownloadCollectionClicked(dashboard: QtCore.QObject):
     parent1_data = dashboard.ui.treeView_archive_download_collection.model().data(parent1_index)
     parent2_data = dashboard.ui.treeView_archive_download_collection.model().data(parent2_index)
 
-    # Assemble Filepath
+    # Use None instead of Notes
     if parent1_data == "Notes":
-        get_filepath = dashboard.backend.library['Archive']['Collection'][item_data]['Filepath']
-    elif parent2_data == "Notes":
-        if '.sigmf-data' in item_data:
-            get_filepath = dashboard.backend.library['Archive']['Collection'][parent1_data]['Filepath'].replace('.tar','') + '/' + item_data
-        else:
-            get_filepath = dashboard.backend.library['Archive']['Collection'][parent1_data]['Filepath'].replace('.tar','') + '/' + item_data + '.tar'
-    else:
-        get_filepath = dashboard.backend.library['Archive']['Collection'][parent2_data]['Filepath'].replace('.tar','') + '/' + parent1_data + '/' + item_data
+        parent1_data = None
+    if parent2_data == "Notes":
+        parent2_data = None
+
+    # Assemble Filepath
+    get_filepath = fissure.utils.library.getArchiveCollectionFilepath(dashboard.backend.library, item_data, parent1_data, parent2_data)
 
     # Download and Unzip
-    get_folder = str(dashboard.ui.listView_archive.model().rootPath())
-    if get_filepath[-4:] == '.tar':
-        os.system('wget https://fissure.ainfosec.com' + get_filepath + ' -O - | tar -x -C "' + get_folder + '/"')
-    elif get_filepath[-11:] == '.sigmf-data':
-        os.system('wget https://fissure.ainfosec.com' + get_filepath + ' -P "' + get_folder + '/"')
-        os.system('wget https://fissure.ainfosec.com' + get_filepath.replace('.sigmf-data','.sigmf-meta') + ' -P "' + get_folder + '/"')
+    if get_filepath == None:
+        dashboard.logger.error("Invalid filepath format. File not downloaded.")
     else:
-        os.system('wget https://fissure.ainfosec.com' + get_filepath + ' -P "' + get_folder + '/"')
-    _slotArchiveDownloadRefreshClicked(dashboard)
+        get_folder = str(dashboard.ui.listView_archive.model().rootPath())
+        if get_filepath[-4:] == '.tar':
+            os.system('wget https://fissure.ainfosec.com' + get_filepath + ' -O - | tar -x -C "' + get_folder + '/"')
+        elif get_filepath[-11:] == '.sigmf-data':
+            os.system('wget https://fissure.ainfosec.com' + get_filepath + ' -P "' + get_folder + '/"')
+            os.system('wget https://fissure.ainfosec.com' + get_filepath.replace('.sigmf-data','.sigmf-meta') + ' -P "' + get_folder + '/"')
+        else:
+            os.system('wget https://fissure.ainfosec.com' + get_filepath + ' -P "' + get_folder + '/"')
 
 
 @QtCore.pyqtSlot(QtCore.QObject)

@@ -13,6 +13,34 @@ import asyncio
 import qasync
 
 
+async def async_save_file_dialog(parent, directory, default_suffix, name_filter):
+    """
+    Asynchronous QFileDialog for saving a file, used to select a save location without blocking the event loop.
+    """
+    dialog = QtWidgets.QFileDialog(parent)
+    dialog.setDirectory(directory)
+    dialog.setDefaultSuffix(default_suffix)
+    dialog.setNameFilters([name_filter])
+    dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
+    dialog.setFilter(dialog.filter() | QtCore.QDir.Hidden)
+
+    loop = asyncio.get_event_loop()
+    future = loop.create_future()
+
+    def on_finished():
+        if dialog.result() == QtWidgets.QDialog.Accepted:
+            future.set_result(dialog.selectedFiles()[0])
+        else:
+            future.set_result("")
+
+    dialog.finished.connect(on_finished)
+    dialog.show()
+
+    await future
+
+    return future.result()
+
+
 def errorMessage(message_text):
     """
     Creates a popup window with an error message for synchronous functions.

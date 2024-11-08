@@ -165,55 +165,6 @@ def zmq_cleanup():  # pragma: no cover
         __vars.zmq_ctx = None
 
 
-def load_library(os_info: str) -> Optional[Dict]:
-    """
-    Loads the library.yaml file for the operating system. Libraries will be combined into a shared database in the future.
-
-    :param os_info: result of get_os_info()
-    :type os_info: str
-    :return: dictionary representation of settings from the YAML file
-    :rtype: Optional[Dict]
-    """
-    # Choose File Based on Operating System
-    if any(keyword == os_info for keyword in OS_3_8_KEYWORDS):
-        library_file = "library_3_8.yaml"
-    elif any(keyword == os_info for keyword in OS_3_10_KEYWORDS):
-        library_file = "library_3_10.yaml"
-    else:
-        logger: logging.Logger = logging.getLogger("fissure")
-        logger.warning("Operating system not detected while loading library. Loading GNU Radio 3.10 library.")
-        library_file = "library_3_10.yaml"
-
-    # Load the Library
-    settings = None
-    with open(os.path.join(YAML_DIR, library_file), "r") as yaml_file:
-        settings = yaml.load(yaml_file, yaml.FullLoader)
-    return settings
-
-
-def save_library(library_dict: Dict, os_info: str):
-    """
-    Saves the library.yaml file for the operating system. Libraries will be combined into a shared database in the future.
-    :param library_dict: library dictionary to save to file
-    :type library_dict: Dict
-    :param os_info: result of get_os_info()
-    :type os_info: str
-    """
-    # Choose File Based on Operating System
-    if any(keyword == os_info for keyword in OS_3_8_KEYWORDS):
-        library_file = "library_3_8.yaml"
-    elif any(keyword == os_info for keyword in OS_3_10_KEYWORDS):
-        library_file = "library_3_10.yaml"
-    else:
-        logger: logging.Logger = logging.getLogger("fissure")
-        logger.warning("Operating system not detected while saving library. Saving to GNU Radio 3.10 library.")
-        library_file = "library_3_10.yaml"
-
-    # Save the Library
-    stream = open(os.path.join(YAML_DIR, library_file), "w")
-    yaml.dump(library_dict, stream, default_flow_style=False, indent=5)
-
-
 def load_yaml(filename: str) -> Optional[Dict]:
     """
     Loads the settings from a YAML file and stores them in a dictionary
@@ -419,3 +370,15 @@ def updateCRC(crc_poly, crc_acc, crc_input, crc_length):
             crc_acc = (crc_acc >> 1) ^ (crc_poly & mask)
 
     return crc_acc
+
+
+def get_library_version():
+    """
+    Returns the library version for flow graphs and scripts stored in the database based on operating system.
+    """
+    # Return Value by Operating System
+    os_info = get_os_info()
+    if os_info in OS_3_8_KEYWORDS:
+        return "maint-3.8"
+    elif os_info in OS_3_10_KEYWORDS:
+        return "maint-3.10"

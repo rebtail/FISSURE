@@ -58,13 +58,13 @@ def _slotPacketSubcategory(dashboard: QtCore.QObject):
     try:
         # Fields
         dashboard.ui.tableWidget1_attack_packet_editor.clearContents()
-        fields = fissure.utils.library.getFields(dashboard.backend.library, current_protocol_key, current_subcategory)
-        dashboard.ui.tableWidget1_attack_packet_editor.setRowCount(len(fields))
-        dashboard.ui.tableWidget1_attack_packet_editor.setVerticalHeaderLabels(fields)
+        field_names = fissure.utils.library.getFields(dashboard.backend.library, current_protocol_key, current_subcategory)
+        dashboard.ui.tableWidget1_attack_packet_editor.setRowCount(len(field_names))
+        dashboard.ui.tableWidget1_attack_packet_editor.setVerticalHeaderLabels(field_names)
 
         # Lengths
-        for n in range(0,len(fields)):
-            get_length = dashboard.backend.library["Protocols"][current_protocol_key]['Packet Types'][current_subcategory]['Fields'][fields[n]]['Length']
+        for n in range(0,len(field_names)):
+            get_length = fissure.utils.library.getFieldData(dashboard.backend.library, current_protocol_key, current_subcategory, field_names[n])["Length"]
             length_item = QtWidgets.QTableWidgetItem(str(get_length))
             length_item.setTextAlignment(QtCore.Qt.AlignCenter)
             dashboard.ui.tableWidget1_attack_packet_editor.setItem(n,3,length_item)
@@ -131,12 +131,11 @@ def _slotPacketRestoreDefaultsClicked(dashboard: QtCore.QObject):
     dashboard.ui.tableWidget1_attack_packet_editor.clearContents()
 
     # Load the Default Fields and Data
-    fields = fissure.utils.library.getFields(dashboard.backend.library,current_protocol_key,current_subcategory_key)
-    default_field_data = fissure.utils.library.getDefaults(dashboard.backend.library,current_protocol_key,current_subcategory_key)
+    field_names = fissure.utils.library.getFields(dashboard.backend.library,current_protocol_key,current_subcategory_key)
 
-    for n in range(0,len(fields)):
+    for n in range(0,len(field_names)):
         # Length Items
-        get_length = dashboard.backend.library["Protocols"][current_protocol_key]['Packet Types'][current_subcategory_key]['Fields'][fields[n]]['Length']
+        get_length = fissure.utils.library.getFieldData(dashboard.backend.library, current_protocol_key, current_subcategory, field_names[n])["Length"]
         length_item = QtWidgets.QTableWidgetItem(str(get_length))
         length_item.setTextAlignment(QtCore.Qt.AlignCenter)
         length_item.setFlags(length_item.flags() & ~QtCore.Qt.ItemIsEditable)
@@ -166,11 +165,12 @@ def _slotPacketRestoreDefaultsClicked(dashboard: QtCore.QObject):
                 new_combobox1.setCurrentIndex(1)
 
         # Format
+        default_field_data = fissure.utils.library.getFieldData(dashboard.backend.library, current_protocol_key, current_subcategory, field_names[n])["Default Value"]
         new_combobox1.setFixedSize(75,24)
         new_combobox1.setCurrentIndex(0)
         new_combobox1.currentIndexChanged.connect(lambda: _slotPacketBinaryHex(dashboard, dashboard.ui.tableWidget1_attack_packet_editor))
         new_combobox1.setProperty("row", n)
-        dashboard.ui.tableWidget1_attack_packet_editor.setItem(n,1,QtWidgets.QTableWidgetItem(str(default_field_data[n])))
+        dashboard.ui.tableWidget1_attack_packet_editor.setItem(n,1,QtWidgets.QTableWidgetItem(str(default_field_data)))
 
     # Calculate the Lengths
     current_length = 0
@@ -1619,9 +1619,9 @@ def _slotAttackProtocols(dashboard: QtCore.QObject):
         if current_packet != "None":
             dashboard.ui.tableWidget_attack_fuzzing_data_field.setRowCount(len(fissure.utils.library.getFields(dashboard.backend.library,current_protocol,current_packet)))
             dashboard.ui.tableWidget_attack_fuzzing_data_field.clear()
-            fields =  fissure.utils.library.getFields(dashboard.backend.library,current_protocol,current_packet)
-            for n in range(0,len(fields)):
-                new_item = QtWidgets.QTableWidgetItem(fields[n])
+            field_names =  fissure.utils.library.getFields(dashboard.backend.library,current_protocol,current_packet)
+            for n in range(0,len(field_names)):
+                new_item = QtWidgets.QTableWidgetItem(field_names[n])
                 dashboard.ui.tableWidget_attack_fuzzing_data_field.setVerticalHeaderItem(n,new_item)
 
         # Update the Packet Editor Table Headers  # Update for Different Packet Types
@@ -1669,34 +1669,14 @@ def _slotAttackProtocols(dashboard: QtCore.QObject):
         dashboard.ui.tableWidget_attack_fuzzing_data_field.resizeRowsToContents()
 
         # Populate the ComboBox with the Associated Modulation Types
+        dashboard.ui.comboBox_attack_modulation.blockSignals(True)
         dashboard.ui.comboBox_attack_modulation.clear()
         modulation_types = fissure.utils.library.getModulations(dashboard.backend.library, current_protocol)
         for n in modulation_types:
             dashboard.ui.comboBox_attack_modulation.addItem(n)
         current_modulation = str(dashboard.ui.comboBox_attack_modulation.currentText())
-
-        # Enable the Selections
-        get_attacks = dashboard.backend.library["Protocols"][current_protocol]["Attacks"]
-        get_hardware = str(dashboard.ui.comboBox_attack_hardware.currentText())
-        if ' - ' in get_hardware:
-            get_hardware = str(dashboard.ui.comboBox_attack_hardware.currentText()).split(' - ')[0]
-        for n in get_attacks:
-            if current_modulation in dashboard.backend.library["Protocols"][current_protocol]["Attacks"][n]:
-                if get_hardware in dashboard.backend.library["Protocols"][current_protocol]["Attacks"][n][current_modulation]["Hardware"]:
-                    dashboard.ui.treeWidget_attack_attacks.findItems(n,QtCore.Qt.MatchExactly|QtCore.Qt.MatchRecursive,0)[0].setDisabled(False)
-                    dashboard.ui.treeWidget_attack_attacks.findItems(n,QtCore.Qt.MatchExactly|QtCore.Qt.MatchRecursive,0)[0].setHidden(False)
-                    enableAttackTreeParents(dashboard, n)
-
-        # Always Enabled
-        for n in ['Single-Stage', 'Multi-Stage', 'New Multi-Stage', 'Fuzzing', 'Variables']:
-            dashboard.ui.treeWidget_attack_attacks.findItems(n,QtCore.Qt.MatchExactly|QtCore.Qt.MatchRecursive,0)[0].setDisabled(False)
-            dashboard.ui.treeWidget_attack_attacks.findItems(n,QtCore.Qt.MatchExactly|QtCore.Qt.MatchRecursive,0)[0].setHidden(False)
-
-        # Expand the Tree Widget
-        dashboard.ui.treeWidget_attack_attacks.expandAll()
-
-        # Select the Top Item
-        dashboard.ui.treeWidget_attack_attacks.setCurrentItem(dashboard.ui.treeWidget_attack_attacks.topLevelItem(0))
+        dashboard.ui.comboBox_attack_modulation.blockSignals(False)
+        _slotAttackModulationChanged(dashboard)
 
     except:
         #No packet types!
@@ -1715,13 +1695,13 @@ def _slotAttackFuzzingSubcategory(dashboard: QtCore.QObject):
         try:
             # Fields
             dashboard.ui.tableWidget_attack_fuzzing_data_field.clearContents()
-            fields = fissure.utils.library.getFields(dashboard.backend.library, current_protocol_key, current_subcategory)
-            dashboard.ui.tableWidget_attack_fuzzing_data_field.setRowCount(len(fields))
-            dashboard.ui.tableWidget_attack_fuzzing_data_field.setVerticalHeaderLabels(fields)
+            field_names = fissure.utils.library.getFields(dashboard.backend.library, current_protocol_key, current_subcategory)
+            dashboard.ui.tableWidget_attack_fuzzing_data_field.setRowCount(len(field_names))
+            dashboard.ui.tableWidget_attack_fuzzing_data_field.setVerticalHeaderLabels(field_names)
 
             # Lengths
-            for n in range(0,len(fields)):
-                get_length = dashboard.backend.library["Protocols"][current_protocol_key]['Packet Types'][current_subcategory]['Fields'][fields[n]]['Length']
+            for n in range(0, len(field_names)):
+                get_length = fissure.utils.library.getFieldData(dashboard.backend.library, current_protocol_key, current_subcategory, field_names[n])["Length"]
                 length_item = QtWidgets.QTableWidgetItem(str(get_length))
                 length_item.setTextAlignment(QtCore.Qt.AlignCenter)
                 dashboard.ui.tableWidget_attack_fuzzing_data_field.setItem(n,7,length_item)
@@ -1822,17 +1802,18 @@ def _slotAttackModulationChanged(dashboard: QtCore.QObject):
                 iterator+=1
 
             # Enable the Selections
-            get_attacks = dashboard.backend.library["Protocols"][current_protocol]["Attacks"]
+            get_attack_rows = fissure.utils.library.getAttacks(dashboard.backend.library, current_protocol, fissure.utils.get_library_version())
             get_hardware = str(dashboard.ui.comboBox_attack_hardware.currentText())
             if ' - ' in get_hardware:
                 get_hardware = str(dashboard.ui.comboBox_attack_hardware.currentText()).split(' - ')[0]
 
-            for n in get_attacks:
-                if current_modulation in dashboard.backend.library["Protocols"][current_protocol]["Attacks"][n]:
-                    if get_hardware in dashboard.backend.library["Protocols"][current_protocol]["Attacks"][n][current_modulation]["Hardware"]:
-                        dashboard.ui.treeWidget_attack_attacks.findItems(n,QtCore.Qt.MatchExactly|QtCore.Qt.MatchRecursive,0)[0].setDisabled(False)
-                        dashboard.ui.treeWidget_attack_attacks.findItems(n,QtCore.Qt.MatchExactly|QtCore.Qt.MatchRecursive,0)[0].setHidden(False)
-                        enableAttackTreeParents(dashboard, n)
+            for n in range(0, len(get_attack_rows)):
+                if current_modulation == get_attack_rows[n][3]:
+                    if get_hardware == get_attack_rows[n][4]:
+                        tree_item_string = get_attack_rows[n][1] + " - " + get_attack_rows[n][2]  # protocol - attack_name
+                        dashboard.ui.treeWidget_attack_attacks.findItems(tree_item_string, QtCore.Qt.MatchExactly|QtCore.Qt.MatchRecursive,0)[0].setDisabled(False)
+                        dashboard.ui.treeWidget_attack_attacks.findItems(tree_item_string, QtCore.Qt.MatchExactly|QtCore.Qt.MatchRecursive,0)[0].setHidden(False)
+                        enableAttackTreeParents(dashboard, tree_item_string)
 
             # Always Enabled
             for n in ['Single-Stage', 'Multi-Stage', 'New Multi-Stage', 'Fuzzing', 'Variables']:
@@ -1858,18 +1839,33 @@ def enableAttackTreeParents(dashboard: QtCore.QObject, attack):
     """ 
     Finds and enables the parents of an attack in the attack tree widget. Not a slot.
     """
-    # Find the Parents
-    attack_index = -1
-    parents = []
-    for n in reversed(dashboard.backend.library['Attacks']['Single-Stage Attacks']):
-        if attack == n.split(',')[0]:
-            attack_index = int(n.split(',')[1])
-        if int(n.split(',')[1]) == (attack_index-1):
-            parents.append(n.split(',')[0])
-            attack_index = attack_index - 1
+    # Get All "attacks" Table Rows
+    get_single_stage_attacks = fissure.utils.library.getSingleStageAttacks(dashboard.backend.library, None)  # add a version
+
+    # Get Parent/Category Names
+    get_parents = []
+    category_names = fissure.utils.library.getAttackCategoryNames(dashboard.backend.library)
+    tree_root_reached = False
+    max_iterations = 10
+    counter = 0
+    while (tree_root_reached == False) and (counter < max_iterations):
+        for n in range(0, len(get_single_stage_attacks)):
+            attack_protocol = attack.split('-',1)[0].strip()
+            attack_name = attack.split('-',1)[-1].strip()
+            if (get_single_stage_attacks[n][1] == attack_protocol) and (get_single_stage_attacks[n][2] == attack_name):
+                category = get_single_stage_attacks[n][7]  # category_name
+                if category in category_names:
+                    get_parents.append(category)
+                    tree_root_reached = True 
+                    break
+                else:
+                    get_parents.append(category)
+                    break
+        counter = counter + 1
+    get_parents_unique = list(set(get_parents))
 
     # Enable the Parents
-    for p in parents:
+    for p in get_parents_unique:
         dashboard.ui.treeWidget_attack_attacks.findItems(p,QtCore.Qt.MatchExactly|QtCore.Qt.MatchRecursive,0)[0].setDisabled(False)
         dashboard.ui.treeWidget_attack_attacks.findItems(p,QtCore.Qt.MatchExactly|QtCore.Qt.MatchRecursive,0)[0].setHidden(False)
 
@@ -1899,12 +1895,11 @@ def _slotAttackFuzzingRestoreDefaultsClicked(dashboard: QtCore.QObject):
     dashboard.ui.tableWidget_attack_fuzzing_data_field.clearContents()
 
     # Load the Default Fields and Data
-    fields = fissure.utils.library.getFields(dashboard.backend.library,current_protocol_key,current_subcategory_key)
-    default_field_data = [dashboard.backend.library["Protocols"][current_protocol_key]['Packet Types'][current_subcategory_key]['Fields'][field]['Default Value'] for field in fields]
+    field_names = fissure.utils.library.getFields(dashboard.backend.library,current_protocol_key,current_subcategory_key)
 
-    for n in range(0,len(fields)):
+    for n in range(0,len(field_names)):
         # Length Items
-        get_length = dashboard.backend.library["Protocols"][current_protocol_key]['Packet Types'][current_subcategory_key]['Fields'][fields[n]]['Length']
+        get_length = fissure.utils.library.getFieldData(dashboard.backend.library, current_protocol_key, current_subcategory, field_names[n])["Length"]
         length_item = QtWidgets.QTableWidgetItem(str(get_length))
         length_item.setTextAlignment(QtCore.Qt.AlignCenter)
         length_item.setFlags(QtCore.Qt.ItemIsEnabled)
@@ -1915,6 +1910,7 @@ def _slotAttackFuzzingRestoreDefaultsClicked(dashboard: QtCore.QObject):
         dashboard.ui.tableWidget_attack_fuzzing_data_field.setItem(n,7,default_length_item)
 
         # Set Binary/Hex comboboxes
+        default_field_data = fissure.utils.library.getFieldData(dashboard.backend.library, current_protocol_key, current_subcategory, field_names[n])["Default Value"]
         new_combobox1 = QtWidgets.QComboBox(dashboard, objectName='comboBox2_')
         dashboard.ui.tableWidget_attack_fuzzing_data_field.setCellWidget(n,4,new_combobox1)
         new_combobox1.addItem("Binary")
@@ -1923,7 +1919,7 @@ def _slotAttackFuzzingRestoreDefaultsClicked(dashboard: QtCore.QObject):
         new_combobox1.setCurrentIndex(0)
         new_combobox1.currentIndexChanged.connect(lambda: _slotPacketBinaryHex(dashboard, dashboard.ui.tableWidget_attack_fuzzing_data_field))
         new_combobox1.setProperty("row", n)
-        dashboard.ui.tableWidget_attack_fuzzing_data_field.setItem(n,5,QtWidgets.QTableWidgetItem(str(default_field_data[n])))
+        dashboard.ui.tableWidget_attack_fuzzing_data_field.setItem(n,5,QtWidgets.QTableWidgetItem(str(default_field_data)))
         if get_length % 4 != 0:
             new_combobox1.setEnabled(False)
         else:
@@ -2107,9 +2103,9 @@ def _slotAttackMultiStageAdd(dashboard: QtCore.QObject):
 
     # Ignore Non-Single-Stage Attacks
     ignored_attacks = []
-    for n in dashboard.backend.library["Attacks"]["Multi-Stage Attacks"] + dashboard.backend.library["Attacks"]["Fuzzing Attacks"]:
+    for n in fissure.utils.library.getMultiStageAttackNames(dashboard.backend.library, None) + fissure.utils.library.getFuzzingAttackNames(dashboard.backend.library, None):
         ignored_attacks.append(n)
-    categories = ["Single-Stage", "Denial of Service", "Jamming", "Spoofing", "Sniffing/Snooping", "Probe Attacks", "File", "Installation of Malware", "Other"]  # Might need a way to detect categories
+    categories = fissure.utils.library.getAttackCategoryNames(dashboard.backend.library)
     ignored_attacks += categories
     if any(str(new_attack) in x for x in ignored_attacks):
         pass
@@ -2128,13 +2124,15 @@ def _slotAttackMultiStageAdd(dashboard: QtCore.QObject):
             dashboard.ui.tableWidget_attack_multi_stage_attacks.setItem(dashboard.ui.tableWidget_attack_multi_stage_attacks.rowCount()-1,0,attack_item)
 
             # Protocol
-            protocol_item = QtWidgets.QTableWidgetItem(dashboard.ui.comboBox_attack_protocols.currentText())
+            get_protocol = str(dashboard.ui.comboBox_attack_protocols.currentText())
+            protocol_item = QtWidgets.QTableWidgetItem(get_protocol)
             protocol_item.setTextAlignment(QtCore.Qt.AlignCenter)
             protocol_item.setFlags(protocol_item.flags() & ~QtCore.Qt.ItemIsEditable)
             dashboard.ui.tableWidget_attack_multi_stage_attacks.setItem(dashboard.ui.tableWidget_attack_multi_stage_attacks.rowCount()-1,1,protocol_item)
 
             # Modulation
-            modulation_item = QtWidgets.QTableWidgetItem(dashboard.ui.comboBox_attack_modulation.currentText())
+            get_modulation_type = str(dashboard.ui.comboBox_attack_modulation.currentText())
+            modulation_item = QtWidgets.QTableWidgetItem(get_modulation_type)
             modulation_item.setTextAlignment(QtCore.Qt.AlignCenter)
             modulation_item.setFlags(modulation_item.flags() & ~QtCore.Qt.ItemIsEditable)
             dashboard.ui.tableWidget_attack_multi_stage_attacks.setItem(dashboard.ui.tableWidget_attack_multi_stage_attacks.rowCount()-1,2,modulation_item)
@@ -2150,7 +2148,14 @@ def _slotAttackMultiStageAdd(dashboard: QtCore.QObject):
             dashboard.ui.tableWidget_attack_multi_stage_attacks.setItem(dashboard.ui.tableWidget_attack_multi_stage_attacks.rowCount()-1,3,hardware_item)
 
             # Type (Flow Graph or Python Script)
-            get_file_type = list(dashboard.backend.library["Protocols"][str(dashboard.ui.comboBox_attack_protocols.currentText())]["Attacks"][str(new_attack)][str(dashboard.ui.comboBox_attack_modulation.currentText())]["Hardware"][get_hardware].keys())[0]
+            get_file_type = fissure.utils.library.getAttackType(
+                dashboard.backend.library, 
+                get_protocol, 
+                new_attack, 
+                get_modulation_type, 
+                get_hardware,
+                fissure.utils.get_library_version()
+            )
             type_item = QtWidgets.QTableWidgetItem(get_file_type)
             type_item.setTextAlignment(QtCore.Qt.AlignCenter)
             type_item.setFlags(type_item.flags() & ~QtCore.Qt.ItemIsEditable)
@@ -2161,13 +2166,16 @@ def _slotAttackMultiStageAdd(dashboard: QtCore.QObject):
             duration_item.setTextAlignment(QtCore.Qt.AlignCenter)
             dashboard.ui.tableWidget_attack_multi_stage_attacks.setItem(dashboard.ui.tableWidget_attack_multi_stage_attacks.rowCount()-1,5,duration_item)
 
-            # Get Filename from the Library
-            fname = dashboard.backend.library["Protocols"][str(dashboard.ui.comboBox_attack_protocols.currentText())]["Attacks"][str(new_attack)][str(dashboard.ui.comboBox_attack_modulation.currentText())]["Hardware"][get_hardware][get_file_type]
-
-            # Get the Attack Filepath
+            # Filename
+            fname = fissure.utils.library.getAttackFilename(
+                dashboard.backend.library, 
+                get_protocol, 
+                new_attack, 
+                get_modulation_type, 
+                get_hardware,
+                fissure.utils.get_library_version()
+            )
             fname = os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "Single-Stage Flow Graphs", fname)
-
-            # Adjust Item
             filename_item = QtWidgets.QTableWidgetItem(fname)
             filename_item.setTextAlignment(QtCore.Qt.AlignCenter)
             filename_item.setFlags(filename_item.flags() & ~QtCore.Qt.ItemIsEditable)
@@ -4030,8 +4038,9 @@ def _slotAttackTemplatesDoubleClicked(dashboard: QtCore.QObject):
         # Determine if the Item is a Fuzzing Attack
         current_item = dashboard.ui.treeWidget_attack_attacks.currentItem()
         fuzzing_attack = False
-        for n in dashboard.backend.library['Attacks']['Fuzzing Attacks']:
-            if n.split(',')[0] == current_item.text(0):
+        get_fuzzing_attacks = fissure.utils.library.getFuzzingAttackNames(dashboard.backend.library, None)
+        for n in get_fuzzing_attacks:
+            if n == current_item.text(0):
                 _slotAttackLoadTemplateClicked(dashboard)
                 fuzzing_attack = True
                 break
@@ -4053,31 +4062,42 @@ def _slotAttackLoadTemplateClicked(dashboard: QtCore.QObject):
 
         # Get the Selected Item from the Tree Widget
         current_item = dashboard.ui.treeWidget_attack_attacks.currentItem()
+        get_attack = str(current_item.text(0))
+        get_protocol = str(dashboard.ui.comboBox_attack_protocols.currentText())
+        get_modulation_type = str(dashboard.ui.comboBox_attack_modulation.currentText())
 
         # Ignore "No Selection" and Expand Selected Categories
-        categories = ["Single-Stage", "Denial of Service", "Jamming", "Spoofing", "Sniffing/Snooping", "Probe Attacks", "Fuzzing", "File", "Installation of Malware", "Misuse of Resources",  "Other", "Multi-Stage"]
-        if any(x == current_item.text(0) for x in categories):
+        #categories = ["Single-Stage", "Denial of Service", "Jamming", "Spoofing", "Sniffing/Snooping", "Probe Attacks", "Fuzzing", "File", "Installation of Malware", "Misuse of Resources",  "Other", "Multi-Stage"]
+        categories = fissure.utils.library.getAttackCategoryNames(dashboard.backend.library)
+        categories.remove("New Multi-Stage")  # handled below
+        categories.remove("Variables")        # handled below
+        if any(x == get_attack for x in categories):
             #dashboard.ui.treeWidget_attack_attacks.expandItem(current_item)  # Disabled to allow double clicking
             pass
 
         # Not a Category
-        else:
+        else:            
             # Determine if the Item is a Single-Stage Attack
             single_stage_attack = False
-            for n in dashboard.backend.library['Attacks']['Single-Stage Attacks']:
-                if n.split(',')[0] == current_item.text(0):
+            get_single_stage_attack_names = fissure.utils.library.getSingleStageAttackNames(dashboard.backend.library, None)
+            for n in get_single_stage_attack_names:
+                if n == get_attack:
                     single_stage_attack = True
 
             # Determine if the Item is a Multi-Stage Attack
             multi_stage_attack = False
-            for n in dashboard.backend.library['Attacks']['Multi-Stage Attacks']:
-                if n.split(',')[0] == current_item.text(0):
+            get_multi_stage_attack_names = fissure.utils.library.getMultiStageAttackNames(dashboard.backend.library, None)
+            get_multi_stage_attack_names.append("New Multi-Stage")
+            for n in get_multi_stage_attack_names:
+                if n == get_attack:
                     multi_stage_attack = True
 
             # Determine if the Item is a Fuzzing Attack
             fuzzing_attack = False
-            for n in dashboard.backend.library['Attacks']['Fuzzing Attacks']:
-                if n.split(',')[0] == current_item.text(0):
+            get_fuzzing_attack_names = fissure.utils.library.getFuzzingAttackNames(dashboard.backend.library, None)
+            get_fuzzing_attack_names.append("Variables")
+            for n in get_fuzzing_attack_names:
+                if n == get_attack:
                     fuzzing_attack = True
 
             # Single-Stage Attack
@@ -4090,14 +4110,28 @@ def _slotAttackLoadTemplateClicked(dashboard: QtCore.QObject):
                 dashboard.ui.label2_selected_protocol.setText(dashboard.ui.comboBox_attack_protocols.currentText())
                 dashboard.ui.label2_selected_modulation.setText(dashboard.ui.comboBox_attack_modulation.currentText())
                 dashboard.ui.label2_selected_hardware.setText(dashboard.ui.comboBox_attack_hardware.currentText())
-                dashboard.ui.label1_selected_attack.setText(current_item.text(0))
+                dashboard.ui.label1_selected_attack.setText(get_attack)
 
                 # Get Filename from the Library
                 get_hardware = str(dashboard.ui.comboBox_attack_hardware.currentText())
                 if ' - ' in get_hardware:
                     get_hardware = get_hardware.split(' - ')[0]
-                get_file_type = list(dashboard.backend.library['Protocols'][str(dashboard.ui.comboBox_attack_protocols.currentText())]['Attacks'][str(current_item.text(0))][str(dashboard.ui.comboBox_attack_modulation.currentText())]['Hardware'][get_hardware].keys())[0]
-                fname = dashboard.backend.library['Protocols'][str(dashboard.ui.comboBox_attack_protocols.currentText())]['Attacks'][str(current_item.text(0))][str(dashboard.ui.comboBox_attack_modulation.currentText())]['Hardware'][get_hardware][get_file_type]
+                get_file_type = fissure.utils.library.getAttackType(
+                    dashboard.backend.library, 
+                    get_protocol, 
+                    get_attack, 
+                    get_modulation_type, 
+                    get_hardware,
+                    fissure.utils.get_library_version()
+                )
+                fname = fissure.utils.library.getAttackFilename(
+                    dashboard.backend.library, 
+                    get_protocol, 
+                    get_attack, 
+                    get_modulation_type, 
+                    get_hardware,
+                    fissure.utils.get_library_version()
+                )
 
                 # Update File Type Label
                 dashboard.ui.label2_attack_single_stage_file_type.setText(get_file_type)
@@ -4138,7 +4172,7 @@ def _slotAttackLoadTemplateClicked(dashboard: QtCore.QObject):
                 dashboard.ui.pushButton_attack_multi_stage_load.setEnabled(True)
 
                 # New Multi-Stage
-                if current_item.text(0) == "New Multi-Stage":
+                if get_attack == "New Multi-Stage":
                     pass
 
                 # Saved Multi-Stage Attack
@@ -4147,8 +4181,22 @@ def _slotAttackLoadTemplateClicked(dashboard: QtCore.QObject):
                     get_hardware = str(dashboard.ui.comboBox_attack_hardware.currentText())
                     if ' - ' in get_hardware:
                         get_hardware = get_hardware.split(' - ')[0]
-                    get_file_type = list(dashboard.backend.library["Protocols"][str(dashboard.ui.comboBox_attack_protocols.currentText())]["Attacks"][str(current_item.text(0))][str(dashboard.ui.comboBox_attack_modulation.currentText())]["Hardware"][get_hardware].keys())[0]
-                    fname = dashboard.backend.library["Protocols"][str(dashboard.ui.comboBox_attack_protocols.currentText())]["Attacks"][str(current_item.text(0))][str(dashboard.ui.comboBox_attack_modulation.currentText())]["Hardware"][get_hardware][get_file_type]
+                    get_file_type = fissure.utils.library.getAttackType(
+                        dashboard.backend.library, 
+                        get_protocol, 
+                        get_attack, 
+                        get_modulation_type, 
+                        get_hardware,
+                        fissure.utils.get_library_version()
+                    )
+                    fname = fissure.utils.library.getAttackFilename(
+                        dashboard.backend.library, 
+                        get_protocol, 
+                        get_attack, 
+                        get_modulation_type, 
+                        get_hardware,
+                        fissure.utils.get_library_version()
+                    )
                     filepath = os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "Single-Stage Flow Graphs", fname)
 
                     # Load Multi-Stage Attack
@@ -4158,7 +4206,7 @@ def _slotAttackLoadTemplateClicked(dashboard: QtCore.QObject):
             if fuzzing_attack == True:
 
                 # Fuzzing - Variables
-                if current_item.text(0) == "Variables":
+                if get_attack == "Variables":
                     dashboard.ui.tabWidget_attack_attack.setCurrentIndex(2)
                     dashboard.ui.tabWidget_attack_fuzzing.setCurrentIndex(0)
 
@@ -4173,7 +4221,7 @@ def _slotAttackLoadTemplateClicked(dashboard: QtCore.QObject):
                     # Update the "Selected" Labels
                     dashboard.ui.label2_attack_fuzzing_selected_protocol.setText(dashboard.ui.comboBox_attack_protocols.currentText())
                     dashboard.ui.label2_attack_fuzzing_selected_modulation.setText(dashboard.ui.comboBox_attack_modulation.currentText())
-                    dashboard.ui.label2_attack_fuzzing_selected_attack.setText(current_item.text(0))
+                    dashboard.ui.label2_attack_fuzzing_selected_attack.setText(get_attack)
 
                     # Switch to Variables Tab
                     dashboard.ui.stackedWidget_fuzzing.setCurrentIndex(1)
@@ -4188,7 +4236,7 @@ def _slotAttackLoadTemplateClicked(dashboard: QtCore.QObject):
                     dashboard.ui.pushButton_attack_fuzzing_start.setEnabled(False)
 
                 # Fuzzing - Fields
-                elif current_item.text(0).split(" - ")[1] == "Fields":
+                elif get_attack.split(" - ")[1] == "Fields":
                     dashboard.ui.tabWidget_attack_attack.setCurrentIndex(2)
                     dashboard.ui.stackedWidget_fuzzing.setCurrentIndex(0)
 
@@ -4210,15 +4258,29 @@ def _slotAttackLoadTemplateClicked(dashboard: QtCore.QObject):
                     # Update the "Selected" Labels
                     dashboard.ui.label2_attack_fuzzing_selected_protocol.setText(dashboard.ui.comboBox_attack_protocols.currentText())
                     dashboard.ui.label2_attack_fuzzing_selected_modulation.setText(dashboard.ui.comboBox_attack_modulation.currentText())
-                    dashboard.ui.label2_attack_fuzzing_selected_attack.setText(current_item.text(0))
+                    dashboard.ui.label2_attack_fuzzing_selected_attack.setText(get_attack)
 
                     # Get Filename from the Library
                     get_hardware = str(dashboard.ui.comboBox_attack_hardware.currentText())
                     if ' - ' in get_hardware:
                         get_hardware = get_hardware.split(' - ')[0]
-                    get_file_type = list(dashboard.backend.library["Protocols"][str(dashboard.ui.comboBox_attack_protocols.currentText())]["Attacks"][str(current_item.text(0))][str(dashboard.ui.comboBox_attack_modulation.currentText())]["Hardware"][get_hardware].keys())[0]
-                    fname = dashboard.backend.library["Protocols"][str(dashboard.ui.comboBox_attack_protocols.currentText())]["Attacks"][str(current_item.text(0))][str(dashboard.ui.comboBox_attack_modulation.currentText())]["Hardware"][get_hardware][get_file_type]
-
+                    get_file_type = fissure.utils.library.getAttackType(
+                        dashboard.backend.library, 
+                        get_protocol, 
+                        get_attack, 
+                        get_modulation_type, 
+                        get_hardware,
+                        fissure.utils.get_library_version()
+                    )
+                    fname = fissure.utils.library.getAttackFilename(
+                        dashboard.backend.library, 
+                        get_protocol, 
+                        get_attack, 
+                        get_modulation_type, 
+                        get_hardware,
+                        fissure.utils.get_library_version()
+                    )
+                    
                     # Load the File
                     _slotAttackLoadFromLibraryClicked(dashboard, None, fname)
 

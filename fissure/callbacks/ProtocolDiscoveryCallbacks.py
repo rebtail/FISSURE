@@ -9,6 +9,17 @@ import os
 
 
 # ########################## From HIPRFISR ###############################
+
+
+async def retrieveDatabaseCacheReturnPD(component: object, database_return={}):
+    """
+    Save the database cache return to the backend library variable.
+    """
+    # Save
+    component.library = database_return
+    component.logger.info("Updated Protocol Discovery database cache from HIPRFISR database")
+
+
 async def startPD(component: object, sensor_node_id=0):
     """
     Starts protocol discovery and bit listener.
@@ -71,14 +82,6 @@ async def searchLibrary(component: object, soi_data="", field_data=""):
     """
     loop = asyncio.get_event_loop()
     loop.run_in_executor(None, component.searchSOIsAndFields, soi_data, field_data)
-
-
-async def setFullLibrary(component: object):
-    """
-    Reloads the FISSURE library after an update.
-    """
-    # Reload the Library
-    component.pd_library = fissure.utils.load_library(component.os_info)
 
 
 async def sliceByPreamble(component: object, preamble="", first_n=0, estimated_length=0):

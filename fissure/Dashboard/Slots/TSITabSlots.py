@@ -854,32 +854,42 @@ def _slotTSI_ConditionerSettingsIsolationCategoryChanged(dashboard: QtCore.QObje
     """ 
     Changes the isolation method options.
     """
+    # Get Category
+    get_category = dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.currentText()
+    
+    # Get Methods
+    get_methods = fissure.utils.library.getConditionerIsolationMethod(
+        dashboard.backend.library, 
+        get_category, 
+        fissure.utils.get_library_version()
+    )
+
     # Energy - Burst Tagger
-    if dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.currentText() == "Energy - Burst Tagger":
+    if get_category == "Energy - Burst Tagger":
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
-        methods = ['Normal','Normal Decay','Power Squelch','Lowpass','Power Squelch then Lowpass','Bandpass','Strongest Frequency then Bandpass']
-        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.addItems(methods)
+        #methods = ['Normal','Normal Decay','Power Squelch','Lowpass','Power Squelch then Lowpass','Bandpass','Strongest Frequency then Bandpass']
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.addItems(get_methods)
     
     # Energy - Imagery
-    elif dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.currentText() == "Energy - Imagery":
+    elif get_category == "Energy - Imagery":
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
         methods = ['None']
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.addItems(methods)
     
     # Eigenvalue
-    elif dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.currentText() == "Eigenvalue":
+    elif get_category == "Eigenvalue":
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
         methods = ['None']
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.addItems(methods)
     
     # Matched Filter
-    elif dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.currentText() == "Matched Filter":
+    elif get_category == "Matched Filter":
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
         methods = ['None']
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.addItems(methods)
     
     # Cyclostationary
-    elif dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.currentText() == "Cyclostationary":
+    elif get_category == "Cyclostationary":
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
         methods = ['None']
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.addItems(methods)
@@ -1078,16 +1088,23 @@ def _slotTSI_DetectorSweepHardwareChanged(dashboard: QtCore.QObject):
     
     # Change Settings
     dashboard.ui.comboBox_tsi_detector.clear()
-    if get_hardware_type == "Computer":
-        dashboard.ui.comboBox_tsi_detector.addItems(['Simulator', 'IQ File'])
 
+    # Populate Detector Combobox
+    detector_fgs = fissure.utils.library.getDetectorFlowGraphsFilename(
+        dashboard.backend.library, 
+        "Sweep", 
+        get_hardware_type, 
+        fissure.utils.get_library_version()
+    )
+    dashboard.ui.comboBox_tsi_detector.addItems(detector_fgs)
+    dashboard.ui.comboBox_tsi_detector.addItems(['Simulator', 'IQ File'])
+
+    if get_hardware_type == "Computer":
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = 1
         dashboard.tuning_widget.freq_end_limit = 6000
 
     elif get_hardware_type == "USRP X3x0":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_x3x0.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         if get_hardware_daughterboard == "CBX-120":
             dashboard.tuning_widget.freq_start_limit = 1200
@@ -1106,28 +1123,21 @@ def _slotTSI_DetectorSweepHardwareChanged(dashboard: QtCore.QObject):
             dashboard.tuning_widget.freq_end_limit = 6000
 
     elif get_hardware_type == "USRP B2x0":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_b2x0.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = 70
         dashboard.tuning_widget.freq_end_limit = 6000
 
     elif get_hardware_type == "HackRF":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_hackrf.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = 1
         dashboard.tuning_widget.freq_end_limit = 6000
 
     elif get_hardware_type == "RTL2832U":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_rtl2832u.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = 64
         dashboard.tuning_widget.freq_end_limit = 1700
 
     elif get_hardware_type == "802.11x Adapter":
-        dashboard.ui.comboBox_tsi_detector.addItems(['Simulator', 'IQ File'])
         dashboard.ui.comboBox_tsi_detector.setCurrentIndex(0)
 
         # Tuning Widget Limits
@@ -1135,43 +1145,31 @@ def _slotTSI_DetectorSweepHardwareChanged(dashboard: QtCore.QObject):
         dashboard.tuning_widget.freq_end_limit = 6000
 
     elif get_hardware_type == "USRP B20xmini":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_b20xmini.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = 70
         dashboard.tuning_widget.freq_end_limit = 6000
 
     elif get_hardware_type == "LimeSDR":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_limesdr.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = 1
         dashboard.tuning_widget.freq_end_limit = 3800
 
     elif get_hardware_type == "bladeRF":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_bladerf.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = 280
         dashboard.tuning_widget.freq_end_limit = 3800
 
     elif get_hardware_type == "Open Sniffer":
-        dashboard.ui.comboBox_tsi_detector.addItems(['Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = 1
         dashboard.tuning_widget.freq_end_limit = 6000
 
     elif get_hardware_type == "PlutoSDR":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_plutosdr.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = 325
         dashboard.tuning_widget.freq_end_limit = 3800
 
     elif get_hardware_type == "USRP2":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_usrp2.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         if get_hardware_daughterboard == "XCVR2450":
             dashboard.tuning_widget.freq_start_limit = 2400
@@ -1223,8 +1221,6 @@ def _slotTSI_DetectorSweepHardwareChanged(dashboard: QtCore.QObject):
             dashboard.tuning_widget.freq_end_limit = 2900
 
     elif get_hardware_type == "USRP N2xx":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_usrp_n2xx.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         if get_hardware_daughterboard == "XCVR2450":
             dashboard.tuning_widget.freq_start_limit = 2400
@@ -1276,30 +1272,22 @@ def _slotTSI_DetectorSweepHardwareChanged(dashboard: QtCore.QObject):
             dashboard.tuning_widget.freq_end_limit = 2900
 
     elif get_hardware_type == "bladeRF 2.0":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_bladerf2.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = 47
         dashboard.tuning_widget.freq_end_limit = 6000
 
     elif get_hardware_type == "USRP X410":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_usrp_x410.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         if get_hardware_daughterboard == "ZBX":
             dashboard.tuning_widget.freq_start_limit = 1
             dashboard.tuning_widget.freq_end_limit = 7200
             
     elif get_hardware_type == "RSPduo":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_rspduo.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = .001
         dashboard.tuning_widget.freq_end_limit = 2000
         
     elif get_hardware_type == "RSPdx R2":
-        dashboard.ui.comboBox_tsi_detector.addItems(['wideband_rspdx_r2.py', 'Simulator', 'IQ File'])
-
         # Tuning Widget Limits
         dashboard.tuning_widget.freq_start_limit = .001
         dashboard.tuning_widget.freq_end_limit = 2000
@@ -1310,7 +1298,7 @@ def _slotTSI_DetectorSweepHardwareChanged(dashboard: QtCore.QObject):
 @QtCore.pyqtSlot(QtCore.QObject)
 def _slotTSI_DetectorFixedHardwareChanged(dashboard: QtCore.QObject):
     """ 
-    Changes TSI fixed hardware settings.
+    Populates fixed detector combobox from database.
     """
     # Sensor Node Hardware Information
     get_current_hardware = str(dashboard.ui.comboBox_tsi_detector_fixed_hardware.currentText())
@@ -1318,41 +1306,16 @@ def _slotTSI_DetectorFixedHardwareChanged(dashboard: QtCore.QObject):
     
     # Change Settings
     dashboard.ui.comboBox_tsi_detector_fixed.clear()
-    if get_hardware_type == "Computer":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_simulator.py'])
-    elif get_hardware_type == "USRP X3x0":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_x3x0.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "USRP B2x0":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_b2x0.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "HackRF":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_hackrf.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "RTL2832U":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_rtl2832u.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "802.11x Adapter":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_simulator.py'])
-    elif get_hardware_type == "USRP B20xmini":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_b20xmini.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "LimeSDR":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_limesdr.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "bladeRF":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_bladerf.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "Open Sniffer":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_simulator.py'])
-    elif get_hardware_type == "PlutoSDR":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_plutosdr.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "USRP2":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_usrp2.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "USRP N2xx":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_usrp_n2xx.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "bladeRF 2.0":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_bladerf2.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "USRP X410":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_usrp_x410.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "RSPduo":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_rspduo.py', 'fixed_threshold_simulator.py'])
-    elif get_hardware_type == "RSPdx R2":
-        dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_rspdx_r2.py', 'fixed_threshold_simulator.py'])
-    
+
+    # Populate Detector Combobox
+    detector_fgs = fissure.utils.library.getDetectorFlowGraphsFilename(
+        dashboard.backend.library, 
+        "Fixed", 
+        get_hardware_type, 
+        fissure.utils.get_library_version()
+    )
+    dashboard.ui.comboBox_tsi_detector_fixed.addItems(detector_fgs)
+    dashboard.ui.comboBox_tsi_detector_fixed.addItems(['fixed_threshold_simulator.py'])
     dashboard.ui.comboBox_tsi_detector_fixed.setCurrentIndex(0)
 
 
@@ -2016,7 +1979,7 @@ def _slotTSI_ConditionerInputPreviewClicked(dashboard: QtCore.QObject):
         number_of_bytes = -1
         
     # Number of Samples
-    get_samples = "-1"
+    num_samples = -1
     if number_of_bytes > 0:            
         if get_type == "Complex Float 32":
             num_samples = int(number_of_bytes/8)
@@ -2228,7 +2191,7 @@ def _slotTSI_ConditionerResultsPreviewClicked(dashboard: QtCore.QObject):
             number_of_bytes = -1
             
         # Number of Samples
-        get_samples = "-1"
+        num_samples = -1
         if number_of_bytes > 0:            
             if get_type == "Complex Float 32":
                 num_samples = int(number_of_bytes/8)
@@ -2887,7 +2850,7 @@ def _slotTSI_FE_InputPreviewClicked(dashboard: QtCore.QObject):
         number_of_bytes = -1
         
     # Number of Samples
-    get_samples = "-1"
+    num_samples = -1
     if number_of_bytes > 0:            
         if get_type == "Complex Float 32":
             num_samples = int(number_of_bytes/8)
@@ -3066,7 +3029,7 @@ def _slotTSI_FE_ResultsPreviewClicked(dashboard: QtCore.QObject):
             number_of_bytes = -1
             
         # Number of Samples
-        get_samples = "-1"
+        num_samples = -1
         if number_of_bytes > 0:            
             if get_type == "Complex Float 32":
                 num_samples = int(number_of_bytes/8)

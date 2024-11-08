@@ -5020,3 +5020,21 @@ def _slotMenuGraphingCalculatorClicked():
     # Open a Browser
     os.system("xdg-open https://www.desmos.com/calculator")
 
+
+@QtCore.pyqtSlot()
+def _slotMenuPgAdminClicked():
+    """
+    Opens pgAdmin 4 in a browser.
+    """
+    # Open a Browser
+    os.system("xdg-open http://localhost:3000/browser/")
+
+
+@QtCore.pyqtSlot()
+def _slotMenuFIRMS_Clicked():
+    """
+    Opens Fire Information for Resource Management System (FIRMS) in a browser.
+    """
+    # Open a Browser
+    os.system("xdg-open https://firms.modaps.eosdis.nasa.gov/map/")
+

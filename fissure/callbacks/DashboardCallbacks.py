@@ -976,63 +976,62 @@ async def searchLibraryReturn(component: object, message=[]):
     # message_list = ast.literal_eval(message)
 
     # Set the Values in the Results Table
-    for n in message:
-        for m in n:
-            component.frontend.ui.tableWidget1_library_search_results.setRowCount(component.frontend.ui.tableWidget1_library_search_results.rowCount()+1)
+    for row in message:
+        component.frontend.ui.tableWidget1_library_search_results.setRowCount(component.frontend.ui.tableWidget1_library_search_results.rowCount()+1)
 
-            # Protocol
-            protocol_item = QtWidgets.QTableWidgetItem(str(n[m]['Protocol']))
-            protocol_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            protocol_item.setFlags(protocol_item.flags() & ~QtCore.Qt.ItemIsEditable)
-            component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,0,protocol_item)
+        # Protocol
+        protocol_item = QtWidgets.QTableWidgetItem(str(row[1]))
+        protocol_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        protocol_item.setFlags(protocol_item.flags() & ~QtCore.Qt.ItemIsEditable)
+        component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,0,protocol_item)
 
-            # Subtype
-            subtype_item = QtWidgets.QTableWidgetItem(str(m))
-            subtype_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            subtype_item.setFlags(subtype_item.flags() & ~QtCore.Qt.ItemIsEditable)
-            component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,1,subtype_item)
+        # Subtype
+        subtype_item = QtWidgets.QTableWidgetItem(str(row[2]))
+        subtype_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        subtype_item.setFlags(subtype_item.flags() & ~QtCore.Qt.ItemIsEditable)
+        component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,1,subtype_item)
 
-            # Center Frequency
-            center_freq_item = QtWidgets.QTableWidgetItem(str(n[m]['Frequency']))
-            center_freq_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            center_freq_item.setFlags(center_freq_item.flags() & ~QtCore.Qt.ItemIsEditable)
-            component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,2,center_freq_item)
+        # Center Frequency
+        center_freq_item = QtWidgets.QTableWidgetItem(str(row[3]))
+        center_freq_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        center_freq_item.setFlags(center_freq_item.flags() & ~QtCore.Qt.ItemIsEditable)
+        component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,2,center_freq_item)
 
-            # Start Frequency
-            start_freq_item = QtWidgets.QTableWidgetItem(str(n[m]['Start Frequency']))
-            start_freq_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            start_freq_item.setFlags(start_freq_item.flags() & ~QtCore.Qt.ItemIsEditable)
-            component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,3,start_freq_item)
+        # Start Frequency
+        start_freq_item = QtWidgets.QTableWidgetItem(str(row[4]))
+        start_freq_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        start_freq_item.setFlags(start_freq_item.flags() & ~QtCore.Qt.ItemIsEditable)
+        component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,3,start_freq_item)
 
-            # End Frequency
-            end_freq_item = QtWidgets.QTableWidgetItem(str(n[m]['End Frequency']))
-            end_freq_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            end_freq_item.setFlags(end_freq_item.flags() & ~QtCore.Qt.ItemIsEditable)
-            component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,4,end_freq_item)
+        # End Frequency
+        end_freq_item = QtWidgets.QTableWidgetItem(str(row[5]))
+        end_freq_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        end_freq_item.setFlags(end_freq_item.flags() & ~QtCore.Qt.ItemIsEditable)
+        component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,4,end_freq_item)
 
-            # Bandwidth
-            bandwidth_item = QtWidgets.QTableWidgetItem(str(n[m]['Bandwidth']))
-            bandwidth_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            bandwidth_item.setFlags(bandwidth_item.flags() & ~QtCore.Qt.ItemIsEditable)
-            component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,5,bandwidth_item)
+        # Bandwidth
+        bandwidth_item = QtWidgets.QTableWidgetItem(str(row[6]))
+        bandwidth_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        bandwidth_item.setFlags(bandwidth_item.flags() & ~QtCore.Qt.ItemIsEditable)
+        component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,5,bandwidth_item)
 
-            # Modulation
-            modulation_item = QtWidgets.QTableWidgetItem(str(n[m]['Modulation']))
-            modulation_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            modulation_item.setFlags(modulation_item.flags() & ~QtCore.Qt.ItemIsEditable)
-            component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,6,modulation_item)
+        # Modulation
+        modulation_item = QtWidgets.QTableWidgetItem(str(row[8]))
+        modulation_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        modulation_item.setFlags(modulation_item.flags() & ~QtCore.Qt.ItemIsEditable)
+        component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,6,modulation_item)
 
-            # Continuous
-            continuous_item = QtWidgets.QTableWidgetItem(str(n[m]['Continuous']))
-            continuous_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            continuous_item.setFlags(continuous_item.flags() & ~QtCore.Qt.ItemIsEditable)
-            component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,7,continuous_item)
+        # Continuous
+        continuous_item = QtWidgets.QTableWidgetItem(str(row[7]).capitalize())
+        continuous_item.setTextAlignment(QtCore.Qt.AlignCenter)
+        continuous_item.setFlags(continuous_item.flags() & ~QtCore.Qt.ItemIsEditable)
+        component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,7,continuous_item)
 
-            # Notes
-            notes_item = QtWidgets.QTableWidgetItem(str(n[m]['Notes']))
-            notes_item.setTextAlignment(QtCore.Qt.AlignLeft)
-            notes_item.setFlags(notes_item.flags() & ~QtCore.Qt.ItemIsEditable)
-            component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,8,notes_item)
+        # Notes
+        notes_item = QtWidgets.QTableWidgetItem(str(row[9]))
+        notes_item.setTextAlignment(QtCore.Qt.AlignLeft)
+        notes_item.setFlags(notes_item.flags() & ~QtCore.Qt.ItemIsEditable)
+        component.frontend.ui.tableWidget1_library_search_results.setItem(component.frontend.ui.tableWidget1_library_search_results.rowCount()-1,8,notes_item)
 
     # Resize the Table
     component.frontend.ui.tableWidget1_library_search_results.resizeColumnsToContents()
@@ -1044,13 +1043,10 @@ async def searchLibraryReturn(component: object, message=[]):
     component.frontend.ui.label2_library_search_searching.setVisible(False)
 
 
-async def setFullLibrary(component: object, message=[]):
+async def libraryUpdateFinished(component: object):
     """ 
     Updates the FISSURE library and widgets with the latest library information.
     """
-    # Save the Library to the Library Backend
-    component.library = fissure.utils.load_library(component.os_info)
-
     # Refresh Library-Dependent Features
     protocols = fissure.utils.library.getProtocols(component.library)
 
@@ -1075,7 +1071,7 @@ async def setFullLibrary(component: object, message=[]):
     component.frontend.ui.comboBox_attack_protocols.clear()
     protocols_with_attacks = []
     for p in protocols:
-        if len(fissure.utils.library.getAttacks(component.library,p)) > 0:
+        if len(fissure.utils.library.getAttackNames(component.library, p, fissure.utils.get_library_version())) > 0:
             protocols_with_attacks.append(p)
     component.frontend.ui.comboBox_attack_protocols.addItems(sorted(protocols_with_attacks))
 
@@ -1092,15 +1088,14 @@ async def setFullLibrary(component: object, message=[]):
     component.frontend.ui.treeWidget_attack_attacks.expandAll()
     AttackTabSlots._slotAttackProtocols(component.frontend)
 
-    # Library Remove Protocols
-    component.frontend.ui.comboBox_library_browse_protocol.clear()
-    component.frontend.ui.comboBox_library_browse_protocol.addItems(sorted(protocols))
+    # Refresh Browse Table
+    LibraryTabSlots._slotLibraryBrowseChanged(component.frontend)
 
     # Sniffer Protocols
     component.frontend.ui.comboBox_pd_sniffer_protocols.clear()
     protocols_with_demod_fgs = []
     for p in protocols:
-        if len(fissure.utils.library.getDemodulationFlowGraphs(component.library, p, '', '')) > 0:
+        if len(fissure.utils.library.getDemodulationFlowGraphFilenames(component.library, p, '', '', version = fissure.utils.get_library_version())) > 0:
             protocols_with_demod_fgs.append(p)
     component.frontend.ui.comboBox_pd_sniffer_protocols.addItems(sorted(protocols_with_demod_fgs))
 
@@ -1124,12 +1119,12 @@ async def setFullLibrary(component: object, message=[]):
     for i in range(component.frontend.ui.comboBox_library_pd_protocol.count()):
         if get_last_protocol == component.frontend.ui.comboBox_library_pd_protocol.itemText(i):
             component.frontend.ui.comboBox_library_pd_protocol.setCurrentIndex(i)
+    component.frontend.ui.label_library_attacks_filepath.setText("")
+    component.frontend.ui.textEdit_library_attacks_name.setText("")
+    component.frontend.ui.textEdit_library_attacks_new_name.setText("")
 
     # Update All Flow Graphs in Demodulation Tab
     PDTabSlots._slotPD_DemodHardwareChanged(component.frontend)
-
-    # Update Browse YAML Files
-    LibraryTabSlots._slotLibraryBrowseYAML_Changed(component.frontend)
 
     # Create a Dialog Window
     fissure.Dashboard.UI_Components.Qt5.errorMessage("Library updated successfully.")
@@ -1165,3 +1160,15 @@ async def sensorNodeConnectTimeout(component: object, sensor_node_id=0):
 
     # Warning
     component.logger.warning("Timeout occurred establishing connection to remote sensor node")
+
+
+async def retrieveDatabaseCacheReturn(component: object, database_return={}, refresh_frontend_widgets=False):
+    """
+    Save the database cache return to the backend library variable.
+    """
+    # Save
+    component.library = database_return
+    component.logger.info("Updated backend database cache from HIPRFISR database")
+
+    if refresh_frontend_widgets is True:
+        await libraryUpdateFinished(component)

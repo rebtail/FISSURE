@@ -23,7 +23,7 @@ def run():
     asyncio.set_event_loop(eventLoop)
 
     gui = Dashboard()
-    gui.show()
+    # gui.show()  # Make visible in frontend.py
 
     with eventLoop:
         eventLoop.run_forever()
