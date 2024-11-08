@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 
 ## 2024-11-07
 
+Fixing Library>Add tab.
+
+### Fixed
+
+- Library>Add combobox displaying the proper options and pages
+- Adding /.env to .gitignore
+
+## 2024-11-07
+
 PostgreSQL database introduction to replace YAML libraries.
 
 ### Added

@@ -35658,11 +35658,6 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <property name="text">
-         <string>Statistics</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
          <string>Demodulation Flow Graph</string>
         </property>
        </item>
@@ -36421,7 +36416,6 @@ p, li { white-space: pre-wrap; }
         <zorder>label2_257</zorder>
         <zorder>label2_258</zorder>
        </widget>
-       <widget class="QWidget" name="page_8"/>
        <widget class="QWidget" name="page_11">
         <widget class="QComboBox" name="comboBox_library_pd_hardware">
          <property name="enabled">
