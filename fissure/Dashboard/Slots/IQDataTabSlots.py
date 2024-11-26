@@ -456,8 +456,8 @@ def _slotIQ_RecordHardwareChanged(dashboard: QtCore.QObject):
 
     elif get_hardware_type == "bladeRF 2.0":
         spinbox_frequency = QtWidgets.QDoubleSpinBox(dashboard)
-        spinbox_frequency.setMaximum(3800)
-        spinbox_frequency.setMinimum(50)
+        spinbox_frequency.setMaximum(6000)
+        spinbox_frequency.setMinimum(47)
         spinbox_frequency.setAlignment(QtCore.Qt.AlignCenter)
         dashboard.ui.tableWidget_iq_record.setCellWidget(0,1,spinbox_frequency)
         comboBox_channel = QtWidgets.QComboBox(dashboard, objectName='comboBox2_')
@@ -861,8 +861,8 @@ def _slotIQ_PlaybackHardwareChanged(dashboard: QtCore.QObject):
 
     elif get_hardware_type == "bladeRF 2.0":
         playback_spinbox_frequency = QtWidgets.QDoubleSpinBox(dashboard)
-        playback_spinbox_frequency.setMaximum(3800)
-        playback_spinbox_frequency.setMinimum(50)
+        playback_spinbox_frequency.setMaximum(6000)
+        playback_spinbox_frequency.setMinimum(47)
         playback_spinbox_frequency.setAlignment(QtCore.Qt.AlignCenter)
         dashboard.ui.tableWidget_iq_playback.setCellWidget(0,0,playback_spinbox_frequency)
         comboBox_playback_channel = QtWidgets.QComboBox(dashboard, objectName='comboBox2_')

@@ -11,6 +11,8 @@ import sys
 import time
 import uuid
 import zmq
+import subprocess
+import os
 
 HEARTBEAT_LOOP_DELAY = 0.1  # Seconds
 EVENT_LOOP_DELAY = 0.1
@@ -127,6 +129,9 @@ class HiprFisr:
 
         # Detect Operating System
         self.os_info = fissure.utils.get_os_info()
+
+        # Start the Database Docker Container (if not running)
+        self.start_database_docker_container()
 
         # Create the HIPRFISR ZMQ Nodes
         listen_addr = self.initialize_comms(address)
@@ -630,6 +635,55 @@ class HiprFisr:
         for sensor_node in self.sensor_nodes:
             if sensor_node.connected is True:
                 await sensor_node.listener.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+
+    def start_database_docker_container(self):
+        """
+        Starts the database Docker container if it is not already running.
+        """
+        def run_docker_command(command, use_sudo=False, cwd=None):
+            """ Helper to run Docker commands with optional sudo and working directory. """
+            if use_sudo:
+                command.insert(0, "sudo")
+            return subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=cwd)
+
+        try:
+            # Define the Docker image to check
+            image_name = "postgres:13"
+
+            # Check if the Docker container is running
+            result = run_docker_command(['docker', 'ps', '--filter', f'ancestor={image_name}', '--format', '{{.Image}}'])
+
+            # If the command failed due to permissions, retry with sudo
+            if result.returncode != 0 and "permission denied" in result.stderr.lower():
+                self.logger.info("Docker requires sudo. Retrying with sudo.")
+                result = run_docker_command(['docker', 'ps', '--filter', f'ancestor={image_name}', '--format', '{{.Image}}'], use_sudo=True)
+
+            # Check if the container is already running
+            if image_name in result.stdout.strip():
+                self.logger.info("Database Docker container is already running.")
+                return
+
+            # Container not running, start it
+            self.logger.info("Database Docker container not found. Starting it...")
+
+            # Define the start command
+            start_command = ["docker", "compose", "up", "-d"]
+            docker_compose_directory = fissure.utils.FISSURE_ROOT
+
+            # Attempt to start without sudo
+            start_result = run_docker_command(start_command, cwd=docker_compose_directory)
+            if start_result.returncode != 0 and "permission denied" in start_result.stderr.lower():
+                self.logger.info("Starting Docker with sudo.")
+                start_result = run_docker_command(start_command, use_sudo=True, cwd=docker_compose_directory)
+
+            if start_result.returncode == 0:
+                self.logger.info("Docker container started successfully.")
+            else:
+                self.logger.error(f"Failed to start Docker container: {start_result.stderr.strip()}")
+
+        except Exception as e:
+            self.logger.error(f"Error: {e}")
 
 
 if __name__ == "__main__":

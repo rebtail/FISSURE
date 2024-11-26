@@ -2784,12 +2784,12 @@ def _slotGuessInterfaceTableClicked(dashboard: QtCore.QObject, table_index):
 
 
 @QtCore.pyqtSlot(QtCore.QObject, str, str)
-def _slotAttackMultiStageLoadClicked(dashboard: QtCore.QObject, fname, data_override):
+def _slotAttackMultiStageImportClicked(dashboard: QtCore.QObject, fname, data_override):
     """ 
     Loads variables from multiple flow graphs into the tables from a custom formatted file.
     """
+    # Look for the Multi-Stage Attack File
     if fname == "":
-        # Look for the Multi-Stage Attack File
         directory =  os.path.join(fissure.utils.FISSURE_ROOT, "Multi-Stage Attack Files")
         fname = QtWidgets.QFileDialog.getOpenFileName(None,"Select Multi-Stage Attack File...", directory, filter="Multi-Stage Attack Files (*.msa);;All Files (*.*)")[0]
 
@@ -2800,6 +2800,7 @@ def _slotAttackMultiStageLoadClicked(dashboard: QtCore.QObject, fname, data_over
         dashboard.ui.tabWidget_attack_multi_stage.setTabText(1,"")
         for row0 in reversed(range(0,dashboard.ui.tableWidget_attack_multi_stage_attacks.rowCount())):
             dashboard.ui.tableWidget_attack_multi_stage_attacks.removeRow(row0)
+        dashboard.ui.tableWidget1_attack_multi_stage_triggers.setRowCount(0)
 
         # Remove Existing Tabs
         for n in reversed(range(0,dashboard.ui.tabWidget_attack_multi_stage.count())):
@@ -2807,16 +2808,19 @@ def _slotAttackMultiStageLoadClicked(dashboard: QtCore.QObject, fname, data_over
 
         # Read the File
         if len(data_override) == 0:
-            f = open(fname, "rb")
-            data = yaml.load(f.read(), yaml.FullLoader)
-            attack_table_row_list = data[0]
-            variable_names_list = data[1]
-            variable_values_list = data[2]
+            with open(fname) as yaml_msa_file:
+                msa_dict = yaml.load(yaml_msa_file, yaml.FullLoader)
+
+            attack_table_row_list = msa_dict["attack_table_row_list"]
+            variable_names_list = msa_dict["variable_names_list"]
+            variable_values_list = msa_dict["variable_values_list"]
+            trigger_values = msa_dict["trigger_values"]
         else: 
             data = data_override
             attack_table_row_list = eval(data[0])
             variable_names_list = eval(data[1])
-            variable_values_list = eval(data[2])            
+            variable_values_list = eval(data[2])
+            trigger_values = []       
         attack_name_list = []
         for rows in attack_table_row_list:
             attack_name_list.append(rows[4])            
@@ -2911,9 +2915,42 @@ def _slotAttackMultiStageLoadClicked(dashboard: QtCore.QObject, fname, data_over
             new_tab.setLayout(vBoxlayout)
             dashboard.ui.tabWidget_attack_multi_stage.addTab(new_tab,dashboard.ui.tableWidget_attack_multi_stage_attacks.item(n,0).text())
 
-        # Close the File
-        if len(data_override) == 0:
-            f.close()
+        # Load the Trigger Table
+        if len(trigger_values) > 0:
+            # Triggers Table
+            dashboard.ui.tableWidget1_attack_multi_stage_triggers.setRowCount(len(trigger_values))
+            for row in range(0,len(trigger_values)):
+                # Filename
+                filename_item = QtWidgets.QTableWidgetItem(trigger_values[row][0])
+                filename_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                filename_item.setFlags(filename_item.flags() & ~QtCore.Qt.ItemIsEditable)
+                dashboard.ui.tableWidget1_attack_multi_stage_triggers.setItem(row,0,filename_item)
+                
+                # Type
+                type_item = QtWidgets.QTableWidgetItem(trigger_values[row][1])
+                type_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                type_item.setFlags(type_item.flags() & ~QtCore.Qt.ItemIsEditable)
+                dashboard.ui.tableWidget1_attack_multi_stage_triggers.setItem(row,1,type_item)
+
+                # Variable Names
+                variable_names_item = QtWidgets.QTableWidgetItem(trigger_values[row][2])
+                variable_names_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                variable_names_item.setFlags(variable_names_item.flags() & ~QtCore.Qt.ItemIsEditable)
+                dashboard.ui.tableWidget1_attack_multi_stage_triggers.setItem(row,2,variable_names_item)
+
+                # Variable Values
+                variable_values_item = QtWidgets.QTableWidgetItem(trigger_values[row][3])
+                variable_values_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                variable_values_item.setFlags(variable_values_item.flags() & ~QtCore.Qt.ItemIsEditable)
+                dashboard.ui.tableWidget1_attack_multi_stage_triggers.setItem(row,3,variable_values_item)
+            
+            # Resize the Table
+            dashboard.ui.tableWidget1_attack_multi_stage_triggers.resizeColumnsToContents()
+            #dashboard.ui.tableWidget1_attack_multi_stage_triggers.setColumnWidth(5,300)
+            #dashboard.ui.tableWidget1_attack_multi_stage_triggers.setColumnWidth(6,300)
+            dashboard.ui.tableWidget1_attack_multi_stage_triggers.resizeRowsToContents()
+            dashboard.ui.tableWidget1_attack_multi_stage_triggers.horizontalHeader().setStretchLastSection(False)
+            dashboard.ui.tableWidget1_attack_multi_stage_triggers.horizontalHeader().setStretchLastSection(True)
 
         # Enable the Controls
         dashboard.ui.pushButton_attack_multi_stage_save.setEnabled(True)
@@ -2925,7 +2962,7 @@ def _slotAttackMultiStageLoadClicked(dashboard: QtCore.QObject, fname, data_over
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
-def _slotAttackMultiStageSaveClicked(dashboard: QtCore.QObject):
+def _slotAttackMultiStageExportClicked(dashboard: QtCore.QObject):
     """
     Saves flow graph variables and values from the tables to a custom formatted file.
     """
@@ -2942,14 +2979,10 @@ def _slotAttackMultiStageSaveClicked(dashboard: QtCore.QObject):
     if dialog.exec_() == QtWidgets.QDialog.Accepted:
         fileName = str(dialog.selectedFiles()[0])
     else:
-        #print('Cancelled')
-        fileName = ""
+        return
 
     # Valid file
     if fileName:
-        # Get the File
-        file = open(fileName,"wb")
-
         # Get Single-Stage Attacks Table
         attack_table_row = []
         attack_table_row_list = []
@@ -2960,11 +2993,11 @@ def _slotAttackMultiStageSaveClicked(dashboard: QtCore.QObject):
             attack_table_row = []
 
         # Go Through Each Tab
-        attack_name_list = []
         variable_names = []
         variable_values = []
         variable_names_list = []
         variable_values_list = []
+
         for tab in range(0,dashboard.ui.tabWidget_attack_multi_stage.count()):
 
             # Get the Flow Graph Table
@@ -2980,12 +3013,28 @@ def _slotAttackMultiStageSaveClicked(dashboard: QtCore.QObject):
             variable_names = []
             variable_values = []
 
-        # Assemble the Data into a File Format
-        formatted_data = "- " + str(attack_table_row_list) + "\n- " + str(variable_names_list) + "\n- " + str(variable_values_list)
+        # Trigger Parameters
+        trigger_values = []
+        for row in range(0, dashboard.ui.tableWidget1_attack_multi_stage_triggers.rowCount()):
+            trigger_values.append(
+                [
+                    str(dashboard.ui.tableWidget1_attack_multi_stage_triggers.item(row,0).text()), 
+                    str(dashboard.ui.tableWidget1_attack_multi_stage_triggers.item(row,1).text()), 
+                    str(dashboard.ui.tableWidget1_attack_multi_stage_triggers.item(row,2).text()), 
+                    str(dashboard.ui.tableWidget1_attack_multi_stage_triggers.item(row,3).text())
+                ]
+            )
+        
+        # Assemble the Data into a YAML File Format
+        yaml_dict = {}
+        yaml_dict["attack_table_row_list"] = attack_table_row_list
+        yaml_dict["variable_names_list"] = variable_names_list
+        yaml_dict["variable_values_list"] = variable_values_list
+        yaml_dict["trigger_values"] = trigger_values
 
-        # Write to File
-        file.write(formatted_data)
-        file.close()
+        # Dump Dictionary to File
+        stream = open(fileName, 'w')
+        yaml.dump(yaml_dict, stream, default_flow_style=False, indent=5)
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -4200,7 +4249,7 @@ def _slotAttackLoadTemplateClicked(dashboard: QtCore.QObject):
                     filepath = os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "Single-Stage Flow Graphs", fname)
 
                     # Load Multi-Stage Attack
-                    _slotAttackMultiStageLoadClicked(dashboard, filepath, '')
+                    _slotAttackMultiStageImportClicked(dashboard, filepath, '')
 
             # Fuzzing Attack
             if fuzzing_attack == True:

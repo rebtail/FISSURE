@@ -3315,10 +3315,10 @@ def connect_attack_slots(dashboard: Dashboard):
         lambda: AttackTabSlots._slotAttackMultiStageGenerate(dashboard)
     )
     dashboard.ui.pushButton_attack_multi_stage_load.clicked.connect(
-        lambda: AttackTabSlots._slotAttackMultiStageLoadClicked(dashboard, fname="", data_override="")
+        lambda: AttackTabSlots._slotAttackMultiStageImportClicked(dashboard, fname="", data_override="")
     )
     dashboard.ui.pushButton_attack_multi_stage_save.clicked.connect(
-        lambda: AttackTabSlots._slotAttackMultiStageSaveClicked(dashboard)
+        lambda: AttackTabSlots._slotAttackMultiStageExportClicked(dashboard)
     )
     dashboard.ui.pushButton_attack_single_stage_autorun.clicked.connect(
         lambda: AttackTabSlots._slotAttackSingleStageAutorunClicked(dashboard)

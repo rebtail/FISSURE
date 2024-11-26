@@ -65,7 +65,8 @@ def main():
             - others can be connected to remotely
     """
     # run_all()
-    generate_certs()
+    # generate_certs()
+    pass
 
 
 if __name__ == "__main__":

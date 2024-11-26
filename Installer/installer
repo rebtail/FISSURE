@@ -208,7 +208,7 @@ bash -c '
 programs_ubuntu20_04.append(('Network Certificates',
 """cd '""" + fissure_directory + """'
 export PYTHONPATH='""" + fissure_directory + """':$PYTHONPATH
-python3 ./fissure/cli.py
+python3 ./fissure/generate_certificates.py
 ########## Verify ##########
 ls '""" + fissure_directory + """/certificates'
 """,True,'Minimum Install'))
@@ -2365,7 +2365,7 @@ bash -c '
 programs_parrot_os_6_1.append(('Network Certificates',
 """cd '""" + fissure_directory + """'
 export PYTHONPATH='""" + fissure_directory + """':$PYTHONPATH
-python3 ./fissure/cli.py
+python3 ./fissure/generate_certificates.py
 ########## Verify ##########
 ls '""" + fissure_directory + """/certificates'
 """,True,'Minimum Install'))
@@ -4493,7 +4493,7 @@ bash -c '
 programs_ubuntu22_04.append(('Network Certificates',
 """cd '""" + fissure_directory + """'
 export PYTHONPATH='""" + fissure_directory + """':$PYTHONPATH
-python3 ./fissure/cli.py
+python3 ./fissure/generate_certificates.py
 ########## Verify ##########
 ls '""" + fissure_directory + """/certificates'
 """,True,'Minimum Install'))
@@ -6613,7 +6613,7 @@ bash -c '
 programs_dragonOS_focalx.append(('Network Certificates',
 """cd '""" + fissure_directory + """'
 export PYTHONPATH='""" + fissure_directory + """':$PYTHONPATH
-python3 ./fissure/cli.py
+python3 ./fissure/generate_certificates.py
 ########## Verify ##########
 ls '""" + fissure_directory + """/certificates'
 """,True,'Minimum Install'))
@@ -8737,7 +8737,7 @@ bash -c '
 programs_kali.append(('Network Certificates (1.79 MB)',
 """cd '""" + fissure_directory + """'
 export PYTHONPATH='""" + fissure_directory + """':$PYTHONPATH
-python3 ./fissure/cli.py
+python3 ./fissure/generate_certificates.py
 ########## Verify ##########
 ls '""" + fissure_directory + """/certificates'
 """,True,'Minimum Install'))
@@ -10869,7 +10869,7 @@ bash -c '
 programs_backbox_linux_8.append(('Network Certificates',
 """cd '""" + fissure_directory + """'
 export PYTHONPATH='""" + fissure_directory + """':$PYTHONPATH
-python3 ./fissure/cli.py
+python3 ./fissure/generate_certificates.py
 ########## Verify ##########
 ls '""" + fissure_directory + """/certificates'
 """,True,'Minimum Install'))
@@ -12986,7 +12986,7 @@ bash -c '
 programs_raspberry_pi_os.append(('Network Certificates',
 """cd '""" + fissure_directory + """'
 export PYTHONPATH='""" + fissure_directory + """':$PYTHONPATH
-python3 ./fissure/cli.py
+python3 ./fissure/generate_certificates.py
 ########## Verify ##########
 ls '""" + fissure_directory + """/certificates'
 """,True,'Minimum Install'))
@@ -15105,7 +15105,7 @@ bash -c '
 programs_ubuntu22_04_arm.append(('Network Certificates',
 """cd '""" + fissure_directory + """'
 export PYTHONPATH='""" + fissure_directory + """':$PYTHONPATH
-python3 ./fissure/cli.py
+python3 ./fissure/generate_certificates.py
 ########## Verify ##########
 ls '""" + fissure_directory + """/certificates'
 """,True,'Minimum Install'))
@@ -17231,7 +17231,7 @@ bash -c '
 programs_ubuntu24_04.append(('Network Certificates (3.51 kB)',
 """cd '""" + fissure_directory + """'
 export PYTHONPATH='""" + fissure_directory + """':$PYTHONPATH
-python3 ./fissure/cli.py
+python3 ./fissure/generate_certificates.py
 ########## Verify ##########
 ls '""" + fissure_directory + """/certificates'
 """,True,'Minimum Install'))
@@ -19366,7 +19366,7 @@ bash -c '
 programs_arch_linux.append(('Network Certificates (3.51 kB)',
 """cd '""" + fissure_directory + """'
 export PYTHONPATH='""" + fissure_directory + """':$PYTHONPATH
-python3 ./fissure/cli.py
+python3 ./fissure/generate_certificates.py
 ########## Verify ##########
 ls '""" + fissure_directory + """/certificates'
 """,True,'Minimum Install'))

@@ -1,7 +1,24 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## 2024-11-07
+## 2024-11-25
+
+Automatically launch database docker container, multi-stage import/export fixes
+
+### Changed
+
+- Moved certificate generator from cli.py to generate_certificates.py and updated installer
+- Renamed _slotAttackMultiStageSaveClicked() to _slotAttackMultiStageExportClicked()
+- Renamed _slotAttackMultiStageLoadClicked() to _slotAttackMultiStageImportClicked()
+- Changed multi-stage attack export file to a YAML dictionary for export and import functions
+
+### Fixed
+
+- Launch database docker container on HIPRFISR startup if it is not running
+- Adjusted frequency ranges for bladeRF 2.0 in IQ Record and IQ Playback tabs
+- Multi-Stage export and import with triggers
+
+## 2024-11-08
 
 Fixing Library>Add tab.
 

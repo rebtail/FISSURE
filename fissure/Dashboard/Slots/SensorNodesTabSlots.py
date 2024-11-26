@@ -373,7 +373,7 @@ def _slotSensorNodesAutorunViewClicked(dashboard: QtCore.QObject):
     elif get_type == "Multi-Stage":
         # Import
         formatted_data = [get_details, get_variables, get_values]
-        fissure.Dashboard.Slots.AttackTabSlots._slotAttackMultiStageLoadClicked(dashboard, fname="n/a", data_override=formatted_data)
+        fissure.Dashboard.Slots.AttackTabSlots._slotAttackMultiStageImportClicked(dashboard, fname="n/a", data_override=formatted_data)
         
         # Switch Tabs
         dashboard.ui.tabWidget_attack_attack.setCurrentIndex(1)
