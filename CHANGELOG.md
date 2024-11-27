@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2024-11-26
+
+Z-Wave and ceiling fans lessons.
+
+### Added
+
+- Z-Wave lesson in menu and README
+- Ceiling Fans lesson in menu and README
+
 ## 2024-11-25
 
 Automatically launch database docker container, multi-stage import/export fixes

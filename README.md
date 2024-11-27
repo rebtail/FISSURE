@@ -19,6 +19,10 @@ The friendly Python codebase and user interface allows beginners to quickly lear
 
 ![NEW](https://img.shields.io/badge/NEW-Feature-brightgreen) 
 
+**Z-Wave and Ceiling Fans Lessons** to highlight FISSURE as a reverse engineering tool. [Lesson13: Z-Wave](/docs/Lessons/Markdown/Lesson13_Z-Wave.md), [Lesson14: Ceiling Fans](/docs/Lessons/Markdown/Lesson14_Ceiling_Fans.md)
+
+![NEW](https://img.shields.io/badge/NEW-Feature-brightgreen) 
+
 **Recall Installer Setups** Export and import checked software items in the FISSURE installer using the Export and Import buttons. Quickly install only the programs you need.
 
 ![NEW](https://img.shields.io/badge/NEW-Feature-brightgreen) 
@@ -316,6 +320,8 @@ FISSURE comes with several helpful guides to become familiar with different tech
 - [Lesson10: Ham Radio Exams](/docs/Lessons/Markdown/Lesson10_Ham_Radio_Exams.md)
 - [Lesson11: Wi-Fi Tools](/docs/Lessons/Markdown/Lesson11_WiFi_Tools.md)
 - [Lesson12: Creating Bootable USBs](/docs/Lessons/Markdown/Lesson12_Creating_Bootable_USBs.md)
+- [Lesson13: Z-Wave](/docs/Lessons/Markdown/Lesson13_Z-Wave.md)
+- [Lesson14: Ceiling Fans](/docs/Lessons/Markdown/Lesson14_Ceiling_Fans.md)
 
 ## Roadmap
 

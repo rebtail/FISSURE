@@ -1960,6 +1960,8 @@ def connect_menuBar_slots(dashboard: Dashboard):
     dashboard.window.actionUK_Portable_Ham_Map.triggered.connect(MenuBarSlots._slotMenuUK_PortableHamMapClicked)
     dashboard.window.actionSatelliteMapSpace.triggered.connect(MenuBarSlots._slotMenuSatelliteMapSpaceClicked)
     dashboard.window.actionHamSCI_Resources.triggered.connect(MenuBarSlots._slotMenuLessonHamSCI_ResourcesClicked)
+    dashboard.window.actionLesson_Z_Wave.triggered.connect(MenuBarSlots._slotMenuLessonZ_WaveClicked)
+    dashboard.window.actionLesson_Ceiling_Fans.triggered.connect(MenuBarSlots._slotMenuLessonCeilingFansClicked)
 
     # Help Menu
     dashboard.window.actionUser_Manual.triggered.connect(MenuBarSlots._slotMenuHelpUserManualClicked)

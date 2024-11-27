@@ -5038,3 +5038,22 @@ def _slotMenuFIRMS_Clicked():
     # Open a Browser
     os.system("xdg-open https://firms.modaps.eosdis.nasa.gov/map/")
 
+
+@QtCore.pyqtSlot()
+def _slotMenuLessonZ_WaveClicked():
+    """
+    Opens the html file in a browser.
+    """
+    os.system(
+        f"xdg-open file://{os.path.join(fissure.utils.FISSURE_ROOT, 'docs', 'Lessons', 'HTML', 'Lesson13_Z-Wave.html')}"
+    )
+
+
+@QtCore.pyqtSlot()
+def _slotMenuLessonCeilingFansClicked():
+    """
+    Opens the html file in a browser.
+    """
+    os.system(
+        f"xdg-open file://{os.path.join(fissure.utils.FISSURE_ROOT, 'docs', 'Lessons', 'HTML', 'Lesson14_Ceiling_Fans.html')}"
+    )

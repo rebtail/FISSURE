@@ -904,6 +904,8 @@
     <addaction name="actionLesson_Ham_Radio_Exams"/>
     <addaction name="actionLesson_WiFi_Tools"/>
     <addaction name="actionLesson_Creating_Bootable_USBs"/>
+    <addaction name="actionLesson_Z_Wave"/>
+    <addaction name="actionLesson_Ceiling_Fans"/>
     <addaction name="separator"/>
     <addaction name="actionPySDR_org"/>
     <addaction name="actionLessonSDR_WithHackRF"/>
@@ -2946,6 +2948,16 @@
   <action name="actionFIRMS">
    <property name="text">
     <string>FIRMS</string>
+   </property>
+  </action>
+  <action name="actionLesson_Z_Wave">
+   <property name="text">
+    <string>Lesson #13: Z-Wave</string>
+   </property>
+  </action>
+  <action name="actionLesson_Ceiling_Fans">
+   <property name="text">
+    <string>Lesson #14: Ceiling Fans</string>
    </property>
   </action>
  </widget>
