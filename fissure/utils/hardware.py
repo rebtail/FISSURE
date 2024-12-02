@@ -1,46 +1,102 @@
 import subprocess
 
 
+def hardwareID_Column(hardware_type):
+    """
+    Returns the column in the Sensor Node Configuration Scan Results table that is used as the hardware ID.
+        0: Type
+        1: UID
+        2: Radio Name
+        3: Serial
+        4: Network Interface
+        5: IP Address
+        6: Daughterboard
+    """
+    # Return ID Column Based on Hardware Type
+    if hardware_type == "Computer":
+        hardware_id = None
+    elif hardware_type == "USRP X3x0":
+        hardware_id = 5
+    elif hardware_type == "USRP B2x0":
+        hardware_id = 3
+    elif hardware_type == "HackRF":
+        hardware_id = 3
+    elif hardware_type == "RTL2832U":
+        hardware_id = 3
+    elif hardware_type == "802.11x Adapter":
+        hardware_id = 4
+    elif hardware_type == "USRP B20xmini":
+        hardware_id = 3
+    elif hardware_type == "LimeSDR":
+        hardware_id = 3
+    elif hardware_type == "bladeRF":
+        hardware_id = 3
+    elif hardware_type == "Open Sniffer":
+        hardware_id = None
+    elif hardware_type == "PlutoSDR":
+        hardware_id = 5
+    elif hardware_type == "USRP2":
+        hardware_id = 5
+    elif hardware_type == "USRP N2xx":
+        hardware_id = 5
+    elif hardware_type == "bladeRF 2.0":
+        hardware_id = 3
+    elif hardware_type == "USRP X410":
+        hardware_id = 5
+    elif hardware_type == "RSPduo":
+        hardware_id = 3
+    elif hardware_type == "RSPdx":
+        hardware_id = 3
+    elif hardware_type == "RSPdx R2":
+        hardware_id = 3
+    else:
+        hardware_id = None
+
+    return hardware_id
+
+
 def hardwareDisplayName(dashboard, hardware_type, sensor_node, component, index):
     """Returns a display name for comboboxes based on provided sensor node hardware information."""
     # Return Display Name Based on Type
     get_hardware_name = ""
+    get_column = hardwareID_Column(hardware_type)
+
     if hardware_type == "Computer":
         get_hardware_name = hardware_type
     elif hardware_type == "USRP X3x0":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][5]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "USRP B2x0":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][3]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "HackRF":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][3]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "RTL2832U":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][3]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "802.11x Adapter":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][4]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "USRP B20xmini":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][3]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "LimeSDR":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][3]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "bladeRF":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][3]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "Open Sniffer":
         get_hardware_name = hardware_type
     elif hardware_type == "PlutoSDR":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][5]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "USRP2":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][5]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "USRP N2xx":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][5]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "bladeRF 2.0":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][3]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "USRP X410":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][5]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "RSPduo":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][3]
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     elif hardware_type == "RSPdx":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][3]                
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]        
     elif hardware_type == "RSPdx R2":
-        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][3]                
+        get_hardware_name = hardware_type + " - " + dashboard.backend.settings[sensor_node][component][index][get_column]
     else:
         get_hardware_name = "UNKNOWN HARDWARE"
 
@@ -52,9 +108,9 @@ def hardwareDisplayNameLookup(dashboard, display_name, component):
     Takes in a hardware display name and returns all the sensor node hardware information.
     """
     # Return Saved Hardware Information
-    hardware_type = display_name.split(" - ")[0]
+    hardware_type = display_name.split(" - ")[0].strip()
     try:
-        second_value = display_name.split(" - ")[1]
+        second_value = display_name.split(" - ")[1].strip()
     except:
         second_value = ""
 
@@ -62,41 +118,42 @@ def hardwareDisplayNameLookup(dashboard, display_name, component):
         get_sensor_node = ["sensor_node1", "sensor_node2", "sensor_node3", "sensor_node4", "sensor_node5"]
         sensor_node = get_sensor_node[dashboard.active_sensor_node]
         get_index = 0
+        get_column = hardwareID_Column(hardware_type)
         for n in range(0, len(dashboard.backend.settings[sensor_node][component])):
             if hardware_type == "Computer":
                 if second_value == "":  # todo
                     get_index = n
                     break
             elif hardware_type == "USRP X3x0":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][5]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "USRP B2x0":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][3]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "HackRF":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][3]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "RTL2832U":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][3]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "802.11x Adapter":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][4]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "USRP B20xmini":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][3]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "LimeSDR":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][3]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "bladeRF":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][3]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "Open Sniffer":
@@ -104,35 +161,35 @@ def hardwareDisplayNameLookup(dashboard, display_name, component):
                     get_index = n
                     break
             elif hardware_type == "PlutoSDR":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][5]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "USRP2":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][5]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "USRP N2xx":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][5]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "bladeRF 2.0":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][3]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "USRP X410":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][5]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "RSPduo":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][3]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break
             elif hardware_type == "RSPdx":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][3]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break                                
             elif hardware_type == "RSPdx R2":
-                if second_value == dashboard.backend.settings[sensor_node][component][n][3]:
+                if second_value == dashboard.backend.settings[sensor_node][component][n][get_column]:
                     get_index = n
                     break                                
             else:

@@ -1,6 +1,6 @@
 from ..Slots import HardwareSelectSlots
 from .UI_Types import UI_Types
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 import fissure.comms
 import os
@@ -317,6 +317,7 @@ class HardwareSelectDialog(QtWidgets.QDialog, UI_Types.HW_Select):
         else:
             self.sensorNodeDisconnected(4)
 
+
     def __connect_slots__(self):
         """
         Contains the connect functions for all the signals and slots
@@ -382,6 +383,7 @@ class HardwareSelectDialog(QtWidgets.QDialog, UI_Types.HW_Select):
         self.pushButton_apply.clicked.connect(lambda: HardwareSelectSlots.apply(self))
         self.pushButton_cancel.clicked.connect(lambda: HardwareSelectSlots.cancel(self))
         self.pushButton_delete.clicked.connect(lambda: HardwareSelectSlots.delete(self))
+
 
     def scanReturn(self, tab_index, all_scan_results):
         """Populates the scan results table with the results of the hardware scan."""
@@ -466,8 +468,9 @@ class HardwareSelectDialog(QtWidgets.QDialog, UI_Types.HW_Select):
                 table_item = QtWidgets.QTableWidgetItem(all_scan_results[n][m])
                 table_item.setTextAlignment(QtCore.Qt.AlignCenter)
                 get_tableWidget.setItem(rows, m, table_item)
+            self.highlight_hardware_id(get_tableWidget, rows)
 
-        get_tableWidget.selectRow(get_tableWidget.rowCount() - 1)
+        get_tableWidget.setCurrentCell(get_tableWidget.rowCount() - 1, 0)
 
         get_tableWidget.resizeColumnsToContents()
         get_tableWidget.resizeRowsToContents()
@@ -487,6 +490,7 @@ class HardwareSelectDialog(QtWidgets.QDialog, UI_Types.HW_Select):
             get_pushButton_scan_results_guess.setEnabled(True)
             get_tableWidget_scan_results.setEnabled(True)
             get_line3_scan_results.setEnabled(True)
+
 
     def guessReturn(self, tab_index, get_row, get_hardware, get_row_text, get_guess_index):
         """Populates the scan results table with the results of the hardware scan."""
@@ -630,6 +634,7 @@ class HardwareSelectDialog(QtWidgets.QDialog, UI_Types.HW_Select):
         scan_results_tables[tab_index].horizontalHeader().setStretchLastSection(False)
         scan_results_tables[tab_index].horizontalHeader().setStretchLastSection(True)
 
+
     def sensorNodeConnected(self, tab_index=0):
         """Updates widgets for a sensor node once it is connected to the rest of FISSURE."""
         # Adjust the Widgets
@@ -730,12 +735,14 @@ class HardwareSelectDialog(QtWidgets.QDialog, UI_Types.HW_Select):
         msg_port_widgets[tab_index].setEnabled(True)
         hb_port_widgets[tab_index].setEnabled(True)
 
+
     def importResults(self, settings_dict=""):
         """
         Reuses the importClicked function on recall settings return from sensor node.
         """
         # Function in Slots
         HardwareSelectSlots.importClicked(self, settings_dict)
+
 
     def sensorNodeDisconnected(self, tab_index=0):
         """Updates widgets for a sensor node once it is disconnected from the rest of FISSURE."""
@@ -800,3 +807,34 @@ class HardwareSelectDialog(QtWidgets.QDialog, UI_Types.HW_Select):
                 if n != tab_index:
                     local_buttons[tab_index].setEnabled(False)
 
+
+    def highlight_hardware_id(self, table_widget, row):
+        """
+        Highlights the hardware ID cell used when selecting hardware throughout FISSURE.
+        """
+        # Get Hardware
+        get_hardware = str(table_widget.item(row, 0).text())
+
+        # Retrieve Hardware ID Field
+        get_column = fissure.utils.hardware.hardwareID_Column(get_hardware)
+
+        # Highlight the Cell
+        if get_column:
+            cell_item = table_widget.item(row, get_column)
+            cell_item.setBackground(QtGui.QColor("yellow"))
+
+
+    def hardwareID_Present(self, table_widget, row):
+        """
+        Determines if the hardware ID is filled out for a row in the scan results before adding it to the defaults table.
+        """
+        # Determine Hardware Type
+        get_hardware = str(table_widget.item(row,0).text())
+
+        # Read Hardware ID Column
+        get_column = fissure.utils.hardware.hardwareID_Column(get_hardware)
+        cell_item = str(table_widget.item(row, get_column).text())
+        if cell_item:
+            return True
+        else:
+            return False

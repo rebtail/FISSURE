@@ -1,6 +1,23 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2024-12-02
+
+Hardware ID requirement and splash screen fixes.
+
+### Added
+
+- Highlighting required hardware ID cells in Sensor Node Configuration scan results table
+
+### Changed
+
+- Hardware ID is now required when saving default hardware assignments
+
+### Fixed
+
+- Fixed isFloat() error when loading flow graph with Variable Fuzzing
+- Optimizing splash screen code and image to avoid flicker
+
 ## 2024-12-01
 
 Upgrading Conditioner tab to use radio hardware for Detector results and frequency list. Part 1.

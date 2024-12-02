@@ -876,7 +876,7 @@ async def scan(HWSelect: QtCore.QObject):
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
-def tsi(HWSelect: QtCore.QObject):
+def tsi(HWSelect: QtCore.QObject, add_to_all=False):
     """
     Adds the selected row in the scan results table to the TSI table.
     """
@@ -903,22 +903,29 @@ def tsi(HWSelect: QtCore.QObject):
         HWSelect.tabWidget_hardware_4,
         HWSelect.tabWidget_hardware_5,
     ]
-    hardware_tsi_widgets[tab_index].setRowCount(hardware_tsi_widgets[tab_index].rowCount() + 1)
     get_row = scan_results_widgets[tab_index].currentRow()
-    for col in range(0, scan_results_widgets[tab_index].columnCount()):
-        if scan_results_widgets[tab_index].item(get_row, col) is not None:
-            table_item = QtWidgets.QTableWidgetItem(str(scan_results_widgets[tab_index].item(get_row, col).text()))
-            table_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            hardware_tsi_widgets[tab_index].setItem(hardware_tsi_widgets[tab_index].rowCount() - 1, col, table_item)
-    hardware_tsi_widgets[tab_index].resizeColumnsToContents()
-    hardware_tsi_widgets[tab_index].resizeRowsToContents()
-    hardware_tsi_widgets[tab_index].horizontalHeader().setStretchLastSection(False)
-    hardware_tsi_widgets[tab_index].horizontalHeader().setStretchLastSection(True)
-    hardware_tabs_widgets[tab_index].setCurrentIndex(0)
+    hardware_id_present = HWSelect.hardwareID_Present(scan_results_widgets[tab_index], get_row)
+
+    if hardware_id_present:
+        hardware_tsi_widgets[tab_index].setRowCount(hardware_tsi_widgets[tab_index].rowCount() + 1)
+        for col in range(0, scan_results_widgets[tab_index].columnCount()):
+            if scan_results_widgets[tab_index].item(get_row, col) is not None:
+                table_item = QtWidgets.QTableWidgetItem(str(scan_results_widgets[tab_index].item(get_row, col).text()))
+                table_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                hardware_tsi_widgets[tab_index].setItem(hardware_tsi_widgets[tab_index].rowCount() - 1, col, table_item)
+        hardware_tsi_widgets[tab_index].resizeColumnsToContents()
+        hardware_tsi_widgets[tab_index].resizeRowsToContents()
+        hardware_tsi_widgets[tab_index].horizontalHeader().setStretchLastSection(False)
+        hardware_tsi_widgets[tab_index].horizontalHeader().setStretchLastSection(True)
+        hardware_tabs_widgets[tab_index].setCurrentIndex(0)
+    else:
+        # Provide Warning
+        if add_to_all == False:
+            fissure.Dashboard.UI_Components.Qt5.errorMessage("Provide hardware ID in scan results table.")
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
-def pd(HWSelect: QtCore.QObject):
+def pd(HWSelect: QtCore.QObject, add_to_all=False):
     """
     Adds the selected row in the scan results table to the PD table.
     """
@@ -945,22 +952,29 @@ def pd(HWSelect: QtCore.QObject):
         HWSelect.tabWidget_hardware_4,
         HWSelect.tabWidget_hardware_5,
     ]
-    hardware_pd_widgets[tab_index].setRowCount(hardware_pd_widgets[tab_index].rowCount() + 1)
     get_row = scan_results_widgets[tab_index].currentRow()
-    for col in range(0, scan_results_widgets[tab_index].columnCount()):
-        if scan_results_widgets[tab_index].item(get_row, col) is not None:
-            table_item = QtWidgets.QTableWidgetItem(str(scan_results_widgets[tab_index].item(get_row, col).text()))
-            table_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            hardware_pd_widgets[tab_index].setItem(hardware_pd_widgets[tab_index].rowCount() - 1, col, table_item)
-    hardware_pd_widgets[tab_index].resizeColumnsToContents()
-    hardware_pd_widgets[tab_index].resizeRowsToContents()
-    hardware_pd_widgets[tab_index].horizontalHeader().setStretchLastSection(False)
-    hardware_pd_widgets[tab_index].horizontalHeader().setStretchLastSection(True)
-    hardware_tabs_widgets[tab_index].setCurrentIndex(1)
+    hardware_id_present = HWSelect.hardwareID_Present(scan_results_widgets[tab_index], get_row)
+
+    if hardware_id_present:
+        hardware_pd_widgets[tab_index].setRowCount(hardware_pd_widgets[tab_index].rowCount() + 1)
+        for col in range(0, scan_results_widgets[tab_index].columnCount()):
+            if scan_results_widgets[tab_index].item(get_row, col) is not None:
+                table_item = QtWidgets.QTableWidgetItem(str(scan_results_widgets[tab_index].item(get_row, col).text()))
+                table_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                hardware_pd_widgets[tab_index].setItem(hardware_pd_widgets[tab_index].rowCount() - 1, col, table_item)
+        hardware_pd_widgets[tab_index].resizeColumnsToContents()
+        hardware_pd_widgets[tab_index].resizeRowsToContents()
+        hardware_pd_widgets[tab_index].horizontalHeader().setStretchLastSection(False)
+        hardware_pd_widgets[tab_index].horizontalHeader().setStretchLastSection(True)
+        hardware_tabs_widgets[tab_index].setCurrentIndex(1)
+    else:
+        # Provide Warning
+        if add_to_all == False:
+            fissure.Dashboard.UI_Components.Qt5.errorMessage("Provide hardware ID in scan results table.")
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
-def attack(HWSelect: QtCore.QObject):
+def attack(HWSelect: QtCore.QObject, add_to_all=False):
     """
     Adds the selected row in the scan results table to the Attack table.
     """
@@ -987,24 +1001,31 @@ def attack(HWSelect: QtCore.QObject):
         HWSelect.tabWidget_hardware_4,
         HWSelect.tabWidget_hardware_5,
     ]
-    hardware_attack_widgets[tab_index].setRowCount(hardware_attack_widgets[tab_index].rowCount() + 1)
     get_row = scan_results_widgets[tab_index].currentRow()
-    for col in range(0, scan_results_widgets[tab_index].columnCount()):
-        if scan_results_widgets[tab_index].item(get_row, col) is not None:
-            table_item = QtWidgets.QTableWidgetItem(str(scan_results_widgets[tab_index].item(get_row, col).text()))
-            table_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            hardware_attack_widgets[tab_index].setItem(
-                hardware_attack_widgets[tab_index].rowCount() - 1, col, table_item
-            )
-    hardware_attack_widgets[tab_index].resizeColumnsToContents()
-    hardware_attack_widgets[tab_index].resizeRowsToContents()
-    hardware_attack_widgets[tab_index].horizontalHeader().setStretchLastSection(False)
-    hardware_attack_widgets[tab_index].horizontalHeader().setStretchLastSection(True)
-    hardware_tabs_widgets[tab_index].setCurrentIndex(2)
+    hardware_id_present = HWSelect.hardwareID_Present(scan_results_widgets[tab_index], get_row)
+
+    if hardware_id_present:
+        hardware_attack_widgets[tab_index].setRowCount(hardware_attack_widgets[tab_index].rowCount() + 1)
+        for col in range(0, scan_results_widgets[tab_index].columnCount()):
+            if scan_results_widgets[tab_index].item(get_row, col) is not None:
+                table_item = QtWidgets.QTableWidgetItem(str(scan_results_widgets[tab_index].item(get_row, col).text()))
+                table_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                hardware_attack_widgets[tab_index].setItem(
+                    hardware_attack_widgets[tab_index].rowCount() - 1, col, table_item
+                )
+        hardware_attack_widgets[tab_index].resizeColumnsToContents()
+        hardware_attack_widgets[tab_index].resizeRowsToContents()
+        hardware_attack_widgets[tab_index].horizontalHeader().setStretchLastSection(False)
+        hardware_attack_widgets[tab_index].horizontalHeader().setStretchLastSection(True)
+        hardware_tabs_widgets[tab_index].setCurrentIndex(2)
+    else:
+        # Provide Warning
+        if add_to_all == False:
+            fissure.Dashboard.UI_Components.Qt5.errorMessage("Provide hardware ID in scan results table.")
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
-def iq(HWSelect: QtCore.QObject):
+def iq(HWSelect: QtCore.QObject, add_to_all=False):
     """
     Adds the selected row in the scan results table to the IQ table.
     """
@@ -1031,22 +1052,29 @@ def iq(HWSelect: QtCore.QObject):
         HWSelect.tabWidget_hardware_4,
         HWSelect.tabWidget_hardware_5,
     ]
-    hardware_iq_widgets[tab_index].setRowCount(hardware_iq_widgets[tab_index].rowCount() + 1)
     get_row = scan_results_widgets[tab_index].currentRow()
-    for col in range(0, scan_results_widgets[tab_index].columnCount()):
-        if scan_results_widgets[tab_index].item(get_row, col) is not None:
-            table_item = QtWidgets.QTableWidgetItem(str(scan_results_widgets[tab_index].item(get_row, col).text()))
-            table_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            hardware_iq_widgets[tab_index].setItem(hardware_iq_widgets[tab_index].rowCount() - 1, col, table_item)
-    hardware_iq_widgets[tab_index].resizeColumnsToContents()
-    hardware_iq_widgets[tab_index].resizeRowsToContents()
-    hardware_iq_widgets[tab_index].horizontalHeader().setStretchLastSection(False)
-    hardware_iq_widgets[tab_index].horizontalHeader().setStretchLastSection(True)
-    hardware_tabs_widgets[tab_index].setCurrentIndex(3)
+    hardware_id_present = HWSelect.hardwareID_Present(scan_results_widgets[tab_index], get_row)
+
+    if hardware_id_present:
+        hardware_iq_widgets[tab_index].setRowCount(hardware_iq_widgets[tab_index].rowCount() + 1)
+        for col in range(0, scan_results_widgets[tab_index].columnCount()):
+            if scan_results_widgets[tab_index].item(get_row, col) is not None:
+                table_item = QtWidgets.QTableWidgetItem(str(scan_results_widgets[tab_index].item(get_row, col).text()))
+                table_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                hardware_iq_widgets[tab_index].setItem(hardware_iq_widgets[tab_index].rowCount() - 1, col, table_item)
+        hardware_iq_widgets[tab_index].resizeColumnsToContents()
+        hardware_iq_widgets[tab_index].resizeRowsToContents()
+        hardware_iq_widgets[tab_index].horizontalHeader().setStretchLastSection(False)
+        hardware_iq_widgets[tab_index].horizontalHeader().setStretchLastSection(True)
+        hardware_tabs_widgets[tab_index].setCurrentIndex(3)
+    else:
+        # Provide Warning
+        if add_to_all == False:
+            fissure.Dashboard.UI_Components.Qt5.errorMessage("Provide hardware ID in scan results table.")
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
-def archive(HWSelect: QtCore.QObject):
+def archive(HWSelect: QtCore.QObject, add_to_all=False):
     """
     Adds the selected row in the scan results table to the Archive table.
     """
@@ -1073,20 +1101,27 @@ def archive(HWSelect: QtCore.QObject):
         HWSelect.tabWidget_hardware_4,
         HWSelect.tabWidget_hardware_5,
     ]
-    hardware_archive_widgets[tab_index].setRowCount(hardware_archive_widgets[tab_index].rowCount() + 1)
     get_row = scan_results_widgets[tab_index].currentRow()
-    for col in range(0, scan_results_widgets[tab_index].columnCount()):
-        if scan_results_widgets[tab_index].item(get_row, col) is not None:
-            table_item = QtWidgets.QTableWidgetItem(str(scan_results_widgets[tab_index].item(get_row, col).text()))
-            table_item.setTextAlignment(QtCore.Qt.AlignCenter)
-            hardware_archive_widgets[tab_index].setItem(
-                hardware_archive_widgets[tab_index].rowCount() - 1, col, table_item
-            )
-    hardware_archive_widgets[tab_index].resizeColumnsToContents()
-    hardware_archive_widgets[tab_index].resizeRowsToContents()
-    hardware_archive_widgets[tab_index].horizontalHeader().setStretchLastSection(False)
-    hardware_archive_widgets[tab_index].horizontalHeader().setStretchLastSection(True)
-    hardware_tabs_widgets[tab_index].setCurrentIndex(4)
+    hardware_id_present = HWSelect.hardwareID_Present(scan_results_widgets[tab_index], get_row)
+
+    if hardware_id_present:
+        hardware_archive_widgets[tab_index].setRowCount(hardware_archive_widgets[tab_index].rowCount() + 1)
+        for col in range(0, scan_results_widgets[tab_index].columnCount()):
+            if scan_results_widgets[tab_index].item(get_row, col) is not None:
+                table_item = QtWidgets.QTableWidgetItem(str(scan_results_widgets[tab_index].item(get_row, col).text()))
+                table_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                hardware_archive_widgets[tab_index].setItem(
+                    hardware_archive_widgets[tab_index].rowCount() - 1, col, table_item
+                )
+        hardware_archive_widgets[tab_index].resizeColumnsToContents()
+        hardware_archive_widgets[tab_index].resizeRowsToContents()
+        hardware_archive_widgets[tab_index].horizontalHeader().setStretchLastSection(False)
+        hardware_archive_widgets[tab_index].horizontalHeader().setStretchLastSection(True)
+        hardware_tabs_widgets[tab_index].setCurrentIndex(4)
+    else:
+        # Provide Warning
+        if add_to_all == False:
+            fissure.Dashboard.UI_Components.Qt5.errorMessage("Provide hardware ID in scan results table.")
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -1204,11 +1239,11 @@ def add_to_all(HWSelect: QtCore.QObject):
     """
     Adds the selected row in the scan results table to all the tables.
     """
-    tsi(HWSelect)
-    pd(HWSelect)
-    attack(HWSelect)
-    iq(HWSelect)
-    archive(HWSelect)
+    tsi(HWSelect, True)
+    pd(HWSelect, True)
+    attack(HWSelect, True)
+    iq(HWSelect, True)
+    archive(HWSelect, False)  # False allows error message to show up once
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -1407,7 +1442,9 @@ def manual(HWSelect: QtCore.QObject):
                 empty_table_item = QtWidgets.QTableWidgetItem("")
                 empty_table_item.setTextAlignment(QtCore.Qt.AlignCenter)
                 get_tableWidget.setItem(rows, m, empty_table_item)
-    get_tableWidget.selectRow(get_tableWidget.rowCount() - 1)
+            HWSelect.highlight_hardware_id(get_tableWidget, rows)
+
+    get_tableWidget.setCurrentCell(get_tableWidget.rowCount() - 1, 0)
     get_tableWidget.resizeColumnsToContents()
     get_tableWidget.resizeRowsToContents()
     get_tableWidget.horizontalHeader().setStretchLastSection(False)
@@ -2422,3 +2459,6 @@ def delete(HWSelect: QtCore.QObject):
                 fissure.Dashboard.Slots.TopBarSlots.sensor_node_rightClick(HWSelect.dashboard, node_idx=0)
 
         HWSelect.accept()
+
+
+

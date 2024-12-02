@@ -66,15 +66,15 @@ class Dashboard(QtWidgets.QMainWindow):
         self.logger.info("=== INITIALIZING ===")
 
         self.splash = SplashScreen()
-        self.splash.show()
-        # QtWidgets.QApplication.processEvents()
-
+        self.splash.show_with_delay(200)  # Helps with flicker
+        QtWidgets.QApplication.processEvents()
+        
         super().__init__(parent)
 
         # Initialize signals
         self.__init_signals__()
         self.__init_window__()
-        
+
         self.server_process = None
 
         # Create Backend
@@ -1467,18 +1467,14 @@ class SplashScreen(QtWidgets.QDialog):
     def __init__(self):
         super(SplashScreen, self).__init__()
         self.setWindowTitle("Splash Screen")
-        # self.setFixedSize(400, 300)
 
         # Remove the window frame
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
         # Load and set the image
         self.image_label = QtWidgets.QLabel(self)
-        splash_pix = QtGui.QPixmap(QtGui.QPixmap(os.path.join(fissure.utils.UI_DIR, "Icons", "splash.png")))
-        splash_pix = splash_pix.scaled(splash_pix.width() // 2, splash_pix.height() // 2, QtCore.Qt.KeepAspectRatio)
+        splash_pix = QtGui.QPixmap(os.path.join(fissure.utils.UI_DIR, "Icons", "splash.png"))
         self.image_label.setPixmap(splash_pix)
-        self.image_label.setScaledContents(True)
-        # self.image_label.setGeometry(0, 0, 400, 300)
 
         # Set the size of the dialog to match the size of the image
         self.resize(splash_pix.size())
@@ -1493,9 +1489,10 @@ class SplashScreen(QtWidgets.QDialog):
         self.label = QtWidgets.QLabel("Loading...", self)
         self.label.move(int((splash_pix.width() - 100) / 2), int(splash_pix.height() - 50))
         self.label.setStyleSheet("color: #f0f0f0; font-size: 16px; font-weight: bold;")
-
-        # Remove the window frame
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+    
+    def show_with_delay(self, delay_ms: int = 100):
+        """Show the splash screen with a slight delay."""
+        QtCore.QTimer.singleShot(delay_ms, self.show)
 
 
 class DashboardScreen(UI_Types.Dashboard):

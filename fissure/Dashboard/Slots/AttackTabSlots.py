@@ -4422,7 +4422,7 @@ def _slotAttackFuzzingSelectFileClicked(dashboard: QtCore.QObject):
                         dashboard.ui.tableWidget_fuzzing_variables.setRowCount(dashboard.ui.tableWidget_fuzzing_variables.rowCount()+1)
 
                         # Add Buttons/ComboBoxes if Value is a Float
-                        if dashboard.isFloat(value_text):
+                        if fissure.utils.isFloat(value_text):
 
                             # Select Radiobuttons
                             new_button = QtWidgets.QRadioButton("", dashboard)
