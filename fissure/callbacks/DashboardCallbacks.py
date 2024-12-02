@@ -355,33 +355,52 @@ async def detectorReturn(component: object, frequency_value=0, power_value=0, ti
 
     component.frontend.matplotlib_widget.plotPoint(plot_x, 11, component.frontend.matplotlib_widget.computeColormapValue(power_value), 5, component.frontend.wideband_data)
 
-    # Add it to the Table
+    # Add it to the Tables (Detector, Conditioner)
     component.frontend.ui.tableWidget1_tsi_wideband.setRowCount(component.frontend.ui.tableWidget1_tsi_wideband.rowCount()+1)
+    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.setRowCount(component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.rowCount()+1)
 
     # Frequency
     frequency_item = QtWidgets.QTableWidgetItem(str(frequency_value))
     frequency_item.setTextAlignment(QtCore.Qt.AlignCenter)
     component.frontend.ui.tableWidget1_tsi_wideband.setItem(component.frontend.ui.tableWidget1_tsi_wideband.rowCount()-1,0,frequency_item)
+    frequency_item2 = QtWidgets.QTableWidgetItem(str(frequency_value))
+    frequency_item2.setTextAlignment(QtCore.Qt.AlignCenter)
+    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.setItem(component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.rowCount()-1,0,frequency_item2)
 
     # Power
     power_item = QtWidgets.QTableWidgetItem(str(power_value))
     power_item.setTextAlignment(QtCore.Qt.AlignCenter)
     component.frontend.ui.tableWidget1_tsi_wideband.setItem(component.frontend.ui.tableWidget1_tsi_wideband.rowCount()-1,1,power_item)
+    power_item2 = QtWidgets.QTableWidgetItem(str(power_value))
+    power_item2.setTextAlignment(QtCore.Qt.AlignCenter)
+    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.setItem(component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.rowCount()-1,1,power_item2)
 
     # Time
     get_time = time.strftime('%H:%M:%S', time.localtime(time_value))  # time format?
     time_item = QtWidgets.QTableWidgetItem(get_time)
     time_item.setTextAlignment(QtCore.Qt.AlignCenter)
-    component.frontend.ui.tableWidget1_tsi_wideband.setItem(component.frontend.ui.tableWidget1_tsi_wideband.rowCount()-1,2,time_item)  # Will this cause sorting problems going from 12:59 to 1:00 or 23:59 to 0:00?
+    time_obj = QtCore.QTime.fromString(get_time, "HH:mm:ss")
+    time_item.setData(QtCore.Qt.UserRole, time_obj.msecsSinceStartOfDay())
+    component.frontend.ui.tableWidget1_tsi_wideband.setItem(component.frontend.ui.tableWidget1_tsi_wideband.rowCount()-1,2,time_item)
+    time_item2 = QtWidgets.QTableWidgetItem(get_time)
+    time_item2.setTextAlignment(QtCore.Qt.AlignCenter)
+    time_obj2 = QtCore.QTime.fromString(get_time, "HH:mm:ss")
+    time_item2.setData(QtCore.Qt.UserRole, time_obj2.msecsSinceStartOfDay())
+    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.setItem(component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.rowCount()-1,2,time_item2)
 
     # Sort by Time
     component.frontend.ui.tableWidget1_tsi_wideband.sortItems(2,order=QtCore.Qt.DescendingOrder)
+    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.sortItems(2,order=QtCore.Qt.DescendingOrder)
 
     # Resize Table Columns and Rows
     component.frontend.ui.tableWidget1_tsi_wideband.resizeColumnsToContents()
     component.frontend.ui.tableWidget1_tsi_wideband.resizeRowsToContents()
     component.frontend.ui.tableWidget1_tsi_wideband.horizontalHeader().setStretchLastSection(False)
     component.frontend.ui.tableWidget1_tsi_wideband.horizontalHeader().setStretchLastSection(True)
+    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.resizeColumnsToContents()
+    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.resizeRowsToContents()
+    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.horizontalHeader().setStretchLastSection(False)
+    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.horizontalHeader().setStretchLastSection(True)
 
 
 async def conditionerProgressBarReturn(component: object, progress=0, file_index=0):
@@ -392,7 +411,7 @@ async def conditionerProgressBarReturn(component: object, progress=0, file_index
     progress_value = progress
     if int(progress) < 100:
         component.frontend.ui.progressBar_tsi_conditioner_operation.setValue(int(progress))
-        if component.frontend.ui.comboBox_tsi_conditioner_settings_input_source.currentText() == "Folder":
+        if component.frontend.ui.comboBox_tsi_conditioner_input_source.currentText() == "Folder":
             component.frontend.ui.listWidget_tsi_conditioner_input_files.setCurrentRow(file_index)
             TSITabSlots._slotTSI_ConditionerInputLoadFileClicked(component.frontend)
 

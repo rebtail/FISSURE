@@ -1,6 +1,29 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2024-12-01
+
+Upgrading Conditioner tab to use radio hardware for Detector results and frequency list. Part 1.
+
+### Added
+
+- TSI Automation tab (empty)
+- Detector results & frequencies input sources for TSI>Conditioner tab
+- Function to add subdirectories to Python path in SensorNode.py
+- Duplicated Conditioner flow graphs in preparation for hardware flow graphs
+
+### Changed
+
+- Moved detector flow graphs to Detectors folder
+- Grouped conditioner flow graphs into File_Source and Hardware_Source folders
+- Loading Conditioner categories, methods, and method parameters from the FISSURE library/database
+- Modified conditioner_flow_graphs database table
+- Removed old library backups YAML folder and files
+
+### Fixed
+
+- Changed detector results to sort time chronologically instead of lexicographically
+
 ## 2024-11-26
 
 Z-Wave and ceiling fans lessons.

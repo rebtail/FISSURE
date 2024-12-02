@@ -1279,8 +1279,715 @@
 }*/</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
+     <widget class="QWidget" name="tab_18">
+      <attribute name="title">
+       <string>Automation</string>
+      </attribute>
+      <widget class="QLabel" name="label1_44">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>55</y>
+         <width>270</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Ubuntu</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Detector</string>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label1_45">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>125</y>
+         <width>270</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Ubuntu</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Conditioner</string>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label1_46">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>205</y>
+         <width>270</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Ubuntu</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Feature Extractor</string>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label1_47">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>275</y>
+         <width>270</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Ubuntu</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Classifier</string>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label1_48">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>345</y>
+         <width>270</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Ubuntu</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Direction Finding</string>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>85</y>
+         <width>92</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Enable</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_2">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>165</y>
+         <width>92</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Enable</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_3">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>240</y>
+         <width>92</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Enable</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_4">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>310</y>
+         <width>92</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Enable</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_5">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>375</y>
+         <width>92</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Enable</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation">
+       <property name="geometry">
+        <rect>
+         <x>265</x>
+         <y>85</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Hardware:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_2">
+       <property name="geometry">
+        <rect>
+         <x>480</x>
+         <y>85</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Detector Method:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_3">
+       <property name="geometry">
+        <rect>
+         <x>690</x>
+         <y>85</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Preset:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_4">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>165</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Hardware:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_5">
+       <property name="geometry">
+        <rect>
+         <x>465</x>
+         <y>165</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Isolation Category:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_6">
+       <property name="geometry">
+        <rect>
+         <x>650</x>
+         <y>165</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Isolation Method:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_7">
+       <property name="geometry">
+        <rect>
+         <x>805</x>
+         <y>165</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Preset:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_8">
+       <property name="geometry">
+        <rect>
+         <x>940</x>
+         <y>85</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Edit:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_9">
+       <property name="geometry">
+        <rect>
+         <x>945</x>
+         <y>165</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Edit:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_10">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>240</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>All Features:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_11">
+       <property name="geometry">
+        <rect>
+         <x>650</x>
+         <y>240</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Model:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_12">
+       <property name="geometry">
+        <rect>
+         <x>500</x>
+         <y>240</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Technique:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_13">
+       <property name="geometry">
+        <rect>
+         <x>880</x>
+         <y>240</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Input Files:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2_tsi_automation_14">
+       <property name="geometry">
+        <rect>
+         <x>260</x>
+         <y>310</y>
+         <width>136</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Models:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_under_construction">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>240</y>
+         <width>1000</width>
+         <height>550</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_6">
+       <property name="geometry">
+        <rect>
+         <x>395</x>
+         <y>25</y>
+         <width>92</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Repeat</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_7">
+       <property name="geometry">
+        <rect>
+         <x>520</x>
+         <y>25</y>
+         <width>92</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Stop After</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton">
+       <property name="geometry">
+        <rect>
+         <x>1115</x>
+         <y>85</y>
+         <width>89</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="geometry">
+        <rect>
+         <x>1115</x>
+         <y>160</y>
+         <width>89</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_3">
+       <property name="geometry">
+        <rect>
+         <x>1115</x>
+         <y>235</y>
+         <width>89</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_4">
+       <property name="geometry">
+        <rect>
+         <x>1115</x>
+         <y>315</y>
+         <width>89</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_5">
+       <property name="geometry">
+        <rect>
+         <x>1110</x>
+         <y>380</y>
+         <width>89</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_6">
+       <property name="geometry">
+        <rect>
+         <x>630</x>
+         <y>555</y>
+         <width>89</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+      <zorder>label1_44</zorder>
+      <zorder>label1_45</zorder>
+      <zorder>label1_46</zorder>
+      <zorder>label1_47</zorder>
+      <zorder>label1_48</zorder>
+      <zorder>checkBox</zorder>
+      <zorder>checkBox_2</zorder>
+      <zorder>checkBox_3</zorder>
+      <zorder>checkBox_4</zorder>
+      <zorder>checkBox_5</zorder>
+      <zorder>label2_tsi_automation</zorder>
+      <zorder>label2_tsi_automation_2</zorder>
+      <zorder>label2_tsi_automation_3</zorder>
+      <zorder>label2_tsi_automation_4</zorder>
+      <zorder>label2_tsi_automation_5</zorder>
+      <zorder>label2_tsi_automation_6</zorder>
+      <zorder>label2_tsi_automation_7</zorder>
+      <zorder>label2_tsi_automation_8</zorder>
+      <zorder>label2_tsi_automation_9</zorder>
+      <zorder>label2_tsi_automation_10</zorder>
+      <zorder>label2_tsi_automation_11</zorder>
+      <zorder>label2_tsi_automation_12</zorder>
+      <zorder>label2_tsi_automation_13</zorder>
+      <zorder>label2_tsi_automation_14</zorder>
+      <zorder>checkBox_6</zorder>
+      <zorder>checkBox_7</zorder>
+      <zorder>pushButton</zorder>
+      <zorder>pushButton_2</zorder>
+      <zorder>pushButton_3</zorder>
+      <zorder>pushButton_4</zorder>
+      <zorder>pushButton_5</zorder>
+      <zorder>pushButton_6</zorder>
+      <zorder>label_under_construction</zorder>
+     </widget>
      <widget class="QWidget" name="tab_tsi_detector">
       <attribute name="title">
        <string>Detector</string>
@@ -3761,211 +4468,653 @@ p, li { white-space: pre-wrap; }
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <widget class="QListWidget" name="listWidget_tsi_conditioner_input_files">
+       <widget class="QStackedWidget" name="stackedWidget_tsi_conditioner_input">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>130</y>
-          <width>250</width>
-          <height>150</height>
+          <x>5</x>
+          <y>35</y>
+          <width>260</width>
+          <height>310</height>
          </rect>
         </property>
-        <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOn</enum>
+        <property name="currentIndex">
+         <number>0</number>
         </property>
+        <widget class="QWidget" name="page_8">
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_preview">
+          <property name="geometry">
+           <rect>
+            <x>175</x>
+            <y>280</y>
+            <width>81</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Preview</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_terminal">
+          <property name="geometry">
+           <rect>
+            <x>91</x>
+            <y>280</y>
+            <width>80</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Terminal</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox_tsi_conditioner_input_data_type">
+          <property name="geometry">
+           <rect>
+            <x>92</x>
+            <y>2</y>
+            <width>165</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>Complex Float 32</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Float/Float 32</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Short/Int 16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Int/Int 32</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Byte/Int 8</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Complex Float 64</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Complex Int 64</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Complex Int 16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Complex Int 8</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="label2_58">
+          <property name="geometry">
+           <rect>
+            <x>-3</x>
+            <y>65</y>
+            <width>75</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Extensions:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QTextEdit" name="textEdit_tsi_conditioner_input_extensions">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>207</x>
+            <y>65</y>
+            <width>50</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="tabChangesFocus">
+           <bool>true</bool>
+          </property>
+          <property name="html">
+           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;.iq&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label2_57">
+          <property name="geometry">
+           <rect>
+            <x>7</x>
+            <y>2</y>
+            <width>80</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Data Type:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="radioButton_tsi_conditioner_input_extensions_all">
+          <property name="geometry">
+           <rect>
+            <x>82</x>
+            <y>65</y>
+            <width>45</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>All</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox_tsi_conditioner_input_folders">
+          <property name="geometry">
+           <rect>
+            <x>92</x>
+            <y>35</y>
+            <width>165</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhNone</set>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="radioButton_tsi_conditioner_input_extensions_custom">
+          <property name="geometry">
+           <rect>
+            <x>132</x>
+            <y>65</y>
+            <width>70</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Custom</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_rename">
+          <property name="geometry">
+           <rect>
+            <x>7</x>
+            <y>280</y>
+            <width>80</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Rename</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_folder">
+          <property name="geometry">
+           <rect>
+            <x>7</x>
+            <y>35</y>
+            <width>81</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Browse</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_refresh">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>91</x>
+            <y>250</y>
+            <width>80</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Refresh</string>
+          </property>
+         </widget>
+         <widget class="QListWidget" name="listWidget_tsi_conditioner_input_files">
+          <property name="geometry">
+           <rect>
+            <x>7</x>
+            <y>95</y>
+            <width>250</width>
+            <height>150</height>
+           </rect>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOn</enum>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_load_file">
+          <property name="geometry">
+           <rect>
+            <x>7</x>
+            <y>250</y>
+            <width>80</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Load File</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_remove">
+          <property name="geometry">
+           <rect>
+            <x>175</x>
+            <y>250</y>
+            <width>80</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Remove</string>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="page_27">
+         <widget class="QTableWidget" name="tableWidget_tsi_conditioner_input_detector">
+          <property name="geometry">
+           <rect>
+            <x>5</x>
+            <y>35</y>
+            <width>250</width>
+            <height>240</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="textElideMode">
+           <enum>Qt::ElideRight</enum>
+          </property>
+          <property name="cornerButtonEnabled">
+           <bool>false</bool>
+          </property>
+          <attribute name="horizontalHeaderMinimumSectionSize">
+           <number>5</number>
+          </attribute>
+          <attribute name="horizontalHeaderDefaultSectionSize">
+           <number>80</number>
+          </attribute>
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderCascadingSectionResizes">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderStretchLastSection">
+           <bool>false</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>Freq. (MHz)</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Power (dB)</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Time</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+          </column>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_detector_remove">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>115</x>
+            <y>280</y>
+            <width>70</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Remove</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_detector_clear">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>190</x>
+            <y>280</y>
+            <width>65</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Clear</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_detector_up">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>5</x>
+            <y>280</y>
+            <width>50</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Up</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_detector_down">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>60</x>
+            <y>280</y>
+            <width>50</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Down</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label2_conditioner_input_detector_dwell">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>2</y>
+            <width>90</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Dwell (s):</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QTextEdit" name="textEdit_tsi_conditioner_input_detector_dwell">
+          <property name="geometry">
+           <rect>
+            <x>92</x>
+            <y>2</y>
+            <width>75</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="tabChangesFocus">
+           <bool>true</bool>
+          </property>
+          <property name="html">
+           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;10&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="page_28">
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_frequencies_remove">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>115</x>
+            <y>280</y>
+            <width>70</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Remove</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_frequencies_down">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>60</x>
+            <y>280</y>
+            <width>50</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Down</string>
+          </property>
+         </widget>
+         <widget class="QTableWidget" name="tableWidget_tsi_conditioner_input_frequencies">
+          <property name="geometry">
+           <rect>
+            <x>5</x>
+            <y>5</y>
+            <width>250</width>
+            <height>240</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectItems</enum>
+          </property>
+          <property name="textElideMode">
+           <enum>Qt::ElideRight</enum>
+          </property>
+          <property name="cornerButtonEnabled">
+           <bool>false</bool>
+          </property>
+          <attribute name="horizontalHeaderMinimumSectionSize">
+           <number>5</number>
+          </attribute>
+          <attribute name="horizontalHeaderDefaultSectionSize">
+           <number>125</number>
+          </attribute>
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderCascadingSectionResizes">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderStretchLastSection">
+           <bool>false</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>Freq. (MHz)</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Dwell (s)</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+          </column>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_frequencies_up">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>5</x>
+            <y>280</y>
+            <width>50</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Up</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_frequencies_clear">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>190</x>
+            <y>280</y>
+            <width>65</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Clear</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_input_frequencies_add">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>5</x>
+            <y>250</y>
+            <width>50</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Add</string>
+          </property>
+         </widget>
+        </widget>
        </widget>
-       <widget class="QPushButton" name="pushButton_tsi_conditioner_input_load_file">
+       <widget class="QComboBox" name="comboBox_tsi_conditioner_input_source">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>285</y>
-          <width>80</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Load File</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_tsi_conditioner_input_refresh">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>94</x>
-          <y>285</y>
-          <width>80</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Refresh</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label2_57">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>40</y>
-          <width>80</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Data Type:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-       <widget class="QComboBox" name="comboBox_tsi_conditioner_input_data_type">
-        <property name="geometry">
-         <rect>
-          <x>100</x>
-          <y>40</y>
-          <width>157</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <item>
-         <property name="text">
-          <string>Complex Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Float/Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Short/Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Int/Int 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Byte/Int 8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Float 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 8</string>
-         </property>
-        </item>
-       </widget>
-       <widget class="QPushButton" name="pushButton_tsi_conditioner_input_remove">
-        <property name="geometry">
-         <rect>
-          <x>178</x>
-          <y>285</y>
-          <width>80</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Remove</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_tsi_conditioner_input_folder">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>70</y>
-          <width>81</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Browse</string>
-        </property>
-       </widget>
-       <widget class="QComboBox" name="comboBox_tsi_conditioner_input_folders">
-        <property name="geometry">
-         <rect>
-          <x>95</x>
-          <y>70</y>
+          <x>97</x>
+          <y>5</y>
           <width>165</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::RightToLeft</enum>
-        </property>
-        <property name="inputMethodHints">
-         <set>Qt::ImhNone</set>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_tsi_conditioner_input_rename">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>315</y>
-          <width>80</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Rename</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_tsi_conditioner_input_terminal">
-        <property name="geometry">
-         <rect>
-          <x>94</x>
-          <y>315</y>
-          <width>80</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Terminal</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_tsi_conditioner_input_preview">
-        <property name="geometry">
-         <rect>
-          <x>178</x>
-          <y>315</y>
-          <width>81</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Preview</string>
-        </property>
-       </widget>
-       <widget class="QComboBox" name="comboBox_tsi_conditioner_settings_input_source">
-        <property name="geometry">
-         <rect>
-          <x>100</x>
-          <y>10</y>
-          <width>75</width>
           <height>27</height>
          </rect>
         </property>
@@ -3988,12 +5137,22 @@ p, li { white-space: pre-wrap; }
           <string>Folder</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Detector Results</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Frequencies</string>
+         </property>
+        </item>
        </widget>
        <widget class="QLabel" name="label2_conditioner_settings_input_source">
         <property name="geometry">
          <rect>
-          <x>0</x>
-          <y>10</y>
+          <x>5</x>
+          <y>5</y>
           <width>90</width>
           <height>27</height>
          </rect>
@@ -4008,89 +5167,6 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-       <widget class="QRadioButton" name="radioButton_tsi_conditioner_input_extensions_all">
-        <property name="geometry">
-         <rect>
-          <x>85</x>
-          <y>100</y>
-          <width>45</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>All</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label2_58">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>100</y>
-          <width>75</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Extensions:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-       <widget class="QRadioButton" name="radioButton_tsi_conditioner_input_extensions_custom">
-        <property name="geometry">
-         <rect>
-          <x>135</x>
-          <y>100</y>
-          <width>70</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Custom</string>
-        </property>
-       </widget>
-       <widget class="QTextEdit" name="textEdit_tsi_conditioner_input_extensions">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>210</x>
-          <y>100</y>
-          <width>50</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="tabChangesFocus">
-         <bool>true</bool>
-        </property>
-        <property name="html">
-         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;.iq&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </widget>
@@ -4622,27 +5698,6 @@ p, li { white-space: pre-wrap; }
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <widget class="QLabel" name="label2_tsi_conditioner_settings_isolation_method">
-        <property name="geometry">
-         <rect>
-          <x>440</x>
-          <y>40</y>
-          <width>140</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Isolation Method:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
        <widget class="QLabel" name="label2_tsi_conditioner_settings_file_output">
         <property name="geometry">
          <rect>
@@ -4837,60 +5892,6 @@ p, li { white-space: pre-wrap; }
          <string>Browse</string>
         </property>
        </widget>
-       <widget class="QComboBox" name="comboBox_tsi_conditioner_settings_isolation_method">
-        <property name="geometry">
-         <rect>
-          <x>590</x>
-          <y>40</y>
-          <width>280</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="inputMethodHints">
-         <set>Qt::ImhNone</set>
-        </property>
-        <property name="currentIndex">
-         <number>1</number>
-        </property>
-        <item>
-         <property name="text">
-          <string>Normal</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Normal Decay</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Power Squelch</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Lowpass</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Power Squelch then Lowpass</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Bandpass</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Strongest Frequency then Bandpass</string>
-         </property>
-        </item>
-       </widget>
        <widget class="QPushButton" name="pushButton_tsi_conditioner_settings_now">
         <property name="geometry">
          <rect>
@@ -4999,1175 +6000,6 @@ p, li { white-space: pre-wrap; }
          <enum>Qt::Vertical</enum>
         </property>
        </widget>
-       <widget class="QStackedWidget" name="stackedWidget_tsi_conditioner_settings">
-        <property name="geometry">
-         <rect>
-          <x>490</x>
-          <y>70</y>
-          <width>400</width>
-          <height>275</height>
-         </rect>
-        </property>
-        <property name="currentIndex">
-         <number>1</number>
-        </property>
-        <widget class="QWidget" name="page_3">
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_threshold">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>10</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Amplitude Threshold:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_threshold">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>10</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;.002&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QWidget" name="page_18">
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_decay_threshold">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>10</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;.004&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_decay_threshold">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>10</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Amplitude Threshold:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_decay_decay">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>40</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;.0002&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_decay_decay">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>40</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Decay:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QWidget" name="page_19">
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_psbt_threshold">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>40</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;.002&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_psbt_threshold">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>40</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Amplitude Threshold:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_psbt_squelch">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>10</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;-70&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_psbt_squelch">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>10</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Squelch Level (dB):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QWidget" name="page_20"/>
-        <widget class="QWidget" name="page_21">
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_lowpass_threshold">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>100</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;.002&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_lowpass_transition">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>40</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Transition Width (Hz):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_lowpass_threshold">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>100</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Amplitude Threshold:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_lowpass_beta">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>70</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;6.76&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_lowpass_beta">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>70</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Filter Beta:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_lowpass_transition">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>40</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;10e3&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_lowpass_cutoff">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>10</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;100e3&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_lowpass_cutoff">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>10</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Cutoff Frequency (Hz):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QWidget" name="page_22">
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_psl_cutoff">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>40</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Cutoff Frequency (Hz):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_psl_beta">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>100</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;6.76&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_psl_beta">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>100</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Filter Beta:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_psl_threshold">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>130</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Amplitude Threshold:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_psl_transition">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>70</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;10e3&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_psl_threshold">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>130</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;.002&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_psl_cutoff">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>40</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;100e3&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_psl_transition">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>70</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Transition Width (Hz):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_psl_squelch">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>10</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;-70&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_psl_squelch">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>10</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Squelch Level (dB):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QWidget" name="page_23">
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_bandpass_threshold">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>130</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;.002&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_bandpass_transition">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>70</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Transition Width (Hz):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_bandpass_beta">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>100</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;6.76&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_bandpass_beta">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>100</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Filter Beta:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_bandpass_threshold">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>130</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Amplitude Threshold:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_bandpass_freq">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>10</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;100e3&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_bandpass_freq">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>10</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Bandpass Freq. (Hz):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_bandpass_transition">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>70</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;10e3&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_bandpass_width">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>40</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;100e3&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_bandpass_width">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>40</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Bandpass Width (Hz):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_1">
-          <property name="geometry">
-           <rect>
-            <x>260</x>
-            <y>15</y>
-            <width>220</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>(0-sample_rate/2)</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_7">
-          <property name="geometry">
-           <rect>
-            <x>260</x>
-            <y>45</y>
-            <width>220</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>(freq +/- width/2)</string>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QWidget" name="page_24">
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_sfb_freq">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>70</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_sfb_transition">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>130</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;10e3&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_sfb_width">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>100</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;200e3&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_sfb_freq">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>70</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Bandpass Freq. (Hz):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_sfb_beta">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>160</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;6.76&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_sfb_width">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>100</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Bandpass Width (Hz):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_sfb_threshold">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>190</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Amplitude Threshold:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_sfb_threshold">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>190</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;.002&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_sfb_beta">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>160</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Filter Beta:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_sfb_transition">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>130</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Transition Width (Hz):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_sfb_fft_size">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>10</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>FFT Size:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_sfb_fft_size">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>10</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;8192&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_tsi_conditioner_settings_bt_sfb_fft_threshold">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>40</y>
-            <width>140</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>FFT Threshold (dB):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-         <widget class="QTextEdit" name="textEdit_tsi_conditioner_settings_bt_sfb_fft_threshold">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>40</y>
-            <width>101</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="html">
-           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;-80&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_15">
-          <property name="geometry">
-           <rect>
-            <x>260</x>
-            <y>105</y>
-            <width>220</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>(freq +/- width/2)</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label2_10">
-          <property name="geometry">
-           <rect>
-            <x>260</x>
-            <y>75</y>
-            <width>220</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>(0-sample_rate/2)</string>
-          </property>
-         </widget>
-        </widget>
-       </widget>
        <widget class="QComboBox" name="comboBox_tsi_conditioner_settings_normalize">
         <property name="enabled">
          <bool>false</bool>
@@ -6206,68 +6038,6 @@ p, li { white-space: pre-wrap; }
         <item>
          <property name="text">
           <string>-9223372036854775808, 9223372036854775807</string>
-         </property>
-        </item>
-       </widget>
-       <widget class="QLabel" name="label2_tsi_conditioner_settings_isolation_category">
-        <property name="geometry">
-         <rect>
-          <x>440</x>
-          <y>10</y>
-          <width>140</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Isolation Category:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-       <widget class="QComboBox" name="comboBox_tsi_conditioner_settings_isolation_category">
-        <property name="geometry">
-         <rect>
-          <x>590</x>
-          <y>10</y>
-          <width>280</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="inputMethodHints">
-         <set>Qt::ImhNone</set>
-        </property>
-        <item>
-         <property name="text">
-          <string>Energy - Burst Tagger</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Energy - Imagery</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Eigenvalue</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Matched Filter</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Cyclostationary</string>
          </property>
         </item>
        </widget>
@@ -6374,18 +6144,343 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="pushButton_tsi_conditioner_settings_view">
+       <widget class="QStackedWidget" name="stackedWidget_tsi_conditioner_settings_method">
         <property name="geometry">
          <rect>
-          <x>875</x>
-          <y>40</y>
-          <width>40</width>
-          <height>27</height>
+          <x>465</x>
+          <y>5</y>
+          <width>455</width>
+          <height>340</height>
          </rect>
         </property>
-        <property name="text">
-         <string>View</string>
+        <property name="currentIndex">
+         <number>0</number>
         </property>
+        <widget class="QWidget" name="File_Folder">
+         <widget class="QLabel" name="label2_tsi_conditioner_settings_isolation_method">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>35</y>
+            <width>120</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Isolation Method:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label2_tsi_conditioner_settings_isolation_category">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>5</y>
+            <width>120</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Isolation Category:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_settings_view">
+          <property name="geometry">
+           <rect>
+            <x>410</x>
+            <y>35</y>
+            <width>40</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>View</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox_tsi_conditioner_settings_isolation_category">
+          <property name="geometry">
+           <rect>
+            <x>125</x>
+            <y>5</y>
+            <width>280</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhNone</set>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox_tsi_conditioner_settings_isolation_method">
+          <property name="geometry">
+           <rect>
+            <x>125</x>
+            <y>35</y>
+            <width>280</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhNone</set>
+          </property>
+          <property name="currentIndex">
+           <number>-1</number>
+          </property>
+         </widget>
+         <widget class="QTableWidget" name="tableWidget_tsi_conditioner_settings_files">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>70</y>
+            <width>440</width>
+            <height>265</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>Ubuntu</family>
+            <pointsize>10</pointsize>
+            <strikeout>false</strikeout>
+           </font>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <attribute name="horizontalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="horizontalHeaderMinimumSectionSize">
+           <number>5</number>
+          </attribute>
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderStretchLastSection">
+           <bool>false</bool>
+          </attribute>
+          <row>
+           <property name="text">
+            <string/>
+           </property>
+          </row>
+          <column>
+           <property name="text">
+            <string>Value</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+          </column>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="Frequencies">
+         <widget class="QLabel" name="label2_tsi_conditioner_settings_isolation_frequencies_method">
+          <property name="geometry">
+           <rect>
+            <x>-25</x>
+            <y>65</y>
+            <width>140</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Isolation Method:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label2_tsi_conditioner_settings_isolation_frequencies_category">
+          <property name="geometry">
+           <rect>
+            <x>-25</x>
+            <y>35</y>
+            <width>140</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Isolation Category:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_tsi_conditioner_settings_frequencies_view">
+          <property name="geometry">
+           <rect>
+            <x>410</x>
+            <y>60</y>
+            <width>40</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>View</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox_tsi_conditioner_settings_isolation_frequencies_category">
+          <property name="geometry">
+           <rect>
+            <x>125</x>
+            <y>35</y>
+            <width>280</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhNone</set>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox_tsi_conditioner_settings_isolation_frequencies_method">
+          <property name="geometry">
+           <rect>
+            <x>125</x>
+            <y>65</y>
+            <width>280</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhNone</set>
+          </property>
+          <property name="currentIndex">
+           <number>-1</number>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label2_tsi_conditioner_settings_isolation_frequencies_hardware">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>10</y>
+            <width>120</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Hardware:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox_tsi_conditioner_settings_isolation_hardware">
+          <property name="geometry">
+           <rect>
+            <x>125</x>
+            <y>5</y>
+            <width>280</width>
+            <height>27</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QTableWidget" name="tableWidget_tsi_conditioner_settings_frequencies">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>100</y>
+            <width>440</width>
+            <height>235</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>Ubuntu</family>
+            <pointsize>10</pointsize>
+            <strikeout>false</strikeout>
+           </font>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <attribute name="horizontalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="horizontalHeaderMinimumSectionSize">
+           <number>5</number>
+          </attribute>
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderStretchLastSection">
+           <bool>false</bool>
+          </attribute>
+          <row>
+           <property name="text">
+            <string/>
+           </property>
+          </row>
+          <column>
+           <property name="text">
+            <string>Value</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+          </column>
+         </widget>
+        </widget>
        </widget>
       </widget>
       <widget class="QLabel" name="label1_34">
@@ -9826,7 +9921,7 @@ p, li { white-space: pre-wrap; }
           </rect>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tab_16">
           <attribute name="title">

@@ -272,6 +272,7 @@ class TargetSignalIdentification:
         common_parameter_values,
         method_parameter_names,
         method_parameter_values,
+        method_filepath
     ):
         """
         Performs the signal conditioning actions.
@@ -316,604 +317,646 @@ class TargetSignalIdentification:
                     get_normalize_max = float(common_parameter_values[n])
                 except (TypeError, ValueError):
                     get_normalize_max = ""
+        
+        # Isolation Method Filepath
+        full_method_filepath = os.path.join(fissure.utils.get_fg_library_dir(self.os_info), "TSI Flow Graphs", "Conditioner") + "/" + method_filepath
+        
+        # GNU Radio Parameters Do Not Allow Underscores
+        for n in range(0, len(method_parameter_names)):
+            method_parameter_names[n] = method_parameter_names[n].replace('_','-')
+        
+        # Create a List of Files in Output Directory
+        if get_output_directory != "":
+            file_names = []
+            for fname in os.listdir(get_output_directory):
+                if os.path.isfile(os.path.join(get_output_directory, fname)):
+                    file_names.append(fname)
 
-        # Flow Graph Directory
-        if get_type == "Complex Float 32":
-            fg_directory = os.path.join(
-                fissure.utils.get_fg_library_dir(self.os_info),
-                "TSI Flow Graphs",
-                "Conditioner",
-                "Flow_Graphs",
-                "ComplexFloat32",
-            )
-        elif get_type == "Complex Int 16":
-            fg_directory = os.path.join(
-                fissure.utils.get_fg_library_dir(self.os_info), "TSI Flow Graphs", "Conditioner", "Flow_Graphs", "ComplexInt16"
-            )
+        # Perform the Method
+        count = 0
+        new_files = []
+        original_filenames = []
+        for n in range(0, len(get_all_filepaths)):
+
+            # Stop Conditioner Triggered
+            if self.conditioner_running == False:
+                self.logger.info("TSI Conditioner Stopped")
+                return
+
+            # Update Progress Bar
+            progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
+            asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+            # Run the Flow Graph
+            cmd = "python3 '" + full_method_filepath + "' --filepath '" + get_all_filepaths[n] + "' --sample-rate " + get_sample_rate
+            for p in range(0, len(method_parameter_names)):
+                cmd = cmd + " --" + method_parameter_names[p] + " " + method_parameter_values[p]
+            
+            p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
+            (output, err) = p1.communicate()
+            p1.wait()
+
+            # Rename the New Files
+            if get_output_directory != "":
+                for fname in os.listdir(get_output_directory):
+                    if os.path.isfile(os.path.join(get_output_directory, fname)):
+                        if fname not in file_names:
+                            count = count + 1
+                            os.rename(
+                                os.path.join(get_output_directory, fname),
+                                os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
+                            )
+                            new_files.append(get_prefix + str(count).zfill(5) + ".iq")
+                            file_names.append(get_prefix + str(count).zfill(5) + ".iq")
+                            original_filenames.append(get_all_filepaths[n])
+
+        # Update Progress Bar
+        progress_value = 95
+        asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
 
         # Method1: burst_tagger
-        if (get_category == "Energy - Burst Tagger") and (get_method == "Normal"):
-            count = 0
-            new_files = []
-            original_filenames = []
+        # if (get_category == "Energy - Burst Tagger") and (get_method == "Normal"):
+            # count = 0
+            # new_files = []
+            # original_filenames = []
 
-            # Create a List of Files in Output Directory
-            if get_output_directory != "":
-                file_names = []
-                for fname in os.listdir(get_output_directory):
-                    if os.path.isfile(os.path.join(get_output_directory, fname)):
-                        file_names.append(fname)
+            # # Create a List of Files in Output Directory
+            # if get_output_directory != "":
+            #     file_names = []
+            #     for fname in os.listdir(get_output_directory):
+            #         if os.path.isfile(os.path.join(get_output_directory, fname)):
+            #             file_names.append(fname)
 
-            for n in range(0, len(get_all_filepaths)):
+            # for n in range(0, len(get_all_filepaths)):
 
-                # Stop Conditioner Triggered
-                if self.conditioner_running == False:
-                    self.logger.info("TSI Conditioner Stopped")
-                    return
+            #     # Stop Conditioner Triggered
+            #     if self.conditioner_running == False:
+            #         self.logger.info("TSI Conditioner Stopped")
+            #         return
 
-                # Update Progress Bar
-                progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
-                asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+            #     # Update Progress Bar
+            #     progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
+            #     asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
                 
-                # Method Parameters
-                for m in range(len(method_parameter_names)):
-                    if method_parameter_names[m] == "threshold":
-                        get_threshold = method_parameter_values[m]
-
-                # Run the Flow Graph
-                cmd = (
-                    "python3 '"
-                    + fg_directory
-                    + "/burst_tagger/normal.py' --filepath '"
-                    + get_all_filepaths[n]
-                    + "' --sample-rate "
-                    + get_sample_rate
-                    + " --threshold "
-                    + get_threshold
-                )
-                p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
-                (output, err) = p1.communicate()
-                p1.wait()
-
-                # Rename the New Files
-                if get_output_directory != "":
-                    for fname in os.listdir(get_output_directory):
-                        if os.path.isfile(os.path.join(get_output_directory, fname)):
-                            if fname not in file_names:
-                                count = count + 1
-                                os.rename(
-                                    os.path.join(get_output_directory, fname),
-                                    os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
-                                )
-                                new_files.append(get_prefix + str(count).zfill(5) + ".iq")
-                                file_names.append(get_prefix + str(count).zfill(5) + ".iq")
-                                original_filenames.append(get_all_filepaths[n])
-
-            # Update Progress Bar
-            progress_value = 95
-            asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-        # Method2: burst_tagger with Decay
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Normal Decay"):
-            count = 0
-            new_files = []
-            original_filenames = []
-
-            # Create a List of Files in Output Directory
-            if get_output_directory != "":
-                file_names = []
-                for fname in os.listdir(get_output_directory):
-                    if os.path.isfile(os.path.join(get_output_directory, fname)):
-                        file_names.append(fname)
-
-            for n in range(0, len(get_all_filepaths)):
-
-                # Stop Conditioner Triggered
-                if self.conditioner_running == False:
-                    self.logger.info("TSI Conditioner Stopped")
-                    return
-
-                # Update Progress Bar
-                progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
-                asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-                # Method Parameters
-                for m in range(len(method_parameter_names)):
-                    if method_parameter_names[m] == "threshold":
-                        get_threshold = method_parameter_values[m]
-                    elif method_parameter_names[m] == "decay":
-                        get_decay = method_parameter_values[m]
-
-                # Run the Flow Graph
-                cmd = (
-                    "python3 '"
-                    + fg_directory
-                    + "/burst_tagger/normal_decay.py' --filepath '"
-                    + get_all_filepaths[n]
-                    + "' --sample-rate "
-                    + get_sample_rate
-                    + " --threshold "
-                    + get_threshold
-                    + " --decay "
-                    + get_decay
-                )
-                p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
-                (output, err) = p1.communicate()
-                p1.wait()
-
-                # Rename the New Files
-                if get_output_directory != "":
-                    for fname in os.listdir(get_output_directory):
-                        if os.path.isfile(os.path.join(get_output_directory, fname)):
-                            if fname not in file_names:
-                                count = count + 1
-                                os.rename(
-                                    os.path.join(get_output_directory, fname),
-                                    os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
-                                )
-                                new_files.append(get_prefix + str(count).zfill(5) + ".iq")
-                                file_names.append(get_prefix + str(count).zfill(5) + ".iq")
-                                original_filenames.append(get_all_filepaths[n])
-
-            # Update Progress Bar
-            progress_value = 95
-            asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-        # Method3: power_squelch_with_burst_tagger
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Power Squelch"):
-            count = 0
-            new_files = []
-            original_filenames = []
-
-            # Create a List of Files in Output Directory
-            if get_output_directory != "":
-                file_names = []
-                for fname in os.listdir(get_output_directory):
-                    if os.path.isfile(os.path.join(get_output_directory, fname)):
-                        file_names.append(fname)
-
-            for n in range(0, len(get_all_filepaths)):
-
-                # Stop Conditioner Triggered
-                if self.conditioner_running == False:
-                    self.logger.info("TSI Conditioner Stopped")
-                    return
-
-                # Update Progress Bar
-                progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
-                asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-                # Method Parameters
-                for m in range(len(method_parameter_names)):
-                    if method_parameter_names[m] == "squelch":
-                        get_squelch = method_parameter_values[m]
-                    elif method_parameter_names[m] == "threshold":
-                        get_threshold = method_parameter_values[m]
-
-                # Run the Flow Graph
-                cmd = (
-                    "python3 '"
-                    + fg_directory
-                    + "/burst_tagger/power_squelch.py' --filepath '"
-                    + get_all_filepaths[n]
-                    + "' --sample-rate "
-                    + get_sample_rate
-                    + " --threshold "
-                    + get_threshold
-                    + " --squelch "
-                    + get_squelch
-                )
-                p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
-                (output, err) = p1.communicate()
-                p1.wait()
-
-                # Rename the New Files
-                if get_output_directory != "":
-                    for fname in os.listdir(get_output_directory):
-                        if os.path.isfile(os.path.join(get_output_directory, fname)):
-                            if fname not in file_names:
-                                count = count + 1
-                                os.rename(
-                                    os.path.join(get_output_directory, fname),
-                                    os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
-                                )
-                                new_files.append(get_prefix + str(count).zfill(5) + ".iq")
-                                file_names.append(get_prefix + str(count).zfill(5) + ".iq")
-                                original_filenames.append(get_all_filepaths[n])
-
-            # Update Progress Bar
-            progress_value = 95
-            asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-        # Method4: lowpass_filter
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Lowpass"):
-            count = 0
-            new_files = []
-            original_filenames = []
-
-            # Create a List of Files in Output Directory
-            if get_output_directory != "":
-                file_names = []
-                for fname in os.listdir(get_output_directory):
-                    if os.path.isfile(os.path.join(get_output_directory, fname)):
-                        file_names.append(fname)
-
-            for n in range(0, len(get_all_filepaths)):
-
-                # Stop Conditioner Triggered
-                if self.conditioner_running == False:
-                    self.logger.info("TSI Conditioner Stopped")
-                    return
-
-                # Update Progress Bar
-                progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
-                asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-                # Method Parameters
-                for m in range(len(method_parameter_names)):
-                    if method_parameter_names[m] == "threshold":
-                        get_threshold = method_parameter_values[m]
-                    elif method_parameter_names[m] == "cutoff":
-                        get_cutoff = method_parameter_values[m]
-                    elif method_parameter_names[m] == "transition":
-                        get_transition = method_parameter_values[m]
-                    elif method_parameter_names[m] == "beta":
-                        get_beta = method_parameter_values[m]
-
-                # Run the Flow Graph
-                cmd = (
-                    "python3 '"
-                    + fg_directory
-                    + "/burst_tagger/lowpass.py' --filepath '"
-                    + get_all_filepaths[n]
-                    + "' --sample-rate "
-                    + get_sample_rate
-                    + " --threshold "
-                    + get_threshold
-                    + " --cutoff-freq "
-                    + get_cutoff
-                    + " --transition-width "
-                    + get_transition
-                    + " --beta "
-                    + get_beta
-                )
-                p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
-                (output, err) = p1.communicate()
-                p1.wait()
-
-                # Rename the New Files
-                if get_output_directory != "":
-                    for fname in os.listdir(get_output_directory):
-                        if os.path.isfile(os.path.join(get_output_directory, fname)):
-                            if fname not in file_names:
-                                count = count + 1
-                                os.rename(
-                                    os.path.join(get_output_directory, fname),
-                                    os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
-                                )
-                                new_files.append(get_prefix + str(count).zfill(5) + ".iq")
-                                file_names.append(get_prefix + str(count).zfill(5) + ".iq")
-                                original_filenames.append(get_all_filepaths[n])
-
-            # Update Progress Bar
-            progress_value = 95
-            asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-        # Method5: power_squelch_lowpass
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Power Squelch then Lowpass"):
-            count = 0
-            new_files = []
-            original_filenames = []
-
-            # Create a List of Files in Output Directory
-            if get_output_directory != "":
-                file_names = []
-                for fname in os.listdir(get_output_directory):
-                    if os.path.isfile(os.path.join(get_output_directory, fname)):
-                        file_names.append(fname)
-
-            for n in range(0, len(get_all_filepaths)):
-
-                # Stop Conditioner Triggered
-                if self.conditioner_running == False:
-                    self.logger.info("TSI Conditioner Stopped")
-                    return
-
-                # Update Progress Bar
-                progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
-                asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-                # Method Parameters
-                for m in range(len(method_parameter_names)):
-                    if method_parameter_names[m] == "squelch":
-                        get_squelch = method_parameter_values[m]
-                    elif method_parameter_names[m] == "cutoff":
-                        get_cutoff = method_parameter_values[m]
-                    elif method_parameter_names[m] == "transition":
-                        get_transition = method_parameter_values[m]
-                    elif method_parameter_names[m] == "beta":
-                        get_beta = method_parameter_values[m]
-                    elif method_parameter_names[m] == "threshold":
-                        get_threshold = method_parameter_values[m]
-
-                # Run the Flow Graph
-                cmd = (
-                    "python3 '"
-                    + fg_directory
-                    + "/burst_tagger/power_squelch_lowpass.py' --filepath '"
-                    + get_all_filepaths[n]
-                    + "' --sample-rate "
-                    + get_sample_rate
-                    + " --threshold "
-                    + get_threshold
-                    + " --cutoff-freq "
-                    + get_cutoff
-                    + " --transition-width "
-                    + get_transition
-                    + " --beta "
-                    + get_beta
-                    + " --squelch "
-                    + get_squelch
-                )
-                p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
-                (output, err) = p1.communicate()
-                p1.wait()
-
-                # Rename the New Files
-                if get_output_directory != "":
-                    for fname in os.listdir(get_output_directory):
-                        if os.path.isfile(os.path.join(get_output_directory, fname)):
-                            if fname not in file_names:
-                                count = count + 1
-                                os.rename(
-                                    os.path.join(get_output_directory, fname),
-                                    os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
-                                )
-                                new_files.append(get_prefix + str(count).zfill(5) + ".iq")
-                                file_names.append(get_prefix + str(count).zfill(5) + ".iq")
-                                original_filenames.append(get_all_filepaths[n])
-
-            # Update Progress Bar
-            progress_value = 95
-            asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-        # Method6: bandpass_filter
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Bandpass"):
-            count = 0
-            new_files = []
-            original_filenames = []
-
-            # Create a List of Files in Output Directory
-            if get_output_directory != "":
-                file_names = []
-                for fname in os.listdir(get_output_directory):
-                    if os.path.isfile(os.path.join(get_output_directory, fname)):
-                        file_names.append(fname)
-
-            for n in range(0, len(get_all_filepaths)):
-
-                # Stop Conditioner Triggered
-                if self.conditioner_running == False:
-                    self.logger.info("TSI Conditioner Stopped")
-                    return
-
-                # Update Progress Bar
-                progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
-                asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-                # Method Parameters
-                for m in range(len(method_parameter_names)):
-                    if method_parameter_names[m] == "bandpass_frequency":
-                        get_bandpass_freq = method_parameter_values[m]
-                    elif method_parameter_names[m] == "bandpass_width":
-                        get_bandpass_width = method_parameter_values[m]
-                    elif method_parameter_names[m] == "transition":
-                        get_transition = method_parameter_values[m]
-                    elif method_parameter_names[m] == "beta":
-                        get_beta = method_parameter_values[m]
-                    elif method_parameter_names[m] == "threshold":
-                        get_threshold = method_parameter_values[m]
-
-                # Run the Flow Graph
-                cmd = (
-                    "python3 '"
-                    + fg_directory
-                    + "/burst_tagger/bandpass.py' --filepath '"
-                    + get_all_filepaths[n]
-                    + "' --sample-rate "
-                    + get_sample_rate
-                    + " --threshold "
-                    + get_threshold
-                    + " --bandpass-freq "
-                    + get_bandpass_freq
-                    + " --transition-width "
-                    + get_transition
-                    + " --beta "
-                    + get_beta
-                    + " --bandpass-width "
-                    + get_bandpass_width
-                )
-                p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
-                (output, err) = p1.communicate()
-                p1.wait()
-
-                # Rename the New Files
-                if get_output_directory != "":
-                    for fname in os.listdir(get_output_directory):
-                        if os.path.isfile(os.path.join(get_output_directory, fname)):
-                            if fname not in file_names:
-                                count = count + 1
-                                os.rename(
-                                    os.path.join(get_output_directory, fname),
-                                    os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
-                                )
-                                new_files.append(get_prefix + str(count).zfill(5) + ".iq")
-                                file_names.append(get_prefix + str(count).zfill(5) + ".iq")
-                                original_filenames.append(get_all_filepaths[n])
-
-            # Update Progress Bar
-            progress_value = 95
-            asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-        # Method7: strongest
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Strongest Frequency then Bandpass"):
-            # self.textEdit_tsi_settings_bt_sfb_freq.setPlainText("?")
-            # self.textEdit_tsi_settings_bt_sfb_freq.setAlignment(QtCore.Qt.AlignCenter)
-            count = 0
-            new_files = []
-            original_filenames = []
-
-            # Create a List of Files in Output Directory
-            if get_output_directory != "":
-                file_names = []
-                for fname in os.listdir(get_output_directory):
-                    if os.path.isfile(os.path.join(get_output_directory, fname)):
-                        file_names.append(fname)
-
-            for n in range(0, len(get_all_filepaths)):
-
-                # Stop Conditioner Triggered
-                if self.conditioner_running == False:
-                    self.logger.info("TSI Conditioner Stopped")
-                    return
-
-                # Update Progress Bar
-                progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
-                asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-                # Method Parameters
-                for m in range(len(method_parameter_names)):
-                    if method_parameter_names[m] == "fft_size":
-                        get_fft_size = method_parameter_values[m]
-                    elif method_parameter_names[m] == "fft_threshold":
-                        get_fft_threshold = method_parameter_values[m]
-                    elif method_parameter_names[m] == "bandpass_width":
-                        get_bandpass_width = method_parameter_values[m]
-                    elif method_parameter_names[m] == "transition":
-                        get_transition = method_parameter_values[m]
-                    elif method_parameter_names[m] == "beta":
-                        get_beta = method_parameter_values[m]
-                    elif method_parameter_names[m] == "threshold":
-                        get_threshold = method_parameter_values[m]
-
-                # Acquire Number of Samples
-                file_bytes = os.path.getsize(get_all_filepaths[n])
-                file_samples = "-1"
-                if file_bytes > 0:
-                    if get_type == "Complex Float 32":
-                        file_samples = str(int(file_bytes / 8))
-                    elif get_type == "Float/Float 32":
-                        file_samples = str(int(file_bytes / 4))
-                    elif get_type == "Short/Int 16":
-                        file_samples = str(int(file_bytes / 2))
-                    elif get_type == "Int/Int 32":
-                        file_samples = str(int(file_bytes / 4))
-                    elif get_type == "Byte/Int 8":
-                        file_samples = str(int(file_bytes / 1))
-                    elif get_type == "Complex Int 16":
-                        file_samples = str(int(file_bytes / 4))
-                    elif get_type == "Complex Int 8":
-                        file_samples = str(int(file_bytes / 2))
-                    elif get_type == "Complex Float 64":
-                        file_samples = str(int(file_bytes / 16))
-                    elif get_type == "Complex Int 64":
-                        file_samples = str(int(file_bytes / 16))
-                else:
-                    continue
-
-                # Where to Store Strongest Frequency Results
-                peak_file_location = os.path.join(
-                    fissure.utils.get_fg_library_dir(self.os_info), "TSI Flow Graphs", "Conditioner", "peaks.txt"
-                )
-
-                # Run the Flow Graph
-                cmd = (
-                    "python3 '"
-                    + fg_directory
-                    + "/fft/strongest.py' --filepath '"
-                    + get_all_filepaths[n]
-                    + "' --sample-rate "
-                    + get_sample_rate
-                    + " --fft-threshold "
-                    + get_fft_threshold
-                    + " --samples "
-                    + file_samples
-                    + " --peak-file-location "
-                    + peak_file_location
-                    + " --fft-size "
-                    + get_fft_size
-                )
-                p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
-                (output, err) = p1.communicate()
-                p1.wait()
-
-                # Read the Frequency Result
-                file = open(peak_file_location.replace("\\", ""), "r")
-                freq_result = str(round(float(file.read()), 2))
-                file.close()
-
-                # Bandpass Filter is Applied to Negative and Positive Sides
-                if float(freq_result) < 0:
-                    freq_result = str(abs(float(freq_result)))
-
-                # Avoid Errors with Filter Width
-                if (float(freq_result) + float(get_bandpass_width) / 2) > float(get_sample_rate) / 2:
-                    freq_result = str(float(get_sample_rate) / 2 - float(get_bandpass_width) / 2)
-                elif (float(freq_result) - float(get_bandpass_width) / 2) < 0:
-                    freq_result = str(float(get_bandpass_width) / 2)
-
-                # Strongest Frequency Result
-                self.logger.info("Strongest Frequency Detected at: " + str(freq_result))
-                # self.textEdit_settings_bt_sfb_freq.setPlainText(freq_result)
-                # self.textEdit_settings_bt_sfb_freq.setAlignment(QtCore.Qt.AlignCenter)
-                # get_bandpass_freq = str(self.textEdit_settings_bt_sfb_freq.toPlainText())
-
-                # Run the Bandpass Flow Graph
-                cmd = (
-                    "python3 '"
-                    + fg_directory
-                    + "/burst_tagger/bandpass.py' --filepath '"
-                    + get_all_filepaths[n]
-                    + "' --sample-rate "
-                    + get_sample_rate
-                    + " --threshold "
-                    + get_threshold
-                    + " --bandpass-freq "
-                    + freq_result
-                    + " --transition-width "
-                    + get_transition
-                    + " --beta "
-                    + get_beta
-                    + " --bandpass-width "
-                    + get_bandpass_width
-                )
-                p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
-                (output, err) = p1.communicate()
-                p1.wait()
-
-                # Rename the New Files
-                if get_output_directory != "":
-                    for fname in os.listdir(get_output_directory):
-                        if os.path.isfile(os.path.join(get_output_directory, fname)):
-                            if fname not in file_names:
-                                count = count + 1
-                                os.rename(
-                                    os.path.join(get_output_directory, fname),
-                                    os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
-                                )
-                                new_files.append(get_prefix + str(count).zfill(5) + ".iq")
-                                file_names.append(get_prefix + str(count).zfill(5) + ".iq")
-                                original_filenames.append(get_all_filepaths[n])
-
-            # Update Progress Bar
-            progress_value = 95
-            asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
-
-        # Invalid Method
-        else:
-            self.logger.error("Invalid method")
-            self.finishedTSI_Conditioner()
-            return
+            #     # Method Parameters
+            #     for m in range(len(method_parameter_names)):
+            #         if method_parameter_names[m] == "threshold":
+            #             get_threshold = method_parameter_values[m]
+
+            #     # Run the Flow Graph
+            #     cmd = (
+            #         "python3 '"
+            #         + fg_directory
+            #         + "/burst_tagger/normal.py' --filepath '"
+            #         + get_all_filepaths[n]
+            #         + "' --sample-rate "
+            #         + get_sample_rate
+            #         + " --threshold "
+            #         + get_threshold
+            #     )
+            #     p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
+            #     (output, err) = p1.communicate()
+            #     p1.wait()
+
+            #     # Rename the New Files
+            #     if get_output_directory != "":
+            #         for fname in os.listdir(get_output_directory):
+            #             if os.path.isfile(os.path.join(get_output_directory, fname)):
+            #                 if fname not in file_names:
+            #                     count = count + 1
+            #                     os.rename(
+            #                         os.path.join(get_output_directory, fname),
+            #                         os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
+            #                     )
+            #                     new_files.append(get_prefix + str(count).zfill(5) + ".iq")
+            #                     file_names.append(get_prefix + str(count).zfill(5) + ".iq")
+            #                     original_filenames.append(get_all_filepaths[n])
+
+            # # Update Progress Bar
+            # progress_value = 95
+            # asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        # # Method2: burst_tagger with Decay
+        # elif (get_category == "Energy - Burst Tagger") and (get_method == "Normal Decay"):
+        #     count = 0
+        #     new_files = []
+        #     original_filenames = []
+
+        #     # Create a List of Files in Output Directory
+        #     if get_output_directory != "":
+        #         file_names = []
+        #         for fname in os.listdir(get_output_directory):
+        #             if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                 file_names.append(fname)
+
+        #     for n in range(0, len(get_all_filepaths)):
+
+        #         # Stop Conditioner Triggered
+        #         if self.conditioner_running == False:
+        #             self.logger.info("TSI Conditioner Stopped")
+        #             return
+
+        #         # Update Progress Bar
+        #         progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
+        #         asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        #         # Method Parameters
+        #         for m in range(len(method_parameter_names)):
+        #             if method_parameter_names[m] == "threshold":
+        #                 get_threshold = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "decay":
+        #                 get_decay = method_parameter_values[m]
+
+        #         # Run the Flow Graph
+        #         cmd = (
+        #             "python3 '"
+        #             + fg_directory
+        #             + "/burst_tagger/normal_decay.py' --filepath '"
+        #             + get_all_filepaths[n]
+        #             + "' --sample-rate "
+        #             + get_sample_rate
+        #             + " --threshold "
+        #             + get_threshold
+        #             + " --decay "
+        #             + get_decay
+        #         )
+        #         p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
+        #         (output, err) = p1.communicate()
+        #         p1.wait()
+
+        #         # Rename the New Files
+        #         if get_output_directory != "":
+        #             for fname in os.listdir(get_output_directory):
+        #                 if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                     if fname not in file_names:
+        #                         count = count + 1
+        #                         os.rename(
+        #                             os.path.join(get_output_directory, fname),
+        #                             os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
+        #                         )
+        #                         new_files.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         file_names.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         original_filenames.append(get_all_filepaths[n])
+
+        #     # Update Progress Bar
+        #     progress_value = 95
+        #     asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        # # Method3: power_squelch_with_burst_tagger
+        # elif (get_category == "Energy - Burst Tagger") and (get_method == "Power Squelch"):
+        #     count = 0
+        #     new_files = []
+        #     original_filenames = []
+
+        #     # Create a List of Files in Output Directory
+        #     if get_output_directory != "":
+        #         file_names = []
+        #         for fname in os.listdir(get_output_directory):
+        #             if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                 file_names.append(fname)
+
+        #     for n in range(0, len(get_all_filepaths)):
+
+        #         # Stop Conditioner Triggered
+        #         if self.conditioner_running == False:
+        #             self.logger.info("TSI Conditioner Stopped")
+        #             return
+
+        #         # Update Progress Bar
+        #         progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
+        #         asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        #         # Method Parameters
+        #         for m in range(len(method_parameter_names)):
+        #             if method_parameter_names[m] == "squelch":
+        #                 get_squelch = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "threshold":
+        #                 get_threshold = method_parameter_values[m]
+
+        #         # Run the Flow Graph
+        #         cmd = (
+        #             "python3 '"
+        #             + fg_directory
+        #             + "/burst_tagger/power_squelch.py' --filepath '"
+        #             + get_all_filepaths[n]
+        #             + "' --sample-rate "
+        #             + get_sample_rate
+        #             + " --threshold "
+        #             + get_threshold
+        #             + " --squelch "
+        #             + get_squelch
+        #         )
+        #         p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
+        #         (output, err) = p1.communicate()
+        #         p1.wait()
+
+        #         # Rename the New Files
+        #         if get_output_directory != "":
+        #             for fname in os.listdir(get_output_directory):
+        #                 if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                     if fname not in file_names:
+        #                         count = count + 1
+        #                         os.rename(
+        #                             os.path.join(get_output_directory, fname),
+        #                             os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
+        #                         )
+        #                         new_files.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         file_names.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         original_filenames.append(get_all_filepaths[n])
+
+        #     # Update Progress Bar
+        #     progress_value = 95
+        #     asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        # # Method4: lowpass_filter
+        # elif (get_category == "Energy - Burst Tagger") and (get_method == "Lowpass"):
+        #     count = 0
+        #     new_files = []
+        #     original_filenames = []
+
+        #     # Create a List of Files in Output Directory
+        #     if get_output_directory != "":
+        #         file_names = []
+        #         for fname in os.listdir(get_output_directory):
+        #             if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                 file_names.append(fname)
+
+        #     for n in range(0, len(get_all_filepaths)):
+
+        #         # Stop Conditioner Triggered
+        #         if self.conditioner_running == False:
+        #             self.logger.info("TSI Conditioner Stopped")
+        #             return
+
+        #         # Update Progress Bar
+        #         progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
+        #         asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        #         # Method Parameters
+        #         for m in range(len(method_parameter_names)):
+        #             if method_parameter_names[m] == "threshold":
+        #                 get_threshold = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "cutoff":
+        #                 get_cutoff = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "transition":
+        #                 get_transition = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "beta":
+        #                 get_beta = method_parameter_values[m]
+
+        #         # Run the Flow Graph
+        #         cmd = (
+        #             "python3 '"
+        #             + fg_directory
+        #             + "/burst_tagger/lowpass.py' --filepath '"
+        #             + get_all_filepaths[n]
+        #             + "' --sample-rate "
+        #             + get_sample_rate
+        #             + " --threshold "
+        #             + get_threshold
+        #             + " --cutoff-freq "
+        #             + get_cutoff
+        #             + " --transition-width "
+        #             + get_transition
+        #             + " --beta "
+        #             + get_beta
+        #         )
+        #         p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
+        #         (output, err) = p1.communicate()
+        #         p1.wait()
+
+        #         # Rename the New Files
+        #         if get_output_directory != "":
+        #             for fname in os.listdir(get_output_directory):
+        #                 if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                     if fname not in file_names:
+        #                         count = count + 1
+        #                         os.rename(
+        #                             os.path.join(get_output_directory, fname),
+        #                             os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
+        #                         )
+        #                         new_files.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         file_names.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         original_filenames.append(get_all_filepaths[n])
+
+        #     # Update Progress Bar
+        #     progress_value = 95
+        #     asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        # # Method5: power_squelch_lowpass
+        # elif (get_category == "Energy - Burst Tagger") and (get_method == "Power Squelch then Lowpass"):
+        #     count = 0
+        #     new_files = []
+        #     original_filenames = []
+
+        #     # Create a List of Files in Output Directory
+        #     if get_output_directory != "":
+        #         file_names = []
+        #         for fname in os.listdir(get_output_directory):
+        #             if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                 file_names.append(fname)
+
+        #     for n in range(0, len(get_all_filepaths)):
+
+        #         # Stop Conditioner Triggered
+        #         if self.conditioner_running == False:
+        #             self.logger.info("TSI Conditioner Stopped")
+        #             return
+
+        #         # Update Progress Bar
+        #         progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
+        #         asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        #         # Method Parameters
+        #         for m in range(len(method_parameter_names)):
+        #             if method_parameter_names[m] == "squelch":
+        #                 get_squelch = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "cutoff":
+        #                 get_cutoff = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "transition":
+        #                 get_transition = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "beta":
+        #                 get_beta = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "threshold":
+        #                 get_threshold = method_parameter_values[m]
+
+        #         # Run the Flow Graph
+        #         cmd = (
+        #             "python3 '"
+        #             + fg_directory
+        #             + "/burst_tagger/power_squelch_lowpass.py' --filepath '"
+        #             + get_all_filepaths[n]
+        #             + "' --sample-rate "
+        #             + get_sample_rate
+        #             + " --threshold "
+        #             + get_threshold
+        #             + " --cutoff-freq "
+        #             + get_cutoff
+        #             + " --transition-width "
+        #             + get_transition
+        #             + " --beta "
+        #             + get_beta
+        #             + " --squelch "
+        #             + get_squelch
+        #         )
+        #         p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
+        #         (output, err) = p1.communicate()
+        #         p1.wait()
+
+        #         # Rename the New Files
+        #         if get_output_directory != "":
+        #             for fname in os.listdir(get_output_directory):
+        #                 if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                     if fname not in file_names:
+        #                         count = count + 1
+        #                         os.rename(
+        #                             os.path.join(get_output_directory, fname),
+        #                             os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
+        #                         )
+        #                         new_files.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         file_names.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         original_filenames.append(get_all_filepaths[n])
+
+        #     # Update Progress Bar
+        #     progress_value = 95
+        #     asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        # # Method6: bandpass_filter
+        # elif (get_category == "Energy - Burst Tagger") and (get_method == "Bandpass"):
+        #     count = 0
+        #     new_files = []
+        #     original_filenames = []
+
+        #     # Create a List of Files in Output Directory
+        #     if get_output_directory != "":
+        #         file_names = []
+        #         for fname in os.listdir(get_output_directory):
+        #             if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                 file_names.append(fname)
+
+        #     for n in range(0, len(get_all_filepaths)):
+
+        #         # Stop Conditioner Triggered
+        #         if self.conditioner_running == False:
+        #             self.logger.info("TSI Conditioner Stopped")
+        #             return
+
+        #         # Update Progress Bar
+        #         progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
+        #         asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        #         # Method Parameters
+        #         for m in range(len(method_parameter_names)):
+        #             if method_parameter_names[m] == "bandpass_frequency":
+        #                 get_bandpass_freq = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "bandpass_width":
+        #                 get_bandpass_width = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "transition":
+        #                 get_transition = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "beta":
+        #                 get_beta = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "threshold":
+        #                 get_threshold = method_parameter_values[m]
+
+        #         # Run the Flow Graph
+        #         cmd = (
+        #             "python3 '"
+        #             + fg_directory
+        #             + "/burst_tagger/bandpass.py' --filepath '"
+        #             + get_all_filepaths[n]
+        #             + "' --sample-rate "
+        #             + get_sample_rate
+        #             + " --threshold "
+        #             + get_threshold
+        #             + " --bandpass-freq "
+        #             + get_bandpass_freq
+        #             + " --transition-width "
+        #             + get_transition
+        #             + " --beta "
+        #             + get_beta
+        #             + " --bandpass-width "
+        #             + get_bandpass_width
+        #         )
+        #         p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
+        #         (output, err) = p1.communicate()
+        #         p1.wait()
+
+        #         # Rename the New Files
+        #         if get_output_directory != "":
+        #             for fname in os.listdir(get_output_directory):
+        #                 if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                     if fname not in file_names:
+        #                         count = count + 1
+        #                         os.rename(
+        #                             os.path.join(get_output_directory, fname),
+        #                             os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
+        #                         )
+        #                         new_files.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         file_names.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         original_filenames.append(get_all_filepaths[n])
+
+        #     # Update Progress Bar
+        #     progress_value = 95
+        #     asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        # # Method7: strongest
+        # elif (get_category == "Energy - Burst Tagger") and (get_method == "Strongest Frequency then Bandpass"):
+        #     # self.textEdit_tsi_settings_bt_sfb_freq.setPlainText("?")
+        #     # self.textEdit_tsi_settings_bt_sfb_freq.setAlignment(QtCore.Qt.AlignCenter)
+        #     count = 0
+        #     new_files = []
+        #     original_filenames = []
+
+        #     # Create a List of Files in Output Directory
+        #     if get_output_directory != "":
+        #         file_names = []
+        #         for fname in os.listdir(get_output_directory):
+        #             if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                 file_names.append(fname)
+
+        #     for n in range(0, len(get_all_filepaths)):
+
+        #         # Stop Conditioner Triggered
+        #         if self.conditioner_running == False:
+        #             self.logger.info("TSI Conditioner Stopped")
+        #             return
+
+        #         # Update Progress Bar
+        #         progress_value = 1 + int((float((n + 1) / len(get_all_filepaths)) * 90))
+        #         asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        #         # Method Parameters
+        #         for m in range(len(method_parameter_names)):
+        #             if method_parameter_names[m] == "fft_size":
+        #                 get_fft_size = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "fft_threshold":
+        #                 get_fft_threshold = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "bandpass_width":
+        #                 get_bandpass_width = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "transition":
+        #                 get_transition = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "beta":
+        #                 get_beta = method_parameter_values[m]
+        #             elif method_parameter_names[m] == "threshold":
+        #                 get_threshold = method_parameter_values[m]
+
+        #         # Acquire Number of Samples
+        #         file_bytes = os.path.getsize(get_all_filepaths[n])
+        #         file_samples = "-1"
+        #         if file_bytes > 0:
+        #             if get_type == "Complex Float 32":
+        #                 file_samples = str(int(file_bytes / 8))
+        #             elif get_type == "Float/Float 32":
+        #                 file_samples = str(int(file_bytes / 4))
+        #             elif get_type == "Short/Int 16":
+        #                 file_samples = str(int(file_bytes / 2))
+        #             elif get_type == "Int/Int 32":
+        #                 file_samples = str(int(file_bytes / 4))
+        #             elif get_type == "Byte/Int 8":
+        #                 file_samples = str(int(file_bytes / 1))
+        #             elif get_type == "Complex Int 16":
+        #                 file_samples = str(int(file_bytes / 4))
+        #             elif get_type == "Complex Int 8":
+        #                 file_samples = str(int(file_bytes / 2))
+        #             elif get_type == "Complex Float 64":
+        #                 file_samples = str(int(file_bytes / 16))
+        #             elif get_type == "Complex Int 64":
+        #                 file_samples = str(int(file_bytes / 16))
+        #         else:
+        #             continue
+
+        #         # Where to Store Strongest Frequency Results
+        #         peak_file_location = os.path.join(
+        #             fissure.utils.get_fg_library_dir(self.os_info), "TSI Flow Graphs", "Conditioner", "peaks.txt"
+        #         )
+
+        #         # Run the Flow Graph
+        #         cmd = (
+        #             "python3 '"
+        #             + fg_directory
+        #             + "/fft/strongest.py' --filepath '"
+        #             + get_all_filepaths[n]
+        #             + "' --sample-rate "
+        #             + get_sample_rate
+        #             + " --fft-threshold "
+        #             + get_fft_threshold
+        #             + " --samples "
+        #             + file_samples
+        #             + " --peak-file-location "
+        #             + peak_file_location
+        #             + " --fft-size "
+        #             + get_fft_size
+        #         )
+        #         p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
+        #         (output, err) = p1.communicate()
+        #         p1.wait()
+
+        #         # Read the Frequency Result
+        #         file = open(peak_file_location.replace("\\", ""), "r")
+        #         freq_result = str(round(float(file.read()), 2))
+        #         file.close()
+
+        #         # Bandpass Filter is Applied to Negative and Positive Sides
+        #         if float(freq_result) < 0:
+        #             freq_result = str(abs(float(freq_result)))
+
+        #         # Avoid Errors with Filter Width
+        #         if (float(freq_result) + float(get_bandpass_width) / 2) > float(get_sample_rate) / 2:
+        #             freq_result = str(float(get_sample_rate) / 2 - float(get_bandpass_width) / 2)
+        #         elif (float(freq_result) - float(get_bandpass_width) / 2) < 0:
+        #             freq_result = str(float(get_bandpass_width) / 2)
+
+        #         # Strongest Frequency Result
+        #         self.logger.info("Strongest Frequency Detected at: " + str(freq_result))
+        #         # self.textEdit_settings_bt_sfb_freq.setPlainText(freq_result)
+        #         # self.textEdit_settings_bt_sfb_freq.setAlignment(QtCore.Qt.AlignCenter)
+        #         # get_bandpass_freq = str(self.textEdit_settings_bt_sfb_freq.toPlainText())
+
+        #         # Run the Bandpass Flow Graph
+        #         cmd = (
+        #             "python3 '"
+        #             + fg_directory
+        #             + "/burst_tagger/bandpass.py' --filepath '"
+        #             + get_all_filepaths[n]
+        #             + "' --sample-rate "
+        #             + get_sample_rate
+        #             + " --threshold "
+        #             + get_threshold
+        #             + " --bandpass-freq "
+        #             + freq_result
+        #             + " --transition-width "
+        #             + get_transition
+        #             + " --beta "
+        #             + get_beta
+        #             + " --bandpass-width "
+        #             + get_bandpass_width
+        #         )
+        #         p1 = subprocess.Popen(cmd, shell=True, cwd=get_output_directory)
+        #         (output, err) = p1.communicate()
+        #         p1.wait()
+
+        #         # Rename the New Files
+        #         if get_output_directory != "":
+        #             for fname in os.listdir(get_output_directory):
+        #                 if os.path.isfile(os.path.join(get_output_directory, fname)):
+        #                     if fname not in file_names:
+        #                         count = count + 1
+        #                         os.rename(
+        #                             os.path.join(get_output_directory, fname),
+        #                             os.path.join(get_output_directory, get_prefix + str(count).zfill(5) + ".iq"),
+        #                         )
+        #                         new_files.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         file_names.append(get_prefix + str(count).zfill(5) + ".iq")
+        #                         original_filenames.append(get_all_filepaths[n])
+
+        #     # Update Progress Bar
+        #     progress_value = 95
+        #     asyncio.run(self.conditionerProgressBarReturn(progress_value, n))
+
+        # # Invalid Method
+        # else:
+        #     self.logger.error("Invalid method")
+        #     self.finishedTSI_Conditioner()
+        #     return
 
         # Remove Files with Too Few Samples
         temp_files = new_files

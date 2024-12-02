@@ -809,7 +809,7 @@ def _slotLibraryBrowseChanged(dashboard: QtCore.QObject):
         headers = ["id", "protocol", "attack_name", "modulation_type", "hardware", "attack_type", "filename", "category_name", "version"]
     elif get_table_name == "conditioner_flow_graphs":
         get_rows = fissure.utils.library.getConditionerFlowGraphsTable(dashboard.backend.library)
-        headers = ["id", "isolation_category", "isolation_method", "hardware", "filename", "file_type", "data_type", "version"] 
+        headers = ["id", "isolation_category", "isolation_method", "hardware", "file_type", "data_type", "version", "parameter_names", "parameter_values", "parameter_labels", "filepath"] 
     elif get_table_name == "demodulation_flow_graphs":
         get_rows = fissure.utils.library.getDemodulationFlowGraphs(dashboard.backend.library)
         headers = ["id", "protocol", "modulation_type", "hardware", "filename", "output_type", "version"]

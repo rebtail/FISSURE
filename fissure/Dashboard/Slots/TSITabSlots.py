@@ -800,53 +800,119 @@ def _slotTSI_ConditionerSettingsIsolationMethodChanged(dashboard: QtCore.QObject
     """ 
     Changes the settings to match the selected isolation method.
     """
+    # Retrieve Table Values
     get_method = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.currentText())
-    if get_method == "Normal":
-        dashboard.ui.stackedWidget_tsi_conditioner_settings.setCurrentIndex(0)
-        dashboard.ui.pushButton_tsi_conditioner_settings_view.setEnabled(True)
-    elif get_method == "Normal Decay":
-        dashboard.ui.stackedWidget_tsi_conditioner_settings.setCurrentIndex(1)
-        dashboard.ui.pushButton_tsi_conditioner_settings_view.setEnabled(True)
-    elif get_method == "Power Squelch":
-        dashboard.ui.stackedWidget_tsi_conditioner_settings.setCurrentIndex(2)
-        dashboard.ui.pushButton_tsi_conditioner_settings_view.setEnabled(True)
-    elif get_method == "None":
-        dashboard.ui.stackedWidget_tsi_conditioner_settings.setCurrentIndex(3)
-        dashboard.ui.pushButton_tsi_conditioner_settings_view.setEnabled(False)
-    elif get_method == "Lowpass":
-        dashboard.ui.stackedWidget_tsi_conditioner_settings.setCurrentIndex(4)
-        dashboard.ui.pushButton_tsi_conditioner_settings_view.setEnabled(True)
-    elif get_method == "Power Squelch then Lowpass":
-        dashboard.ui.stackedWidget_tsi_conditioner_settings.setCurrentIndex(5)
-        dashboard.ui.pushButton_tsi_conditioner_settings_view.setEnabled(True)
-    elif get_method == "Bandpass":
-        dashboard.ui.stackedWidget_tsi_conditioner_settings.setCurrentIndex(6)
-        dashboard.ui.pushButton_tsi_conditioner_settings_view.setEnabled(True)
-    elif get_method == "Strongest Frequency then Bandpass":
-        dashboard.ui.stackedWidget_tsi_conditioner_settings.setCurrentIndex(7)
-        dashboard.ui.pushButton_tsi_conditioner_settings_view.setEnabled(True)
+
+    get_row = fissure.utils.library.getConditionerRow(
+        dashboard.backend.library, 
+        get_method, 
+        fissure.utils.get_library_version(), 
+        "File"
+    )
+
+    if get_row == None:
+        get_parameter_labels = []
+        get_parameter_values = []
+    else:
+        get_parameter_labels = get_row[9]
+        get_parameter_values = get_row[8]
+
+    # Clear Table
+    dashboard.ui.tableWidget_tsi_conditioner_settings_files.setColumnCount(1)
+    dashboard.ui.tableWidget_tsi_conditioner_settings_files.setRowCount(0)
+    dashboard.ui.tableWidget_tsi_conditioner_settings_files.clearContents()
+
+    # Fill Table
+    for n in range(0, len(get_parameter_labels)):
+        label_item = QtWidgets.QTableWidgetItem(get_parameter_labels[n])
+        value_item = QtWidgets.QTableWidgetItem(get_parameter_values[n])
+        dashboard.ui.tableWidget_tsi_conditioner_settings_files.setRowCount(dashboard.ui.tableWidget_tsi_conditioner_settings_files.rowCount()+1)
+        dashboard.ui.tableWidget_tsi_conditioner_settings_files.setVerticalHeaderItem(dashboard.ui.tableWidget_tsi_conditioner_settings_files.rowCount()-1, label_item)
+        dashboard.ui.tableWidget_tsi_conditioner_settings_files.setItem(dashboard.ui.tableWidget_tsi_conditioner_settings_files.rowCount()-1, 0, value_item)
+
+    # Resize Table
+    dashboard.ui.tableWidget_tsi_conditioner_settings_files.resizeColumnsToContents()
+    dashboard.ui.tableWidget_tsi_conditioner_settings_files.resizeRowsToContents()
+    dashboard.ui.tableWidget_tsi_conditioner_settings_files.horizontalHeader().setStretchLastSection(False)
+    dashboard.ui.tableWidget_tsi_conditioner_settings_files.horizontalHeader().setStretchLastSection(True)
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
-def _slotTSI_ConditionerSettingsInputSourceChanged(dashboard: QtCore.QObject):
+def _slotTSI_ConditionerInputSourceChanged(dashboard: QtCore.QObject):
     """ 
     Enables/disables the Start button if folder or file is selected with no valid filepath.
     """
     # File
-    if dashboard.ui.comboBox_tsi_conditioner_settings_input_source.currentText() == "File":
+    if dashboard.ui.comboBox_tsi_conditioner_input_source.currentText() == "File":
         if dashboard.ui.label2_tsi_conditioner_info_file_name.text() == "File:":
             dashboard.ui.pushButton_tsi_conditioner_operation_start.setEnabled(False)
         else:
             dashboard.ui.pushButton_tsi_conditioner_operation_start.setEnabled(True)
+        dashboard.ui.stackedWidget_tsi_conditioner_input.setCurrentIndex(0)
+        dashboard.ui.stackedWidget_tsi_conditioner_settings_method.setCurrentIndex(0)
+
+        # Update Categories
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.blockSignals(True)
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.blockSignals(True)
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.clear()
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
+        get_categories = fissure.utils.library.getConditionerIsolationCategory(
+            dashboard.backend.library, 
+            "File", 
+            fissure.utils.get_library_version()
+        )
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.addItems(get_categories)
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.blockSignals(False)
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.blockSignals(False)
+        _slotTSI_ConditionerSettingsIsolationCategoryChanged(dashboard)
 
     # Folder
-    elif dashboard.ui.comboBox_tsi_conditioner_settings_input_source.currentText() == "Folder":
+    elif dashboard.ui.comboBox_tsi_conditioner_input_source.currentText() == "Folder":
         if dashboard.ui.comboBox_tsi_conditioner_input_folders.currentText() == "":
             dashboard.ui.pushButton_tsi_conditioner_operation_start.setEnabled(False)
         elif dashboard.ui.listWidget_tsi_conditioner_input_files.count() == 0:
             dashboard.ui.pushButton_tsi_conditioner_operation_start.setEnabled(False)
         else:
             dashboard.ui.pushButton_tsi_conditioner_operation_start.setEnabled(True)
+        dashboard.ui.stackedWidget_tsi_conditioner_input.setCurrentIndex(0)
+        dashboard.ui.stackedWidget_tsi_conditioner_settings_method.setCurrentIndex(0)
+
+        # Update Categories
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.blockSignals(True)
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.blockSignals(True)
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.clear()
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
+        get_categories = fissure.utils.library.getConditionerIsolationCategory(
+            dashboard.backend.library, 
+            "File", 
+            fissure.utils.get_library_version()
+        )
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.addItems(get_categories)
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.blockSignals(False)
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.blockSignals(False)
+        _slotTSI_ConditionerSettingsIsolationCategoryChanged(dashboard)
+    
+    # Detector Results
+    elif dashboard.ui.comboBox_tsi_conditioner_input_source.currentText() == "Detector Results":
+        dashboard.ui.pushButton_tsi_conditioner_operation_start.setEnabled(True)
+        dashboard.ui.stackedWidget_tsi_conditioner_input.setCurrentIndex(1)
+        dashboard.ui.stackedWidget_tsi_conditioner_settings_method.setCurrentIndex(1)
+
+        # Update Categories
+        _slotTSI_ConditionerSettingsIsolationFrequenciesHardwareChanged(dashboard)
+
+        dashboard.ui.pushButton_tsi_conditioner_operation_start.setEnabled(False)  # Temporarily disabled while under development
+
+    # Frequency
+    elif dashboard.ui.comboBox_tsi_conditioner_input_source.currentText() == "Frequencies":
+        dashboard.ui.pushButton_tsi_conditioner_operation_start.setEnabled(True)
+        dashboard.ui.stackedWidget_tsi_conditioner_input.setCurrentIndex(2)
+        dashboard.ui.stackedWidget_tsi_conditioner_settings_method.setCurrentIndex(1)
+
+        # Update Categories
+        _slotTSI_ConditionerSettingsIsolationFrequenciesHardwareChanged(dashboard)
+
+        dashboard.ui.pushButton_tsi_conditioner_operation_start.setEnabled(False)  # Temporarily disabled while under development
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -861,36 +927,38 @@ def _slotTSI_ConditionerSettingsIsolationCategoryChanged(dashboard: QtCore.QObje
     get_methods = fissure.utils.library.getConditionerIsolationMethod(
         dashboard.backend.library, 
         get_category, 
-        fissure.utils.get_library_version()
+        fissure.utils.get_library_version(),
+        "File"
     )
+    dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
+
+    # Exclude Certain Items
+    item_to_remove = "Strongest Frequency then Bandpass"  # Need to convert two-stage method to one
+    if item_to_remove in get_methods:
+        get_methods.remove(item_to_remove)
 
     # Energy - Burst Tagger
     if get_category == "Energy - Burst Tagger":
-        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
         #methods = ['Normal','Normal Decay','Power Squelch','Lowpass','Power Squelch then Lowpass','Bandpass','Strongest Frequency then Bandpass']
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.addItems(get_methods)
     
     # Energy - Imagery
     elif get_category == "Energy - Imagery":
-        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
         methods = ['None']
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.addItems(methods)
     
     # Eigenvalue
     elif get_category == "Eigenvalue":
-        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
         methods = ['None']
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.addItems(methods)
     
     # Matched Filter
     elif get_category == "Matched Filter":
-        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
         methods = ['None']
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.addItems(methods)
     
     # Cyclostationary
     elif get_category == "Cyclostationary":
-        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.clear()
         methods = ['None']
         dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.addItems(methods)
 
@@ -2421,9 +2489,9 @@ def _slotTSI_ConditionerSettingsViewClicked(dashboard: QtCore.QObject):
     
     # Flow Graph Directory
     if get_type == "Complex Float 32":
-        fg_directory = os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "TSI Flow Graphs", "Conditioner", "Flow_Graphs", "ComplexFloat32")
+        fg_directory = os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "TSI Flow Graphs", "Conditioner", "File_Source", "Flow_Graphs", "ComplexFloat32")
     elif get_type == "Complex Int 16":
-        fg_directory = os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "TSI Flow Graphs", "Conditioner", "Flow_Graphs", "ComplexInt16")
+        fg_directory = os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "TSI Flow Graphs", "Conditioner", "File_Source", "Flow_Graphs", "ComplexInt16")
 
     # Method1: burst_tagger
     if (get_category == "Energy - Burst Tagger") and (get_method == "Normal"):
@@ -2654,7 +2722,7 @@ def _slotTSI_ConditionerResultsRefreshClicked(dashboard: QtCore.QObject):
     # Common GUI Parameters
     get_category = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.currentText())
     get_method = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.currentText())
-    get_input_source = str(dashboard.ui.comboBox_tsi_conditioner_settings_input_source.currentText())
+    get_input_source = str(dashboard.ui.comboBox_tsi_conditioner_input_source.currentText())
     get_output_directory = str(dashboard.ui.comboBox_tsi_conditioner_settings_folder.currentText())
     get_prefix = str(dashboard.ui.textEdit_tsi_conditioner_settings_prefix.toPlainText())
     get_sample_rate = str(dashboard.ui.textEdit_tsi_conditioner_info_sample_rate.toPlainText())
@@ -3980,10 +4048,8 @@ async def _slotTSI_ConditionerOperationStartClicked(dashboard: QtCore.QObject):
         dashboard.ui.progressBar_tsi_conditioner_operation.setValue(0)
         
         # Common GUI Parameters
-        get_input_source = str(dashboard.ui.comboBox_tsi_conditioner_settings_input_source.currentText())
+        get_input_source = str(dashboard.ui.comboBox_tsi_conditioner_input_source.currentText())
 
-        get_category = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.currentText())
-        get_method = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.currentText())
         get_output_directory = str(dashboard.ui.comboBox_tsi_conditioner_settings_folder.currentText())
         get_prefix = str(dashboard.ui.textEdit_tsi_conditioner_settings_prefix.toPlainText())
         get_sample_rate = str(dashboard.ui.textEdit_tsi_conditioner_info_sample_rate.toPlainText())
@@ -4053,9 +4119,14 @@ async def _slotTSI_ConditionerOperationStartClicked(dashboard: QtCore.QObject):
             else:
                 ret = await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Invalid input file. Click the Refresh button.")
                 return
+            
+            method_table = dashboard.ui.tableWidget_tsi_conditioner_settings_files
+            get_category = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.currentText())
+            get_method = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.currentText())
+            get_hardware = "File"
         
         # Folder
-        else:
+        elif get_input_source == "Folder":
             if dashboard.ui.listWidget_tsi_conditioner_input_files.count() > 0:
                 for n in range(0,dashboard.ui.listWidget_tsi_conditioner_input_files.count()):
                     # All Files
@@ -4077,78 +4148,43 @@ async def _slotTSI_ConditionerOperationStartClicked(dashboard: QtCore.QObject):
                             else:
                                 ret = await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Invalid input file. Click the Refresh button.")
                                 return
+                
+                method_table = dashboard.ui.tableWidget_tsi_conditioner_settings_files
+                get_category = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.currentText())
+                get_method = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.currentText())
+                get_hardware = "File"
 
             else:
                 # fissure.Dashboard.UI_Components.Qt5.errorMessage("No input files found.")
                 ret = await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "No input files found.")
                 return
         
-        # Method1: burst_tagger
-        if (get_category == "Energy - Burst Tagger") and (get_method == "Normal"):
-            get_threshold = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_threshold.toPlainText())
-            method_parameter_names = ['threshold']
-            method_parameter_values = [get_threshold]
-            
-        # Method2: burst_tagger with Decay    
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Normal Decay"):
-            get_threshold = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_decay_threshold.toPlainText())
-            get_decay = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_decay_decay.toPlainText())
-            method_parameter_names = ['threshold','decay']
-            method_parameter_values = [get_threshold,get_decay]
-            
-        # Method3: power_squelch_with_burst_tagger    
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Power Squelch"):
-            get_squelch = str(dashboard.ui.textEdit_tsi_conditioner_settings_psbt_squelch.toPlainText())
-            get_threshold = str(dashboard.ui.textEdit_tsi_conditioner_settings_psbt_threshold.toPlainText())
-            method_parameter_names = ['squelch','threshold']
-            method_parameter_values = [get_squelch,get_threshold]
-            
-        # Method4: lowpass_filter    
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Lowpass"):
-            get_threshold = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_lowpass_threshold.toPlainText())
-            get_cutoff = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_lowpass_cutoff.toPlainText())
-            get_transition = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_lowpass_transition.toPlainText())
-            get_beta = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_lowpass_beta.toPlainText())
-            method_parameter_names = ['threshold','cutoff','transition','beta']
-            method_parameter_values = [get_threshold,get_cutoff,get_transition,get_beta]
-        
-        # Method5: power_squelch_lowpass    
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Power Squelch then Lowpass"):
-            get_squelch = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_psl_squelch.toPlainText())
-            get_cutoff = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_psl_cutoff.toPlainText())
-            get_transition = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_psl_transition.toPlainText())
-            get_beta = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_psl_beta.toPlainText())
-            get_threshold = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_psl_threshold.toPlainText())
-            method_parameter_names = ['squelch','cutoff','transition','beta','threshold']
-            method_parameter_values = [get_squelch,get_cutoff,get_transition,get_beta,get_threshold]
-                
-        # Method6: bandpass_filter    
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Bandpass"):
-            get_bandpass_freq = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_bandpass_freq.toPlainText())
-            get_bandpass_width = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_bandpass_width.toPlainText())
-            get_transition = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_bandpass_transition.toPlainText())
-            get_beta = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_bandpass_beta.toPlainText())
-            get_threshold = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_bandpass_threshold.toPlainText())
-            method_parameter_names = ['bandpass_frequency','bandpass_width','transition','beta','threshold']
-            method_parameter_values = [get_bandpass_freq,get_bandpass_width,get_transition,get_beta,get_threshold]
-        
-        # Method7: strongest    
-        elif (get_category == "Energy - Burst Tagger") and (get_method == "Strongest Frequency then Bandpass"):
-            get_fft_size = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_sfb_fft_size.toPlainText())
-            get_fft_threshold = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_sfb_fft_threshold.toPlainText())
-            get_bandpass_width = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_sfb_width.toPlainText())
-            get_transition = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_sfb_transition.toPlainText())
-            get_beta = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_sfb_beta.toPlainText())
-            get_threshold = str(dashboard.ui.textEdit_tsi_conditioner_settings_bt_sfb_threshold.toPlainText())
-            method_parameter_names = ['fft_size','fft_threshold','bandpass_width','transition','beta','threshold']
-            method_parameter_values = [get_fft_size,get_fft_threshold,get_bandpass_width,get_transition,get_beta,get_threshold]
-            
-        # Uknown Method
+        # Detector Results
+        elif get_input_source == "Detector Results":
+            method_table = dashboard.ui.tableWidget_tsi_conditioner_settings_files
+            get_category = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_category.currentText())
+            get_method = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.currentText())
+            get_hardware = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_hardware.currentText()).split(" - ")[0].strip()
+
+        # Frequencies
         else:
-            dashboard.ui.progressBar_tsi_conditioner_operation.setValue(0)
-            #dashboard.stop_operations = True        
-            dashboard.ui.pushButton_tsi_conditioner_operation_start.setText("Start")
-            return
+            method_table = dashboard.ui.tableWidget_tsi_conditioner_settings_files
+            get_category = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_category.currentText())
+            get_method = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.currentText())
+            get_hardware = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_hardware.currentText()).split(" - ")[0].strip()
+
+        # Collect Parameters from Database and Table
+        get_row = fissure.utils.library.getConditionerRow(
+            dashboard.backend.library, 
+            get_method, 
+            fissure.utils.get_library_version(), 
+            get_hardware
+        )
+        method_parameter_names = get_row[7]
+        method_filepath = get_row[10]
+        method_parameter_values = []
+        for n in range(0, method_table.rowCount()):
+            method_parameter_values.append(str(method_table.item(n,0).text()))
             
         # Assemble
         common_parameter_names = ['category','method','output_directory','prefix','sample_rate','tuned_frequency','data_type','max_files','min_samples','all_filepaths','detect_saturation','saturation_min','saturation_max','normalize_output','normalize_min','normalize_max']
@@ -4158,7 +4194,7 @@ async def _slotTSI_ConditionerOperationStartClicked(dashboard: QtCore.QObject):
         dashboard.ui.progressBar_tsi_conditioner_operation.setValue(1)
         
         # Send the Message
-        await dashboard.backend.startTSI_Conditioner(dashboard.active_sensor_node, common_parameter_names, common_parameter_values, method_parameter_names, method_parameter_values)
+        await dashboard.backend.startTSI_Conditioner(dashboard.active_sensor_node, common_parameter_names, common_parameter_values, method_parameter_names, method_parameter_values, method_filepath)
 
 
 @qasync.asyncSlot(QtCore.QObject)
@@ -6591,3 +6627,357 @@ def _slotTSI_SOI_BrowseClicked(dashboard: QtCore.QObject):
         dashboard.ui.textEdit_tsi_soi_browse.setText(folder)           
     except:
         pass
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerInputDetectorClearClicked(dashboard: QtCore.QObject):
+    """ 
+    Clears the list of input frequencies for the conditioner.
+    """
+    # Remove All Rows
+    dashboard.ui.tableWidget_tsi_conditioner_input_detector.setRowCount(0)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerInputDetectorUpClicked(dashboard: QtCore.QObject):
+    """ 
+    Moves an input frequency up in the listbox.
+    """
+    current_row = dashboard.ui.tableWidget_tsi_conditioner_input_detector.currentRow()
+    if current_row > 0:  # Ensure it isn't the topmost row
+        # Swap all items in the current row with the row above it
+        for column in range(dashboard.ui.tableWidget_tsi_conditioner_input_detector.columnCount()):
+            current_item = dashboard.ui.tableWidget_tsi_conditioner_input_detector.takeItem(current_row, column)
+            above_item = dashboard.ui.tableWidget_tsi_conditioner_input_detector.takeItem(current_row - 1, column)
+
+            # Swap items
+            dashboard.ui.tableWidget_tsi_conditioner_input_detector.setItem(current_row, column, above_item)
+            dashboard.ui.tableWidget_tsi_conditioner_input_detector.setItem(current_row - 1, column, current_item)
+
+        # Update the selected row
+        dashboard.ui.tableWidget_tsi_conditioner_input_detector.setCurrentCell(current_row - 1, dashboard.ui.tableWidget_tsi_conditioner_input_detector.currentColumn())
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerInputDetectorDownClicked(dashboard: QtCore.QObject):
+    """ 
+    Moves an input frequency down in the listbox.
+    """
+    current_row = dashboard.ui.tableWidget_tsi_conditioner_input_detector.currentRow()
+    if current_row < dashboard.ui.tableWidget_tsi_conditioner_input_detector.rowCount() - 1:  # Ensure it isn't the bottommost row
+        # Swap all items in the current row with the row below it
+        for column in range(dashboard.ui.tableWidget_tsi_conditioner_input_detector.columnCount()):
+            current_item = dashboard.ui.tableWidget_tsi_conditioner_input_detector.takeItem(current_row, column)
+            below_item = dashboard.ui.tableWidget_tsi_conditioner_input_detector.takeItem(current_row + 1, column)
+
+            # Swap items
+            dashboard.ui.tableWidget_tsi_conditioner_input_detector.setItem(current_row, column, below_item)
+            dashboard.ui.tableWidget_tsi_conditioner_input_detector.setItem(current_row + 1, column, current_item)
+
+        # Update the selected row
+        dashboard.ui.tableWidget_tsi_conditioner_input_detector.setCurrentCell(current_row + 1, dashboard.ui.tableWidget_tsi_conditioner_input_detector.currentColumn())    
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerInputDetectorRemoveClicked(dashboard: QtCore.QObject):
+    """ 
+    Removes an input frequency for the conditioner.
+    """    
+    current_row = dashboard.ui.tableWidget_tsi_conditioner_input_detector.currentRow()
+
+    if current_row == -1:  # No row is selected
+        return
+
+    # Remove the current row
+    dashboard.ui.tableWidget_tsi_conditioner_input_detector.removeRow(current_row)
+
+    # Determine the next row to select
+    if dashboard.ui.tableWidget_tsi_conditioner_input_detector.rowCount() == 0:  # Table is empty
+        return
+    elif current_row < dashboard.ui.tableWidget_tsi_conditioner_input_detector.rowCount():  # Select the row at the same index
+        dashboard.ui.tableWidget_tsi_conditioner_input_detector.selectRow(current_row)
+    else:  # Select the last row if the current row was the last one
+        dashboard.ui.tableWidget_tsi_conditioner_input_detector.selectRow(dashboard.ui.tableWidget_tsi_conditioner_input_detector.rowCount() - 1)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerSettingsIsolationFrequenciesCategoryChanged(dashboard: QtCore.QObject):
+    """ 
+    Updates the isolation methods after changing the category.
+    """   
+    # Get Category
+    get_category = dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_category.currentText()
+    get_hardware = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_hardware.currentText()).split(" - ")[0].strip()
+
+    # Get Methods
+    get_methods = fissure.utils.library.getConditionerIsolationMethod(
+        dashboard.backend.library, 
+        get_category, 
+        fissure.utils.get_library_version(),
+        get_hardware
+    )
+    dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.clear()
+
+    # Exclude Certain Items
+    item_to_remove = "Strongest Frequency then Bandpass"  # Need to convert two-stage method to one
+    if item_to_remove in get_methods:
+        get_methods.remove(item_to_remove)
+
+    # Energy - Burst Tagger
+    if get_category == "Energy - Burst Tagger":
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.addItems(get_methods)
+
+    # Energy - Imagery
+    elif get_category == "Energy - Imagery":
+        methods = ['None']
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.addItems(methods)
+    
+    # Eigenvalue
+    elif get_category == "Eigenvalue":
+        methods = ['None']
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.addItems(methods)
+    
+    # Matched Filter
+    elif get_category == "Matched Filter":
+        methods = ['None']
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.addItems(methods)
+    
+    # Cyclostationary
+    elif get_category == "Cyclostationary":
+        methods = ['None']
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.addItems(methods)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerSettingsIsolationFrequenciesMethodChanged(dashboard: QtCore.QObject):
+    """ 
+    Updates the method input parameters after changing the method.
+    """   
+    # Retrieve Table Values
+    get_method = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.currentText())
+    get_hardware = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_hardware.currentText()).split(" - ")[0].strip()
+
+    if len(get_hardware) > 0:
+        # Search Database Cache
+        get_row = fissure.utils.library.getConditionerRow(
+            dashboard.backend.library, 
+            get_method, 
+            fissure.utils.get_library_version(), 
+            get_hardware
+        )
+
+        if get_row == None:
+            get_parameter_labels = []
+            get_parameter_values = []
+        else:
+            get_parameter_labels = get_row[9]
+            get_parameter_values = get_row[8]
+
+        # Clear Table
+        dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.setColumnCount(1)
+        dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.setRowCount(0)
+        dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.clearContents()
+
+        # Fill Table
+        for n in range(0, len(get_parameter_labels)):
+            label_item = QtWidgets.QTableWidgetItem(get_parameter_labels[n])
+            value_item = QtWidgets.QTableWidgetItem(get_parameter_values[n])
+            dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.setRowCount(dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.rowCount()+1)
+            dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.setVerticalHeaderItem(dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.rowCount()-1, label_item)
+            dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.setItem(dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.rowCount()-1, 0, value_item)
+
+        # Resize Table
+        dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.resizeColumnsToContents()
+        dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.resizeRowsToContents()
+        dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.horizontalHeader().setStretchLastSection(False)
+        dashboard.ui.tableWidget_tsi_conditioner_settings_frequencies.horizontalHeader().setStretchLastSection(True)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerSettingsFrequenciesViewClicked(dashboard: QtCore.QObject):
+    """ 
+    Opens visualization (GNU Radio Companion flow graph, image, code) for the isolation technique.
+    """
+    # View if Possible
+    get_category = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_category.currentText())
+    get_method = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_method.currentText())
+    
+    # Flow Graph Directory
+    fg_directory = os.path.join(fissure.utils.get_fg_library_dir(dashboard.backend.os_info), "TSI Flow Graphs", "Conditioner", "Hardware_Source", "Flow_Graphs")
+
+    # Method1: burst_tagger
+    if (get_category == "Energy - Burst Tagger") and (get_method == "Normal"):
+        filepath = os.path.join(fg_directory, "burst_tagger", "normal.grc")
+        osCommandString = 'gnuradio-companion "' + filepath
+        os.system(osCommandString + '" &')
+    
+    # Method2: burst_tagger with Decay
+    elif (get_category == "Energy - Burst Tagger") and (get_method == "Normal Decay"):
+        filepath = os.path.join(fg_directory, "burst_tagger", "normal_decay.grc")
+        osCommandString = 'gnuradio-companion "' + filepath
+        os.system(osCommandString + '" &')
+    
+    # Method3: power_squelch_with_burst_tagger
+    elif (get_category == "Energy - Burst Tagger") and (get_method == "Power Squelch"):
+        filepath = os.path.join(fg_directory, "burst_tagger", "power_squelch.grc")
+        osCommandString = 'gnuradio-companion "' + filepath
+        os.system(osCommandString + '" &')
+    
+    # Method4: lowpass_filter
+    elif (get_category == "Energy - Burst Tagger") and (get_method == "Lowpass"):
+        filepath = os.path.join(fg_directory, "burst_tagger", "lowpass.grc")
+        osCommandString = 'gnuradio-companion "' + filepath
+        os.system(osCommandString + '" &')
+    
+    # Method5: power_squelch_lowpass
+    elif (get_category == "Energy - Burst Tagger") and (get_method == "Power Squelch then Lowpass"):
+        filepath = os.path.join(fg_directory, "burst_tagger", "power_squelch_lowpass.grc")
+        osCommandString = 'gnuradio-companion "' + filepath
+        os.system(osCommandString + '" &')
+        
+    # Method6: bandpass_filter
+    elif (get_category == "Energy - Burst Tagger") and (get_method == "Bandpass"):
+        filepath = os.path.join(fg_directory, "burst_tagger", "bandpass.grc")
+        osCommandString = 'gnuradio-companion "' + filepath
+        os.system(osCommandString + '" &')
+        
+    # Method7: strongest
+    elif (get_category == "Energy - Burst Tagger") and (get_method == "Strongest Frequency then Bandpass"):
+        filepath1 = os.path.join(fg_directory, "fft", "strongest.grc")
+        filepath2 = os.path.join(fg_directory, "burst_tagger", "bandpass.grc")
+        osCommandString = 'gnuradio-companion "' + filepath1 + '" "' + filepath2
+        os.system(osCommandString + '" &')
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerInputFrequenciesClearClicked(dashboard: QtCore.QObject):
+    """ 
+    Clears the list of input frequencies for the conditioner.
+    """
+    # Remove All Rows
+    dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.setRowCount(0)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerInputFrequenciesUpClicked(dashboard: QtCore.QObject):
+    """ 
+    Moves an input frequency up in the listbox.
+    """
+    current_row = dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.currentRow()
+    if current_row > 0:  # Ensure it isn't the topmost row
+        # Swap all items in the current row with the row above it
+        for column in range(dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.columnCount()):
+            current_item = dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.takeItem(current_row, column)
+            above_item = dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.takeItem(current_row - 1, column)
+
+            # Swap items
+            dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.setItem(current_row, column, above_item)
+            dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.setItem(current_row - 1, column, current_item)
+
+        # Update the selected row
+        dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.setCurrentCell(current_row - 1, dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.currentColumn())
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerInputFrequenciesDownClicked(dashboard: QtCore.QObject):
+    """ 
+    Moves an input frequency down in the listbox.
+    """
+    current_row = dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.currentRow()
+    if current_row < dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.rowCount() - 1:  # Ensure it isn't the bottommost row
+        # Swap all items in the current row with the row below it
+        for column in range(dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.columnCount()):
+            current_item = dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.takeItem(current_row, column)
+            below_item = dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.takeItem(current_row + 1, column)
+
+            # Swap items
+            dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.setItem(current_row, column, below_item)
+            dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.setItem(current_row + 1, column, current_item)
+
+        # Update the selected row
+        dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.setCurrentCell(current_row + 1, dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.currentColumn())    
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerInputFrequenciesRemoveClicked(dashboard: QtCore.QObject):
+    """ 
+    Removes an input frequency for the conditioner.
+    """    
+    current_row = dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.currentRow()
+
+    if current_row == -1:  # No row is selected
+        return
+
+    # Remove the current row
+    dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.removeRow(current_row)
+
+    # Determine the next row to select
+    if dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.rowCount() == 0:  # Table is empty
+        return
+    elif current_row < dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.rowCount():  # Select the row at the same index
+        dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.selectRow(current_row)
+    else:  # Select the last row if the current row was the last one
+        dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.selectRow(dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.rowCount() - 1)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerSettingsFrequenciesAddClicked(dashboard: QtCore.QObject):
+    """ 
+    Adds a new row to the frequencies table.
+    """    
+    current_row = dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.currentRow()
+
+    # Determine where to insert the new row
+    if current_row == -1:  # No row is selected
+        insert_position = dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.rowCount()  # Add to the end
+    else:
+        insert_position = current_row + 1  # Insert after the selected row
+
+    # Insert the new row
+    dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.insertRow(insert_position)
+
+    # Initialize the new row with empty items
+    freq_item = QtWidgets.QTableWidgetItem("")
+    freq_item.setTextAlignment(QtCore.Qt.AlignCenter)
+    dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.setItem(insert_position, 0, freq_item)
+    dwell_item = QtWidgets.QTableWidgetItem("10")
+    dwell_item.setTextAlignment(QtCore.Qt.AlignCenter)
+    dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.setItem(insert_position, 1, dwell_item)
+
+    # Resize the Table
+    dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.resizeRowsToContents()
+    dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.resizeColumnsToContents()
+    dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.horizontalHeader().setStretchLastSection(False)
+    dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.horizontalHeader().setStretchLastSection(True)
+
+    # Select the newly inserted row
+    dashboard.ui.tableWidget_tsi_conditioner_input_frequencies.setCurrentCell(insert_position, 0)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotTSI_ConditionerSettingsIsolationFrequenciesHardwareChanged(dashboard: QtCore.QObject):
+    """ 
+    Updates available isolation categories and methods based on selected hardware.
+    """
+    # Clear the Isolation Categories and Methods
+    dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_category.blockSignals(True)
+    dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.blockSignals(True)
+    dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_category.clear()
+    dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.clear()
+
+    # Update Categories
+    get_hardware = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_hardware.currentText()).split(" - ")[0].strip()
+    if get_hardware:
+        get_categories = fissure.utils.library.getConditionerIsolationCategory(
+            dashboard.backend.library, 
+            get_hardware, 
+            fissure.utils.get_library_version()
+        )
+        dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_category.addItems(get_categories)
+
+    # Unblock
+    dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_category.blockSignals(False)
+    dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.blockSignals(False)
+
+    # Update Methods
+    _slotTSI_ConditionerSettingsIsolationFrequenciesCategoryChanged(dashboard)

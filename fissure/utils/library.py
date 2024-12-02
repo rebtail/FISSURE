@@ -225,11 +225,43 @@ def getPacketTypesDirect(conn, protocol):
 # outside the HIPRFISR component.
 # =============================================================
 
-def getConditionerIsolationMethod(library, isolation_category, version):
+def getConditionerIsolationCategory(library, hardware, version):
     """
-    Returns a list of filename values for a detector type, hardware type, and version from the detector_flow_graphs table.
+    Returns the isolation categories from the conditioner_flow_graphs table.
     """
-    return sorted([str(row[2]) for row in library["conditioner_flow_graphs"] if row[1] == isolation_category and row[7] == version])
+    # Define priority values to always include
+    priority_values = [
+        "Energy - Burst Tagger", 
+        "Energy - Imagery",
+        "Eigenvalue",
+        "Matched Filter",
+        "Cyclostationary"        
+    ]
+
+    # Get unique categories from the library
+    categories = {str(row[1]) for row in library["conditioner_flow_graphs"] if row[3] == hardware and row[6] == version}
+
+    # Add priority values to the set
+    categories.update(priority_values)
+
+    # Return a sorted list
+    return sorted(categories)
+
+
+def getConditionerIsolationMethod(library, isolation_category, version, hardware):
+    """
+    Returns the isolation methods from the conditioner_flow_graphs table.
+    """
+    return sorted([str(row[2]) for row in library["conditioner_flow_graphs"] if row[1] == isolation_category and row[3] == hardware and row[6] == version])
+
+
+def getConditionerRow(library, isolation_method, version, hardware):
+    """
+    Returns the row for a conditioner isolation method from the conditioner_flow_graphs table.
+    """
+    matching_rows = [row for row in library["conditioner_flow_graphs"] if row[2] == isolation_method and row[3] == hardware and row[6] == version]
+    
+    return matching_rows[0] if matching_rows else None
 
 
 def getDetectorFlowGraphsFilename(library, detector_type, hardware, version):

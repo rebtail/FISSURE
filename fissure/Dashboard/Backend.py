@@ -1455,6 +1455,7 @@ class DashboardBackend:
         common_parameter_values=[],
         method_parameter_names=[],
         method_parameter_values=[],
+        method_filepath=""
     ):
         """
         Signals to TSI to start TSI Conditioner.
@@ -1467,6 +1468,7 @@ class DashboardBackend:
                 "common_parameter_values": common_parameter_values,
                 "method_parameter_names": method_parameter_names,
                 "method_parameter_values": method_parameter_values,
+                "method_filepath": method_filepath,
             }
             msg = {
                     fissure.comms.MessageFields.IDENTIFIER: fissure.comms.Identifiers.DASHBOARD,

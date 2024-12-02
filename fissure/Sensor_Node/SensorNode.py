@@ -41,6 +41,15 @@ CERT_DIR = "certificates"
 
 DELAY = 0.5  # Seconds
 
+
+def add_subdirectories_to_path(base_path):
+    """
+    Add all subdirectories of a base path to sys.path.
+    """
+    for root, dirs, files in os.walk(base_path):
+        sys.path.insert(0, root)  # Add each subdirectory to sys.path
+
+
 if "maint-3.8" in fissure.utils.get_fg_library_dir(fissure.utils.get_os_info()):
     sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.8", "PD Flow Graphs"))
     sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.8", "Single-Stage Flow Graphs"))
@@ -48,7 +57,7 @@ if "maint-3.8" in fissure.utils.get_fg_library_dir(fissure.utils.get_os_info()):
     sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.8", "IQ Flow Graphs"))
     sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.8", "Archive Flow Graphs"))
     sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.8", "Sniffer Flow Graphs"))
-    sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.8", "TSI Flow Graphs"))
+    add_subdirectories_to_path(os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.8", "TSI Flow Graphs"))
 elif "maint-3.10" in fissure.utils.get_fg_library_dir(fissure.utils.get_os_info()):
     sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.10", "PD Flow Graphs"))
     sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.10", "Single-Stage Flow Graphs"))
@@ -56,7 +65,7 @@ elif "maint-3.10" in fissure.utils.get_fg_library_dir(fissure.utils.get_os_info(
     sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.10", "IQ Flow Graphs"))
     sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.10", "Archive Flow Graphs"))
     sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.10", "Sniffer Flow Graphs"))
-    sys.path.insert(0, os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.10", "TSI Flow Graphs"))
+    add_subdirectories_to_path(os.path.join(fissure.utils.FISSURE_ROOT, "Flow Graph Library", "maint-3.10", "TSI Flow Graphs"))
 sys.path.insert(0, '/tmp')
 
 
@@ -2102,7 +2111,7 @@ class SensorNode():
         """
         try:
             # Start it
-            filepath = os.path.join(fissure.utils.get_fg_library_dir(self.os_info), "TSI Flow Graphs", flow_graph_filename)
+            filepath = os.path.join(fissure.utils.get_fg_library_dir(self.os_info), "TSI Flow Graphs", "Detectors", flow_graph_filename)
             arguments = ""
             for n in range(0,len(variable_names)):
                 arguments = arguments + '--' + variable_names[n] + '="' + variable_values[n] + '" '

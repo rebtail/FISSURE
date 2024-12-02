@@ -55,10 +55,6 @@ async def addToLibrary(
     """
     Adds new data to the library.
     """
-    # # Make a Backup of the Current Library
-    # stream = open(os.path.join(fissure.utils.YAML_DIR, "Library Backups", "library_backup_add.yaml"), "w")
-    # yaml.dump(component.library, stream, default_flow_style=False, indent=5)
-
     # Maintain a Connection to the Database
     conn = fissure.utils.library.openDatabaseConnection()
 
@@ -658,6 +654,7 @@ async def startTSI_Conditioner(
     common_parameter_values=[],
     method_parameter_names=[],
     method_parameter_values=[],
+    method_filepath=""
 ):
     """
     Signals to TSI to start TSI Conditioner.
@@ -669,6 +666,7 @@ async def startTSI_Conditioner(
         "common_parameter_values": common_parameter_values,
         "method_parameter_names": method_parameter_names,
         "method_parameter_values": method_parameter_values,
+        "method_filepath": method_filepath
     }
     msg = {
         fissure.comms.MessageFields.IDENTIFIER: component.identifier,

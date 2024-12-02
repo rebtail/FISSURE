@@ -29,6 +29,7 @@ async def startTSI_Conditioner(
     common_parameter_values=[],
     method_parameter_names=[],
     method_parameter_values=[],
+    method_filepath=""
 ):
     """
     Accepts a Start message from the HIPRFISR and begins the new thread.
@@ -43,6 +44,7 @@ async def startTSI_Conditioner(
         common_parameter_values,
         method_parameter_names,
         method_parameter_values,
+        method_filepath
     )
 
 
