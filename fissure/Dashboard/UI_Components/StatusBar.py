@@ -127,7 +127,7 @@ class FissureStatusBar(QtWidgets.QStatusBar):
         self.connect_button = QtWidgets.QPushButton("Connect", objectName="pushButton_status_connect")
         self.connecting_button = QtWidgets.QPushButton("", objectName="pushButton_status_connecting")
         self.disconnect_button = QtWidgets.QPushButton("Disconnect", objectName="pushButton_status_disconnect")
-        self.shutdown_button = QtWidgets.QPushButton("Shutdown", objectName="pushButton_status_shutdown")
+        self.shutdown_button = QtWidgets.QPushButton("Shut Down", objectName="pushButton_status_shutdown")
 
         self.addr_prompt = QtWidgets.QWidget()
         self.protocol_select = QtWidgets.QComboBox(objectName="comboBox_status_protocol")
@@ -327,7 +327,7 @@ class FissureStatusBar(QtWidgets.QStatusBar):
         """
         self.addr_label.setText("")
         self.disconnect_button.setText("Disconnect")
-        self.shutdown_button.setText("Shutdown")
+        self.shutdown_button.setText("Shut Down")
 
     def update_session_status(self, connected: bool, addr: fissure.comms.Address = None):
         if connected is True:

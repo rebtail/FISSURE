@@ -1738,7 +1738,7 @@ async def launch(HWSelect: QtCore.QObject):
     # Connect
     os.system('python3 "' + os.path.join(fissure.utils.SENSOR_NODE_DIR, "SensorNode.py") + '" --local &')
     HWSelect.dashboard.logger.info("Launching local sensor node, please wait...")
-    await asyncio.sleep(9)
+    # await asyncio.sleep(9)
     # time.sleep(1)
  
     # Send Message for HIPRFISR to Sensor Node Connections

@@ -14,44 +14,61 @@ handlers:
         formatter: hiprfisrfmt
         stream: ext://sys.stdout
 
-    #set file handler for 5 backup log files of ~100MB each max
     file:
         class: logging.handlers.RotatingFileHandler
         level: DEBUG            
         formatter: hiprfisrfmt
         filename: Logs/event.log
-        maxBytes: 10000000                
-        backupCount: 5
+        maxBytes: 5000000                
+        backupCount: 0  # Keep only one file, overwrite when the size limit is reached
     
+loggers:
+    root:
+        level: DEBUG
+        handlers: [console,file]
+        propagate: False
 
-root:
-    level: DEBUG
-    handlers: [console,file]
+    fissure:
+        level: DEBUG
+        handlers: [console, file]
+        propagate: False
+    
+    fissure.dashboard:
+        level: DEBUG
+        handlers: [console, file]
+        propagate: False
+        
+    fissure.dashboard.frontend:
+        level: DEBUG
+        handlers: [console, file]
+        propagate: False
+        
+    fissure.dashboard.backend:
+        level: DEBUG
+        handlers: [console, file]
+        propagate: False
 
-fissure:
-    level: DEBUG
-    handlers: [console, file]
+    fissure.hiprfisr:
+        level: DEBUG
+        handlers: [console, file]
+        propagate: False
 
-fissure.dashboard:
-    level: DEBUG
-    handlers: [console, file]
+    fissure.pd:
+        level: DEBUG
+        handlers: [console, file]
+        propagate: False
 
-fissure.hiprfisr:
-    level: DEBUG
-    handlers: [console, file]
+    fissure.tsi:
+        level: DEBUG
+        handlers: [console, file]
+        propagate: False
 
-fissure.pd:
-    level: DEBUG
-    handlers: [console, file]
+    fissure.sensor_node:
+        level: DEBUG
+        handlers: [console, file]
+        propagate: False
 
-fissure.tsi:
-    level: DEBUG
-    handlers: [console, file]
-
-fissure.sensor_node:
-    level: DEBUG
-    handlers: [console, file]
-
-fissure.test:
-    level: DEBUG
-    handlers: [console, file]
+    fissure.test:
+        level: DEBUG
+        handlers: [console, file]
+        propagate: False

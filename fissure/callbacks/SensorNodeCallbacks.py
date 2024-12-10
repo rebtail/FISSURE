@@ -70,9 +70,6 @@ async def overwriteDefaultAutorunPlaylist(component: object, sensor_node_id=0, p
     Overwrites the default autorun playlist yaml file with a dictionary configured in the Dashboard.
     """
     # Overwrite default.yaml
-    # playlist_dict = eval(
-    #     binascii.a2b_hex(eval(playlist_dict)).decode()
-    # )  # fissureclass.py does not like dictionaries in commands
     component.logger.info("OVERWRITE!")
     filename = os.path.join(fissure.utils.SENSOR_NODE_DIR, "Autorun_Playlists", "default.yaml")
     with open(filename, "w") as stream:

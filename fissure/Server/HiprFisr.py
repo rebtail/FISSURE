@@ -67,7 +67,7 @@ class HiprFisr:
 
     settings: Dict
     identifier: str = fissure.comms.Identifiers.HIPRFISR
-    logger: logging.Logger = fissure.utils.get_logger(fissure.comms.Identifiers.HIPRFISR)
+    # logger: logging.Logger = fissure.utils.get_logger(fissure.comms.Identifiers.HIPRFISR)
     ip_address: str
     session_active: bool
     dashboard_socket: fissure.comms.Server  # PAIR
@@ -84,6 +84,7 @@ class HiprFisr:
     shutdown: bool
 
     def __init__(self, address: fissure.comms.Address):
+        self.logger = fissure.utils.get_logger(fissure.comms.Identifiers.HIPRFISR)
         self.logger.info("=== INITIALIZING ===")
 
         # Get IP Address
@@ -126,6 +127,13 @@ class HiprFisr:
 
         # Load settings from Fissure Config YAML
         self.settings = fissure.utils.get_fissure_config()
+
+        # Update Logging Levels
+        fissure.utils.update_logging_levels(
+            self.logger, 
+            self.settings["console_logging_level"], 
+            self.settings["file_logging_level"]
+        )
 
         # Detect Operating System
         self.os_info = fissure.utils.get_os_info()
@@ -176,6 +184,13 @@ class HiprFisr:
         self.sensor_nodes = []
         for n in range(0,5):
             self.sensor_nodes.append(SensorNode())
+
+    
+    def reset_sensor_node_listener(self, sensor_node_index=0):
+        """
+        Resets the sensor node listener to help clear old connections.
+        """
+        self.sensor_nodes[sensor_node_index] = SensorNode()
 
 
     def register_callbacks(self, ctx: ModuleType):
@@ -247,6 +262,7 @@ class HiprFisr:
 
             else:
                 await self.connect_components()
+        self.logger.debug("Shutdown reached in HIPRFISR event loop")
 
         # Ensure the Heartbeat Loop is Stopped
         heartbeat_task.cancel()
@@ -257,7 +273,6 @@ class HiprFisr:
 
         # Shut Down Comms
         await self.shutdown_comms()
-        
         self.logger.info("=== SHUTDOWN ===")
 
 
@@ -265,7 +280,7 @@ class HiprFisr:
         """
         Wait for all FISSURE Components to connect or `Exit Connect Loop` message from Dashboard
         """
-        self.logger.debug("entering connect loop")
+        self.logger.debug("Entering connect loop")
         while self.connect_loop is True:
             # Send and Listen for Heartbeats
             # NOTE: HiprFisr won't send any heartbeats on a socket until it receives one first
@@ -290,7 +305,7 @@ class HiprFisr:
                 }
                 await self.dashboard_socket.send_msg(fissure.comms.MessageTypes.STATUS, msg)
                 self.connect_loop = False
-        self.logger.debug("exiting connect loop")
+        self.logger.debug("Exiting connect loop")
 
 
     async def read_dashboard_messages(self):
@@ -601,25 +616,16 @@ class HiprFisr:
     async def updateLoggingLevels(self, new_console_level="", new_file_level=""):
         """Update the logging levels on the HIPRFISR and forward to all components."""
         # Update New Levels for the HIPRFISR
-        for n in range(0, len(self.logger.parent.handlers)):
-            if self.logger.parent.handlers[n].name == "console":
-                if new_console_level == "DEBUG":
-                    self.logger.parent.handlers[n].level = 10
-                elif new_console_level == "INFO":
-                    self.logger.parent.handlers[n].level = 20
-                elif new_console_level == "WARNING":
-                    self.logger.parent.handlers[n].level = 30
-                elif new_console_level == "ERROR":
-                    self.logger.parent.handlers[n].level = 40
-            elif self.logger.parent.handlers[n].name == "file":
-                if new_file_level == "DEBUG":
-                    self.logger.parent.handlers[n].level = 10
-                elif new_file_level == "INFO":
-                    self.logger.parent.handlers[n].level = 20
-                elif new_file_level == "WARNING":
-                    self.logger.parent.handlers[n].level = 30
-                elif new_file_level == "ERROR":
-                    self.logger.parent.handlers[n].level = 40
+        fissure.utils.update_logging_levels(self.logger, new_console_level, new_file_level)
+
+        # For Testing
+        # self.logger.info("INFO")
+        # self.logger.debug("DEBUG")
+        # self.logger.warning("WARNING")
+        # self.logger.error("ERROR")
+        # print(f"Logger level: {self.logger.level}")
+        # for handler in self.logger.handlers:
+        #     print(f"Handler {type(handler).__name__} level: {handler.level}")
 
         # Update Other Components
         PARAMETERS = {"new_console_level": new_console_level, "new_file_level": new_file_level}

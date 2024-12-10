@@ -51,7 +51,9 @@ __vars = FissureUtilObjects()
 
 
 def init_logging():
-    """Configure Logging"""
+    """
+    Configure Logging
+    """
     # Create the log directory if it doesn't already exist
     if not os.path.exists(LOG_DIR):  # pragma: no cover
         os.mkdir(LOG_DIR)
@@ -67,6 +69,11 @@ def init_logging():
     # Set Logging Config
     logging.config.dictConfig(config)
 
+    # print("After dictConfig:")
+    # for name, logger in logging.Logger.manager.loggerDict.items():
+    #     if isinstance(logger, logging.Logger):
+    #         print(f"Logger: {name}, Handlers: {logger.handlers}, Propagate: {logger.propagate}")
+
 
 def get_logger(source: str) -> logging.Logger:
     """
@@ -81,8 +88,49 @@ def get_logger(source: str) -> logging.Logger:
     # Format logger name if it's not the root fissure logger
     if source != "fissure":
         source = f"fissure.{source.lower()}"
+    
+    logger = logging.getLogger(source.lower())
 
-    return logging.getLogger(source.lower())
+    return logger
+
+
+def update_logging_levels(logger, new_console_level=None, new_file_level=None):
+    """
+    Update the logging levels for a FISSURE component.
+    """
+    level_mapping = {
+        "DEBUG": 10,
+        "INFO": 20,
+        "WARNING": 30,
+        "ERROR": 40,
+    }
+
+    # # Print initial handler levels
+    # for handler in logger.handlers:
+    #     print(f"Handler {type(handler).__name__} level before update: {handler.level}")
+
+    if new_console_level is not None and new_console_level.strip():
+        console_level = level_mapping.get(new_console_level.upper(), 20)
+        for handler in logger.handlers:
+            if isinstance(handler, logging.StreamHandler):
+                handler.setLevel(console_level)
+    else:
+        console_level = logger.level
+
+    if new_file_level is not None and new_file_level.strip():
+        file_level = level_mapping.get(new_file_level.upper(), 20)
+        for handler in logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                handler.setLevel(file_level)
+    else:
+        file_level = logger.level
+
+    logger.setLevel(min(console_level, file_level))
+
+    # # Print final handler levels
+    # for handler in logger.handlers:
+    #     print(f"Handler {type(handler).__name__} level after update: {handler.level}")
+    # print(f"Logger level after update: {logger.level}")
 
 
 def get_fg_library_dir(os_info: str) -> str:

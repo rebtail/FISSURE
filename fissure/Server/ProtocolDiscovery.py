@@ -47,7 +47,7 @@ class ProtocolDiscovery:
 
     settings: Dict
     identifier: str = fissure.comms.Identifiers.PD
-    logger: logging.Logger = fissure.utils.get_logger(fissure.comms.Identifiers.PD)
+    # logger: logging.Logger = fissure.utils.get_logger(fissure.comms.Identifiers.PD)
     ip_address: str
     pd_library: any
     hiprfisr_address: fissure.comms.Address
@@ -60,9 +60,18 @@ class ProtocolDiscovery:
 
 
     def __init__(self):
+        self.logger = fissure.utils.get_logger(fissure.comms.Identifiers.PD)
+        self.logger.info("=== INITIALIZING ===")
 
-        self.logger.debug("=== INITIALIZING ===")
         self.settings = fissure.utils.get_fissure_config()
+
+        # Update Logging Levels
+        fissure.utils.update_logging_levels(
+            self.logger, 
+            self.settings["console_logging_level"], 
+            self.settings["file_logging_level"]
+        )
+
         self.ip_address = "localhost"
         self.os_info = fissure.utils.get_os_info()
         self.library = None
@@ -257,25 +266,7 @@ class ProtocolDiscovery:
     def updateLoggingLevels(self, new_console_level="", new_file_level=""):
         """Update the logging levels on PD."""
         # Update New Levels for PD
-        for n in range(0, len(self.logger.parent.handlers)):
-            if self.logger.parent.handlers[n].name == "console":
-                if new_console_level == "DEBUG":
-                    self.logger.parent.handlers[n].level = 10
-                elif new_console_level == "INFO":
-                    self.logger.parent.handlers[n].level = 20
-                elif new_console_level == "WARNING":
-                    self.logger.parent.handlers[n].level = 30
-                elif new_console_level == "ERROR":
-                    self.logger.parent.handlers[n].level = 40
-            elif self.logger.parent.handlers[n].name == "file":
-                if new_file_level == "DEBUG":
-                    self.logger.parent.handlers[n].level = 10
-                elif new_file_level == "INFO":
-                    self.logger.parent.handlers[n].level = 20
-                elif new_file_level == "WARNING":
-                    self.logger.parent.handlers[n].level = 30
-                elif new_file_level == "ERROR":
-                    self.logger.parent.handlers[n].level = 40
+        fissure.utils.update_logging_levels(self.logger, new_console_level, new_file_level)
 
 
     async def retrieveDatabaseCachePD(self):

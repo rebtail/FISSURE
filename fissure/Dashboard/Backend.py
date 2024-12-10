@@ -12,15 +12,22 @@ import multiprocessing
 import time
 import zmq
 import signal
+import uuid
 
 EVENT_LOOP_DELAY = 0.1  # Seconds
 
 
 def run():
+    """
+    Never called.
+    """
     asyncio.run(main())
 
 
 async def main():
+    """
+    Never called.
+    """
     print("[FISSURE][Dashboard] start")
     dashboard = DashboardBackend()
 
@@ -33,13 +40,16 @@ async def main():
 
 # Ignore SIGINT in the secondary process
 def run_server():
+    """
+    Called by start_local_hiprfisr().
+    """
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     fissure.Server.run()
 
 
 class DashboardBackend:
     callbacks: Dict = {}
-    logger: logging.Logger = fissure.utils.get_logger(f"{fissure.comms.Identifiers.DASHBOARD}.backend")
+    # logger: logging.Logger = fissure.utils.get_logger(f"{fissure.comms.Identifiers.DASHBOARD}.backend")
     frontend: QtCore.QObject
     settings: Dict
     ip_address: str
@@ -50,15 +60,27 @@ class DashboardBackend:
     pd_connected: bool
     tsi_connected: bool
     sensor_node_connected: List[bool]
-    session_active: bool
+    session_active: bool  # For keeping track of StatusBar status
     shutdown: bool
+    identifier: str = fissure.comms.Identifiers.DASHBOARD
 
 
     def __init__(self, frontend: QtCore.QObject):
+        self.logger = fissure.utils.get_logger(f"{fissure.comms.Identifiers.DASHBOARD}.backend")       
         self.logger.info("=== INITIALIZING ===")
+
         self.settings = fissure.utils.get_fissure_config()
+
+        # Update Logging Levels
+        fissure.utils.update_logging_levels(
+            self.logger, 
+            self.settings["console_logging_level"], 
+            self.settings["file_logging_level"]
+        )
+
         self.ip_address = fissure.utils.get_ip_address()
-        self.initialize_comms()
+        self.hiprfisr_socket = None
+        # self.initialize_comms()
         self.os_info = fissure.utils.get_os_info()
 
         # Initialize Connection/Heartbeat Variables
@@ -81,7 +103,7 @@ class DashboardBackend:
         # Load Library
         self.library = None
         self.frontend_initialized = False
-        self.initial_database_retrieval = False
+        self.initial_database_retrieval = True
 
         self.frontend = frontend
 
@@ -93,10 +115,20 @@ class DashboardBackend:
 
 
     def initialize_comms(self):
+        """
+        Create the Listener socket.
+        """
+        # Close on Reconnect
+        if self.hiprfisr_socket:
+            # self.hiprfisr_socket.shutdown()
+            self.hiprfisr_socket = None 
+
         # Create HiprFisr Listener
+        self.socket_id = f"{self.identifier}-{uuid.uuid4()}"
         self.hiprfisr_socket = fissure.comms.Listener(
             sock_type=zmq.PAIR, name=f"{fissure.comms.Identifiers.DASHBOARD}::backend"
         )
+        self.hiprfisr_socket.set_identity(self.socket_id)
 
 
     async def shutdown_comms(self):
@@ -117,7 +149,7 @@ class DashboardBackend:
 
     def stop(self) -> bool:
         """
-        Set the shutdown flag to stop the backend
+        Set the shutdown flag to stop the backend event loop. Is called in a loop on closing Dashboard.
         """
         if self.hiprfisr_connected is False:
             self.shutdown = True
@@ -168,8 +200,8 @@ class DashboardBackend:
                 await self.read_hiprfisr_messages()
 
                 # Retrieve Initial Database Cache from HIPRFISR
-                if self.initial_database_retrieval == False:
-                    self.initial_database_retrieval = True
+                if self.initial_database_retrieval == True:
+                    self.initial_database_retrieval = False
                     await self.retrieveDatabaseCache(False)
                 if self.library != None and self.frontend_initialized == False:
                     self.frontend_initialized = True
@@ -188,7 +220,6 @@ class DashboardBackend:
         await self.shutdown_comms()
         fissure.utils.save_fissure_config(data=self.settings)  # Check is in save_fissure_config
         self.logger.info("=== SHUTDOWN ===")
-        self.session_active = None
 
 
     async def send_heartbeat(self):
@@ -387,7 +418,7 @@ class DashboardBackend:
 
         while self.session_active is not False:
             if self.shutting_down_message_received == True:
-                self.logger.warning("received shutdown notice from HiprFisr")
+                self.logger.warning("Received shutdown notice from HIPRFISR")
                 self.close_session()
             await asyncio.sleep(.1)
 
@@ -404,7 +435,6 @@ class DashboardBackend:
             }
         )
         self.hiprfisr_address = None
-        self.hiprfisr_connected = False
         self.hiprfisr_connected = False
         self.pd_connected = False
         self.tsi_connected = False
@@ -528,26 +558,9 @@ class DashboardBackend:
         Updates the console and file logging levels for all components.
         """
         # Update New Levels for the Dashboard
-        for n in range(0, len(self.logger.handlers)):
-            if self.logger.handlers[n].name == "console":
-                if new_console_level == "DEBUG":
-                    self.logger.handlers[n].level = 10
-                elif new_console_level == "INFO":
-                    self.logger.handlers[n].level = 20
-                elif new_console_level == "WARNING":
-                    self.logger.handlers[n].level = 30
-                elif new_console_level == "ERROR":
-                    self.logger.handlers[n].level = 40
-            elif self.logger.handlers[n].name == "file":
-                if new_file_level == "DEBUG":
-                    self.logger.handlers[n].level = 10
-                elif new_file_level == "INFO":
-                    self.logger.handlers[n].level = 20
-                elif new_file_level == "WARNING":
-                    self.logger.handlers[n].level = 30
-                elif new_file_level == "ERROR":
-                    self.logger.handlers[n].level = 40
+        fissure.utils.update_logging_levels(self.logger, new_console_level, new_file_level)
 
+        # For Testing
         # self.logger.debug("=== debug ===")
         # self.logger.info("=== info ===")
         # self.logger.warning("=== warning ===")

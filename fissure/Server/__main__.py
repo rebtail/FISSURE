@@ -13,13 +13,14 @@ def run():
 
 
 async def main():
-    fissure.utils.init_logging()
-
     args = Parser.parse_args()
 
     print("[FISSURE][Server] start")
 
+    fissure.utils.init_logging()  # Needed for Server Programs: HIPRFISR, PD, TSI
+
     if args.remote:
+        # fissure.utils.init_logging()
         server_address = fissure.comms.Address(
             protocol="tcp", address="0.0.0.0", hb_channel=args.heartbeat_port, msg_channel=args.message_port
         )

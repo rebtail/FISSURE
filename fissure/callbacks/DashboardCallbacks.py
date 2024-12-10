@@ -1189,5 +1189,20 @@ async def retrieveDatabaseCacheReturn(component: object, database_return={}, ref
     component.library = database_return
     component.logger.info("Updated backend database cache from HIPRFISR database")
 
+    # Enable Sensor Node Buttons
+    component.frontend.ui.pushButton_top_node1.setEnabled(True)
+    component.frontend.ui.pushButton_top_node2.setEnabled(True)
+    component.frontend.ui.pushButton_top_node3.setEnabled(True)
+    component.frontend.ui.pushButton_top_node4.setEnabled(True)
+    component.frontend.ui.pushButton_top_node5.setEnabled(True)
+
+    # Enable Tabs
+    if component.frontend.ui.pushButton_automation_system_start.text() == "Stop":
+        component.frontend.ui.tabWidget.setEnabled(True)
+
+    # Enable Start Button
+    component.frontend.ui.pushButton_automation_system_start.setEnabled(True)
+
+    # Refresh Library Dependent Widgets
     if refresh_frontend_widgets is True:
         await libraryUpdateFinished(component)

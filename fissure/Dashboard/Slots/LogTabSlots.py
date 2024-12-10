@@ -32,16 +32,15 @@ def _slotLogRefreshClicked(dashboard: QtCore.QObject):
         bad_words.append('[ERROR]')
 
     # Remove Lines with Keywords
-    temp_log_filepath = os.path.join(fissure.utils.LOG_DIR, "temp.log")
     event_log_filepath = os.path.join(fissure.utils.LOG_DIR, "event.log")
-    with open(event_log_filepath) as oldfile, open(temp_log_filepath, 'w') as newfile:
+    filtered_log_lines = []
+    with open(event_log_filepath) as oldfile:
         for line in oldfile:
             if not any(bad_word in line for bad_word in bad_words):
-                newfile.write(line)
+                filtered_log_lines.append(line)
 
-    # Display the Text
-    with open(temp_log_filepath) as mylogfile:
-        temp_log_contents = mylogfile.read()
+    # Display the filtered log content directly in the UI
+    temp_log_contents = ''.join(filtered_log_lines)
     dashboard.ui.textEdit2_log.setPlainText(temp_log_contents)
     dashboard.ui.textEdit2_log.moveCursor(QtGui.QTextCursor.End)
 
@@ -74,17 +73,16 @@ def _slotLogRefreshPermitClicked(dashboard: QtCore.QObject):
     if dashboard.ui.checkBox_log_error_permit.isChecked():
         good_words.append('[ERROR]')
 
-    # Remove Lines with Keywords
-    temp_log_filepath = os.path.join(fissure.utils.LOG_DIR, "temp.log")
+    # Read and Filter the Log File Content Directly
     event_log_filepath = os.path.join(fissure.utils.LOG_DIR, "event.log")
-    with open(event_log_filepath) as oldfile, open(temp_log_filepath, 'w') as newfile:
+    filtered_log_lines = []
+    with open(event_log_filepath) as oldfile:
         for line in oldfile:
             if any(good_word in line for good_word in good_words):
-                newfile.write(line)
+                filtered_log_lines.append(line)
 
     # Display the Text
-    with open(temp_log_filepath) as mylogfile:
-        temp_log_contents = mylogfile.read()
+    temp_log_contents = ''.join(filtered_log_lines)
     dashboard.ui.textEdit2_log.setPlainText(temp_log_contents)
     dashboard.ui.textEdit2_log.moveCursor(QtGui.QTextCursor.End)
 

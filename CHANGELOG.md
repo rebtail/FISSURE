@@ -1,6 +1,33 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2024-12-09
+
+Networking and logging fixes.
+
+### Added
+
+- update_logging_levels() utility function
+- INFO and DEBUG level logging for sending and receiving network messages
+- List of banned command messages in FissureZMQNode.py for ignoring parameter values in logging
+
+### Changed
+
+- Moving temporary ipc files for local connections to /tmp folder
+- Changed status bar "Shutdown" button to "Shut Down"
+- Retrieve the Dashboard database cache on reconnect
+- Disable more widgets on disconnect, enable them on database cache return
+- Replaced updateLoggingLevel() callbacks with new utility function
+- File logging now writes to a single .log file and the max size is reduced to 5 MB (logging.yaml)
+- Removed temp.log file and writing to file when filtering log results
+
+### Fixed
+
+- Launch, disconnect, and launch networking fix for local sensor nodes
+- Minimum logging levels in logger across software components set to match minimum level in console/file handlers
+- Setting logging level in options dialog updates across all components
+- Setting logging level in config files updates component logging levels on initialization
+
 ## 2024-12-02
 
 Hardware ID requirement and splash screen fixes.

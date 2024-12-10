@@ -285,7 +285,6 @@ class SensorNode():
         while self.shutdown is False:
             await asyncio.sleep(DELAY)
 
-            # print("looping")
             if self.hiprfisr_connected:
                 try:
                     await asyncio.wait_for(self.send_heartbeat(), timeout=10.0)

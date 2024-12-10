@@ -13,11 +13,28 @@ import zmq.asyncio
 import zmq.auth
 import zmq.auth.asyncio
 import asyncio
+import gc
 
 SERVER = "server"
 CLIENTS = "clients"
 
 POLL_TIMEOUT = 50
+
+# Commands Banned from Logging the Parameters Values in Console and File (messages with a lot of data)
+BANNED_MESSAGE_NAMES = [
+    "demodFG_LibrarySearchReturn",
+    "findEntropyReturn",
+    "findPreamblesReturn",
+    "overwriteDefaultAutorunPlaylist",
+    "pdBitsReturn",
+    "recallSettingsReturn",
+    "retrieveDatabaseCacheReturn",
+    "retrieveDatabaseCacheReturnPD",
+    "saveFile",
+    "searchLibraryReturn",
+    "sliceByPreambleReturn",
+    "transferSensorNodeFile",
+]
 
 
 class FissureZMQNode(ABC):
@@ -62,6 +79,7 @@ class FissureZMQNode(ABC):
         # Setup Authentication
         self.initialize_auth()
 
+
     def __del__(self):
         """
         Cleanup ZMQ Context for GC
@@ -71,13 +89,16 @@ class FissureZMQNode(ABC):
         except Exception:  # pragma: no cover
             pass
 
+
     @abstractmethod
     def initialize_auth(self):
         pass  # pragma: no cover
 
+
     @abstractmethod
     def shutdown(self):
         pass  # pragma: no cover
+
 
     async def send_heartbeat(self, msg: Dict, target_ids: Optional[List[str]] = None, **kwargs):
         """
@@ -96,6 +117,7 @@ class FissureZMQNode(ABC):
                     await self.heartbeat_channel.send_multipart([encoded_id, encoded_msg])
         else:
             await self.heartbeat_channel.send_json(msg)
+
 
     async def send_msg(self, msg_type: str, msg: Dict, target_ids: Optional[List[str]] = None, **kwargs):
         """
@@ -116,10 +138,54 @@ class FissureZMQNode(ABC):
                     encoded_id = id.encode()
                     encoded_msg = json.dumps(msg).encode()
                     await self.message_channel.send_multipart([encoded_id, encoded_msg])
-                    self.logger.debug(f"[{self.name}] sent message: {msg}")
+
+                    # Ignore Message Parameters in Logging
+                    if msg_type == "Commands":
+                        if msg["MessageName"] in BANNED_MESSAGE_NAMES:
+                            log_message = msg.copy()
+                            log_message.pop("Parameters", None)
+                        else:
+                            log_message = msg
+
+                        # Log Messages
+                        if self.logger.isEnabledFor(logging.INFO):
+                            if target_ids:
+                                identifiers = [tid.split('-')[0] for tid in target_ids]
+                                identifier_str = ', '.join(identifiers)
+                                self.logger.info(f"[{self.name}] sent message: {log_message['MessageName']} to [{identifier_str}]")
+                            else:
+                                self.logger.info(f"[{self.name}] sent message: {log_message['MessageName']}")
+                        self.logger.debug(f"[{self.name}] sent message: {log_message}" + (f" to {target_ids}" if target_ids else ""))                       
+                    
+                    # Other Types
+                    else:
+                        # Log Messages
+                        if self.logger.isEnabledFor(logging.INFO):
+                            if target_ids:
+                                identifiers = [tid.split('-')[0] for tid in target_ids]
+                                identifier_str = ', '.join(identifiers)
+                                self.logger.info(f"[{self.name}] sent message: {msg['MessageName']} to [{identifier_str}]")
+                            else:
+                                self.logger.info(f"[{self.name}] sent message: {msg['MessageName']}")
+                        self.logger.debug(f"[{self.name}] sent message: {msg}" + (f" to {target_ids}" if target_ids else ""))
         else:
             await self.message_channel.send_json(msg)
-            self.logger.debug(f"[{self.name}] sent message: {msg}")
+
+            # Ignore Message Parameters in Logging
+            if msg_type == "Commands":
+                if msg["MessageName"] in BANNED_MESSAGE_NAMES:
+                    log_message = msg.copy()
+                    log_message.pop("Parameters", None)
+                else:
+                    log_message = msg
+                if self.logger.isEnabledFor(logging.INFO):
+                    self.logger.info(f"[{self.name}] sent message: {msg['MessageName']}" + (f" to {target_ids}" if target_ids else ""))
+                self.logger.debug(f"[{self.name}] sent message: {log_message}" + (f" to {target_ids}" if target_ids else ""))
+            else:
+                if self.logger.isEnabledFor(logging.INFO):
+                    self.logger.info(f"[{self.name}] sent message: {msg['MessageName']}" + (f" to {target_ids}" if target_ids else ""))
+                self.logger.debug(f"[{self.name}] sent message: {msg}" + (f" to {target_ids}" if target_ids else ""))
+
 
     async def recv_heartbeat(self) -> Optional[Dict]:
         """
@@ -140,6 +206,7 @@ class FissureZMQNode(ABC):
                 msgrcvd = await self.heartbeat_channel.recv_json()
         return msgrcvd
 
+
     async def recv_heartbeats(self) -> List[Optional[Dict]]:
         """
         Receive multiple heartbeats (for ROUTER sockets that serve multiple clients)
@@ -153,6 +220,7 @@ class FissureZMQNode(ABC):
             heartbeats.append(rcvd)
             rcvd = await self.recv_heartbeat()
         return heartbeats
+
 
     async def recv_msg(self) -> Optional[Dict]:
         """
@@ -172,11 +240,41 @@ class FissureZMQNode(ABC):
             else:
                 msgrcvd = await self.message_channel.recv_json()
             if msgrcvd is not None:
+                # Commands
                 if msgrcvd.get(MessageFields.TYPE) == MessageTypes.COMMANDS:
                     cb = msgrcvd.get(MessageFields.MESSAGE_NAME)
                     msgrcvd["callback"] = cb
-                self.logger.debug(f"[{self.name}] received message: {msgrcvd}")
+
+                    # Ignore Message Parameters in Logging
+                    if cb in BANNED_MESSAGE_NAMES:
+                        log_message = msgrcvd.copy()
+                        log_message.pop("Parameters", None)
+                    else:
+                        log_message = msgrcvd
+                    
+                    # Log Messages
+                    if self.logger.isEnabledFor(logging.INFO):
+                        if sender_id:
+                            sender_id_no_uuid = msgrcvd[MessageFields.SENDER_ID].split('-')[0]
+                            self.logger.info(f"[{self.name}] received message: {cb} from [{sender_id_no_uuid}]")
+                        else:
+                            self.logger.info(f"[{self.name}] received message: {cb}")
+                    
+                    if sender_id:
+                        self.logger.debug(f"[{self.name}] received message: {log_message} from [{msgrcvd[MessageFields.SENDER_ID]}]")
+                    else:
+                        self.logger.debug(f"[{self.name}] received message: {log_message}")
+                    
+                # Other Types
+                else:
+                    # Log Messages
+                    if sender_id:
+                        sender_id_no_uuid = msgrcvd[MessageFields.SENDER_ID].split('-')[0]
+                        self.logger.debug(f"[{self.name}] received message: {msgrcvd} from [{sender_id_no_uuid}]")
+                    else:
+                        self.logger.debug(f"[{self.name}] received message: {msgrcvd}")
         return msgrcvd
+
 
     async def run_callback(self, context: object, parsed_command: Dict) -> Any:
         """
@@ -248,6 +346,7 @@ class Server(FissureZMQNode):
         super().__init__(sock_type=sock_type, name=name)
         self.logger.debug(f"[{self.name}] initialized")
 
+
     def initialize_auth(self):
         """
         Create ZMQ Authenicator, configure to allow CURVE connections from ANY domain (subject to publickey auth)
@@ -265,6 +364,7 @@ class Server(FissureZMQNode):
         self.heartbeat_channel.curve_server = True
         self.message_channel.curve_server = True
 
+
     def start(self):
         """
         Connect the ZMQ Socket to the server port
@@ -273,10 +373,13 @@ class Server(FissureZMQNode):
         self.message_channel.bind(self.address.message_channel)
         self.logger.debug(f"[{self.name}] started at {self.address}")
 
+
     def shutdown(self):
         """
         Close ZMQ sockets
         """
+        self.heartbeat_channel.setsockopt(zmq.LINGER, 0)
+        self.message_channel.setsockopt(zmq.LINGER, 0)
         if not (self.heartbeat_channel.closed or self.message_channel.closed):
             if self.heartbeat_channel.closed is False:
                 self.heartbeat_channel.close()
@@ -286,16 +389,21 @@ class Server(FissureZMQNode):
 
         # Cleanup IPC sockets
         if self.address.protocol == "ipc":
-            hb_socket_path = self.address.heartbeat_channel.lstrip("ipc://")
-            msg_socket_path = self.address.message_channel.lstrip("ipc://")
+            # Heartbeat Channel
+            if self.address.heartbeat_channel.startswith("ipc://"):
+                hb_socket_path = self.address.heartbeat_channel[len("ipc://"):]
 
-            if os.path.exists(hb_socket_path):
-                self.logger.debug(f"[{self.name}] removing ipc socket: {hb_socket_path}")
-                os.remove(hb_socket_path)
+                if os.path.exists(hb_socket_path):
+                    self.logger.debug(f"[{self.name}] removing ipc socket: {hb_socket_path}")
+                    os.remove(hb_socket_path)
 
-            if os.path.exists(msg_socket_path):
-                self.logger.debug(f"[{self.name}] removing ipc socket: {msg_socket_path}")
-                os.remove(msg_socket_path)
+            # Message Channel
+            if self.address.message_channel.startswith("ipc://"):
+                msg_socket_path = self.address.message_channel[len("ipc://"):]
+
+                if os.path.exists(msg_socket_path):
+                    self.logger.debug(f"[{self.name}] removing ipc socket: {msg_socket_path}")
+                    os.remove(msg_socket_path)
 
 
 class Listener(FissureZMQNode):
@@ -320,6 +428,7 @@ class Listener(FissureZMQNode):
         super().__init__(sock_type=sock_type, name=name)
         self.logger.debug(f"[{self.name}] initialized")
 
+
     def initialize_auth(self):
         """
         Configure ZMQ CURVE-Based Authentication
@@ -342,6 +451,7 @@ class Listener(FissureZMQNode):
         self.logger.debug(f"[{self.name}] loaded client private key = {client_private_key}")
         self.logger.debug(f"[{self.name}] loaded server public key = {server_public_key}")
 
+
     def set_identity(self, identity: str):
         """
         Set the socket ID - for Listeners that will connect to a ROUTER Server
@@ -352,6 +462,7 @@ class Listener(FissureZMQNode):
         self.sockid = identity
         self.heartbeat_channel.setsockopt_string(zmq.IDENTITY, identity)
         self.message_channel.setsockopt_string(zmq.IDENTITY, identity)
+
 
     async def connect(self, server_addr: Address, timeout: int = 5) -> bool:
         """
@@ -364,6 +475,8 @@ class Listener(FissureZMQNode):
         :returns: result of the connection attempt
         :rtype: bool
         """
+        self.heartbeat_channel.setsockopt(zmq.LINGER, 1000)  # -1?
+        self.message_channel.setsockopt(zmq.LINGER, 1000)
         if self.heartbeat_channel.getsockopt(zmq.TYPE) == zmq.SUB:
             self.heartbeat_channel.setsockopt_string(zmq.SUBSCRIBE, "")  # pragma: no cover
 
@@ -405,10 +518,18 @@ class Listener(FissureZMQNode):
         :type server: fissure.comms.Address
         """
         if server_addr in self.connections:
+            self.heartbeat_channel.setsockopt(zmq.LINGER, 0)
+            self.message_channel.setsockopt(zmq.LINGER, 0)
             self.heartbeat_channel.disconnect(server_addr.heartbeat_channel)
             self.message_channel.disconnect(server_addr.message_channel)
             self.connections.remove(server_addr)
             self.logger.debug(f"[{self.name}] disconnected from {server_addr}")
+
+            # # Explicitly close sockets here if not closed yet
+            # if not self.heartbeat_channel.closed:
+            #     self.heartbeat_channel.close()
+            # if not self.message_channel.closed:
+            #     self.message_channel.close()
 
 
     def shutdown(self):

@@ -56,13 +56,14 @@ WINDOW_HEIGHT = 1024
 
 class Dashboard(QtWidgets.QMainWindow):
     backend: DashboardBackend
-    logger: logging.Logger = fissure.utils.get_logger(f"{fissure.comms.Identifiers.DASHBOARD}.frontend")
+    # logger: logging.Logger = fissure.utils.get_logger(f"{fissure.comms.Identifiers.DASHBOARD}.frontend")
     ui: object
     signals: DashboardSignals
     popups = {}
     active_sensor_node: int
 
     def __init__(self, parent: QtWidgets.QWidget = None):
+        self.logger = fissure.utils.get_logger(f"{fissure.comms.Identifiers.DASHBOARD}.frontend")
         self.logger.info("=== INITIALIZING ===")
 
         self.splash = SplashScreen()
@@ -79,7 +80,13 @@ class Dashboard(QtWidgets.QMainWindow):
 
         # Create Backend
         self.backend = DashboardBackend(frontend=self)
-        self.backend.start()
+
+        # Update Logging Levels
+        fissure.utils.update_logging_levels(
+            self.logger, 
+            self.backend.settings["console_logging_level"], 
+            self.backend.settings["file_logging_level"]
+        )
 
         # Closing Variables
         self.all_closed_down = False
@@ -1039,7 +1046,7 @@ class Dashboard(QtWidgets.QMainWindow):
 
         If currently connected to HiprFisr, notify user to end session and ignore event,
         otherwise close gracefully. FIX - closing while HIPRFISR is connecting on startup.
-        """        
+        """
         # First Close Event
         if self.all_closed_down == False:
             # HIPRFISR Shut Down Already
@@ -1069,8 +1076,10 @@ class Dashboard(QtWidgets.QMainWindow):
         
         # Shut Down Local HIPRFISR
         await StatusBarSlots.shutdown_hiprfisr(self)
+
         while self.backend.stop() == False:
             await qasync.asyncio.sleep(0.1)
+
         self.all_closed_down = True
         self.close()
 

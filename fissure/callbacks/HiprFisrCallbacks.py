@@ -197,7 +197,7 @@ async def shutdown(component: object, identifiers: List[str]):
     :param identifier: Identifier of the fissure component to shutdown
     :type identifier: str
     """
-    component.logger.info(f"received shutdown command for {identifiers}")
+    component.logger.info(f"received shutdown command for [{', '.join(identifiers)}]")
     for identifier in identifiers:
         if identifier == component.identifier:
             # forward 'Shutdown' command to PD and TSI)
@@ -1432,6 +1432,9 @@ async def connectToSensorNode(component: object, sensor_node_id, ip_address, msg
         get_hb_port = str(hb_port)
         get_msg_port = str(msg_port)
 
+        # Reset Listener for Local Connections since Local Sensor Node Shuts Down Completely on Disconnect
+        component.reset_sensor_node_listener(sensor_node_id)
+
     # Remote
     else:
         get_protocol = "tcp"
@@ -1816,7 +1819,9 @@ async def flowGraphStarted(component: object, sensor_node_id=0, category=""):
 
 
 async def recallSettingsReturn(component: object, settings_dict):
-    """Connects the HIPRFISR to a sensor node."""
+    """
+    Returns the recalled sensor node settings to the Dashboard.
+    """
     # Send the Message
     PARAMETERS = {"settings_dict": settings_dict}
     msg = {

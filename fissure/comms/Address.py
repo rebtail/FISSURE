@@ -62,6 +62,10 @@ class Address:
             self.message_channel = f"{self.protocol}://{self.address}:{msg_port}"
 
         elif self.protocol == IPC:
+            # Ensure the address is absolute; default to /tmp if not
+            if not self.address.startswith('/'):
+                self.address = f"/tmp/{self.address}"
+
             self.heartbeat_channel = f"{self.protocol}://{self.address}-hb"
             self.message_channel = f"{self.protocol}://{self.address}-msg"
 

@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtWidgets
 
 import fissure.comms
 import qasync
+import asyncio
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -82,11 +83,15 @@ async def startLocalSession(dashboard: QtCore.QObject):
 
     # Start Server Locally
     # connecting_button.setChecked(True)
+    dashboard.backend.initialize_comms()
+    dashboard.backend.start()
     await dashboard.backend.start_local_hiprfisr()
     # connecting_button.setChecked(False)
 
     # Connect to the local Server
     await connect(dashboard, fissure.comms.Address({"protocol": "ipc", "address": "fissure"}))
+
+    # Enable Widgets in retrieveDatabaseCacheReturn()
 
 
 @qasync.asyncSlot(QtCore.QObject, fissure.comms.Address)
@@ -110,6 +115,7 @@ async def connect(
     # Connect to HiprFisr
     # connect_button.setChecked(True)
     connect_button.setText("Connecting...")
+    dashboard.backend.initial_database_retrieval = True  # Retrieve the database again on reconnect
     await dashboard.backend.connect_to_hiprfisr(addr)
     # connect_button.setChecked(False)
 
@@ -121,14 +127,8 @@ async def connect(
         # Update Status Bar
         status_bar.update_session_status(connected=True, addr=addr)
 
-        # Enable Dashboard Buttons
-        dashboard.ui.pushButton_top_node1.setEnabled(True)
-        dashboard.ui.pushButton_top_node2.setEnabled(True)
-        dashboard.ui.pushButton_top_node3.setEnabled(True)
-        dashboard.ui.pushButton_top_node4.setEnabled(True)
-        dashboard.ui.pushButton_top_node5.setEnabled(True)
-        # dashboard.ui.tabWidget.setEnabled(True)
-        dashboard.ui.pushButton_automation_system_start.setEnabled(True)
+        # Enable Widgets in retrieveDatabaseCacheReturn()
+
     else:
         # Connection Failed
         connect_button.setText("FAILED")
@@ -170,7 +170,11 @@ async def disconnect_hiprfisr(dashboard: QtCore.QObject):
     dashboard.ui.pushButton_top_node3.setEnabled(False)
     dashboard.ui.pushButton_top_node4.setEnabled(False)
     dashboard.ui.pushButton_top_node5.setEnabled(False)
-    # dashboard.ui.tabWidget.setEnabled(False)
+
+    # Disable Tabs
+    dashboard.ui.tabWidget.setEnabled(False)
+    
+    # Disable Start Button
     dashboard.ui.pushButton_automation_system_start.setEnabled(False)
 
 
@@ -194,15 +198,23 @@ async def shutdown_hiprfisr(dashboard: QtCore.QObject):
     dashboard.logger.critical("[GUI] Shutting Down HIPRFISR")
 
     shutdown_button.setChecked(True)
-    await dashboard.backend.shutdown_hiprfisr()
+    await dashboard.backend.shutdown_hiprfisr()  # Needs event loop running to know if shutdown happened   
     shutdown_button.setChecked(False)
 
-    # # Shutdown Backend and close the Dashboard
-    # dashboard.backend.stop()
-    # await qasync.asyncio.sleep(0.5)
-    # dashboard.close()
+    # Disable Sensor Node Buttons
+    dashboard.ui.pushButton_top_node1.setEnabled(False)
+    dashboard.ui.pushButton_top_node2.setEnabled(False)
+    dashboard.ui.pushButton_top_node3.setEnabled(False)
+    dashboard.ui.pushButton_top_node4.setEnabled(False)
+    dashboard.ui.pushButton_top_node5.setEnabled(False)
 
-    # Reset visible widgets and status
+    # Disable Tabs
+    dashboard.ui.tabWidget.setEnabled(False)
+
+    # Disable Start Button
+    dashboard.ui.pushButton_automation_system_start.setEnabled(False)
+
+    # Reset visible widgets and status in statusbar
     status_bar.update_session_status(False, None)
 
 
