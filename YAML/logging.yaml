@@ -20,7 +20,7 @@ handlers:
         formatter: hiprfisrfmt
         filename: Logs/event.log
         maxBytes: 5000000                
-        backupCount: 0  # Keep only one file, overwrite when the size limit is reached
+        backupCount: 1  # Ignores maxBytes when backupCount is 0
     
 loggers:
     root:

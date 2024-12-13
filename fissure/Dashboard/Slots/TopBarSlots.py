@@ -266,3 +266,15 @@ def start(dashboard: QtCore.QObject):
         dashboard.ui.tabWidget.setTabEnabled(6,False)
         dashboard.ui.tabWidget.setTabEnabled(7,False)
         dashboard.ui.tabWidget.setTabEnabled(8,False)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def demoClicked(dashboard: QtCore.QObject):
+    """ 
+    Stops demo mode.
+    """
+    # Set the Flag
+    dashboard.logger.info("Stop Demo Mode")
+    dashboard.stop_demo_flag = True
+    dashboard.ui.pushButton_demo.setText("Stopping...")
+    

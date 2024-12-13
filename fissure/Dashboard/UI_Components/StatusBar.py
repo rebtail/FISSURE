@@ -83,6 +83,7 @@ class FissureStatusBar(QtWidgets.QStatusBar):
     # Dialog
     dialog: StatusDialog
 
+
     def __init__(self, parent):
         super(FissureStatusBar, self).__init__(parent)
         self.parent = parent
@@ -96,6 +97,7 @@ class FissureStatusBar(QtWidgets.QStatusBar):
         self.__connect_slots__()
 
         self.dialog = StatusDialog(parent=self.window())
+
 
     def __init_components__(self):
         """
@@ -115,6 +117,7 @@ class FissureStatusBar(QtWidgets.QStatusBar):
             sensor_node = QtWidgets.QPushButton(f"SN{idx+1}: --", objectName=f"pushButton_status{idx+5}")
             sensor_node.setFlat(True)
             self.sensor_nodes.append(sensor_node)
+
 
     def __init_session__(self):
         """
@@ -155,6 +158,7 @@ class FissureStatusBar(QtWidgets.QStatusBar):
         self.hb_port_box.setText("5051")
         self.msg_port_box.setText("5052")
         self.ports_prompt.show()
+
 
     def __init_format__(self):
         """
@@ -242,6 +246,7 @@ class FissureStatusBar(QtWidgets.QStatusBar):
         # Start with No Active Session
         self.session_active.hide()
 
+
     def __connect_slots__(self):
         self.local_button.clicked.connect(lambda: StatusBarSlots.startLocalSession(self.parent))
         self.remote_button.clicked.connect(lambda: StatusBarSlots.remote_connect_prompt(self))
@@ -294,6 +299,7 @@ class FissureStatusBar(QtWidgets.QStatusBar):
         self.disconnect_button.clicked.connect(lambda: StatusBarSlots.disconnect_hiprfisr(self.parent))
         self.shutdown_button.clicked.connect(lambda: StatusBarSlots.shutdown_hiprfisr(self.parent))
 
+
     def reset_session_inactive(self):
         """
         Reset session prompt widgets to their initial state.
@@ -321,6 +327,7 @@ class FissureStatusBar(QtWidgets.QStatusBar):
         self.local_button.show()
         self.remote_button.show()
 
+
     def reset_session_active(self):
         """
         Reset session active widgets to their initial state
@@ -328,6 +335,7 @@ class FissureStatusBar(QtWidgets.QStatusBar):
         self.addr_label.setText("")
         self.disconnect_button.setText("Disconnect")
         self.shutdown_button.setText("Shut Down")
+
 
     def update_session_status(self, connected: bool, addr: fissure.comms.Address = None):
         if connected is True:
@@ -348,9 +356,11 @@ class FissureStatusBar(QtWidgets.QStatusBar):
             self.tsi.setText("TSI: --")
             self.pd.setText("PD: --")
 
+
     def enterEvent(self, event):
         self.dialog.show()
         self.dialog.raise_()
+
 
     def leaveEvent(self, event):
         self.dialog.hide()

@@ -919,12 +919,160 @@
     <addaction name="actionThe_Signal_Path"/>
     <addaction name="actionHamSCI_Resources"/>
    </widget>
+   <widget class="QMenu" name="menuDemo">
+    <property name="title">
+     <string>&amp;Demo</string>
+    </property>
+    <widget class="QMenu" name="menuDemo_TSI_Tab">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>TSI Tab</string>
+     </property>
+     <addaction name="actionDemo_TSI_All"/>
+     <addaction name="separator"/>
+     <addaction name="actionDemo_TSI_Automation_Tab"/>
+     <addaction name="actionDemo_TSI_Detector_Tab"/>
+     <addaction name="actionDemo_TSI_Conditioner_Tab"/>
+     <addaction name="actionDemo_TSI_Feature_Extractor_Tab"/>
+     <addaction name="actionDemo_TSI_Classifier_Tab"/>
+     <addaction name="actionDemo_TSI_Direction_Finding_Tab"/>
+     <addaction name="actionDemo_TSI_SOI_Aggregator_Tab"/>
+    </widget>
+    <widget class="QMenu" name="menuDemo_PD_Tab">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>PD Tab</string>
+     </property>
+     <addaction name="actionDemo_PD_All"/>
+    </widget>
+    <widget class="QMenu" name="menuDemo_Attack_Tab">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Attack Tab</string>
+     </property>
+     <addaction name="actionDemo_Attack_All"/>
+     <addaction name="separator"/>
+     <addaction name="actionDemo_Attack_Single_Stage_Tab"/>
+     <addaction name="actionDemo_Attack_Multi_Stage_Tab"/>
+     <addaction name="actionDemo_Attack_Fuzzing_Tab"/>
+     <addaction name="actionDemo_Attack_History_Tab"/>
+     <addaction name="actionDemo_Attack_Packet_Crafter_Tab"/>
+    </widget>
+    <widget class="QMenu" name="menuDemo_IQ_Data_Tab">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>IQ Data Tab</string>
+     </property>
+     <addaction name="actionDemo_IQ_Data_All"/>
+     <addaction name="separator"/>
+     <addaction name="actionDemo_IQ_Data_Data_Viewer"/>
+     <addaction name="actionDemo_IQ_Data_Record_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Playback_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Inspection_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Crop_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Convert_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Append_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Transfer_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Timeslot_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Overlap_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Resample_Tab"/>
+     <addaction name="actionDemo_IQ_Data_OFDM_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Normalize_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Strip_Tab"/>
+     <addaction name="actionDemo_IQ_Data_Split_Tab"/>
+     <addaction name="actionDemo_IQ_Data_OOK_Tab"/>
+    </widget>
+    <widget class="QMenu" name="menuDemo_Archive_Tab">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Archive Tab</string>
+     </property>
+     <addaction name="actionDemo_Archive_All"/>
+     <addaction name="separator"/>
+     <addaction name="actionDemo_Archive_Download_Tab"/>
+     <addaction name="actionDemo_Archive_Replay_Tab"/>
+     <addaction name="actionDemo_Archive_Datasets_Tab"/>
+    </widget>
+    <widget class="QMenu" name="menuDemo_Sensor_Nodes_Tab">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Sensor Nodes Tab</string>
+     </property>
+     <addaction name="actionDemo_Sensor_Nodes_All"/>
+     <addaction name="separator"/>
+     <addaction name="actionDemo_Sensor_Nodes_Autorun_Tab"/>
+     <addaction name="actionDemo_Sensor_Nodes_File_Navigation_Tab"/>
+    </widget>
+    <widget class="QMenu" name="menuDemo_Library_Tab">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Library Tab</string>
+     </property>
+     <addaction name="actionDemo_Library_All"/>
+     <addaction name="separator"/>
+     <addaction name="actionDemo_Library_Browse_Tab"/>
+     <addaction name="actionDemo_Library_Gallery_Tab"/>
+     <addaction name="actionDemo_Library_Search_Tab"/>
+     <addaction name="actionDemo_Library_Add_Tab"/>
+    </widget>
+    <widget class="QMenu" name="menuDemo_Log_Tab">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Log Tab</string>
+     </property>
+     <addaction name="actionDemo_Log_All"/>
+    </widget>
+    <widget class="QMenu" name="menuDemo_Configuration">
+     <property name="title">
+      <string>Configuration &amp;&amp; Menu</string>
+     </property>
+     <addaction name="actionDemo_Configuration_All"/>
+     <addaction name="separator"/>
+     <addaction name="actionDemo_Configuration_Sensor_Node_Configuration"/>
+     <addaction name="actionDemo_Configuration_Software_Server"/>
+     <addaction name="actionDemo_Configuration_View_Menu"/>
+     <addaction name="actionDemo_Configuration_Options_Menu"/>
+     <addaction name="actionDemo_Configuration_Standalone_Menu"/>
+     <addaction name="actionDemo_Configuration_Tools_Menu"/>
+     <addaction name="actionDemo_Configuration_Lessons_Menu"/>
+     <addaction name="actionDemo_Configuration_Help_Menu"/>
+    </widget>
+    <addaction name="actionDemo_All"/>
+    <addaction name="separator"/>
+    <addaction name="menuDemo_Configuration"/>
+    <addaction name="actionDemo_Automation_Tab"/>
+    <addaction name="menuDemo_TSI_Tab"/>
+    <addaction name="menuDemo_PD_Tab"/>
+    <addaction name="menuDemo_Attack_Tab"/>
+    <addaction name="menuDemo_IQ_Data_Tab"/>
+    <addaction name="menuDemo_Archive_Tab"/>
+    <addaction name="menuDemo_Sensor_Nodes_Tab"/>
+    <addaction name="menuDemo_Library_Tab"/>
+    <addaction name="menuDemo_Log_Tab"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuOptions"/>
    <addaction name="menuFlow_Graphs"/>
    <addaction name="menuSDR_Tools"/>
    <addaction name="menuLessons"/>
+   <addaction name="menuDemo"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -2958,6 +3106,333 @@
   <action name="actionLesson_Ceiling_Fans">
    <property name="text">
     <string>Lesson #14: Ceiling Fans</string>
+   </property>
+  </action>
+  <action name="actionDemo_All">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Demo All</string>
+   </property>
+  </action>
+  <action name="actionDemo_Configuration_Sensor_Node_Configuration">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Sensor Node Configuration</string>
+   </property>
+  </action>
+  <action name="actionDemo_TSI_All">
+   <property name="text">
+    <string>Demo All (TSI)</string>
+   </property>
+  </action>
+  <action name="actionDemo_PD_All">
+   <property name="text">
+    <string>Demo All (PD)</string>
+   </property>
+  </action>
+  <action name="actionDemo_Attack_All">
+   <property name="text">
+    <string>Demo All (Attack)</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_All">
+   <property name="text">
+    <string>Demo All (IQ Data)</string>
+   </property>
+  </action>
+  <action name="actionDemo_Archive_All">
+   <property name="text">
+    <string>Demo All (Archive)</string>
+   </property>
+  </action>
+  <action name="actionDemo_Sensor_Nodes_All">
+   <property name="text">
+    <string>Demo All (Sensor Nodes)</string>
+   </property>
+  </action>
+  <action name="actionDemo_Library_All">
+   <property name="text">
+    <string>Demo All (Library)</string>
+   </property>
+  </action>
+  <action name="actionDemo_Log_All">
+   <property name="text">
+    <string>Demo All (Log)</string>
+   </property>
+  </action>
+  <action name="actionDemo_TSI_Automation_Tab">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Automation Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_TSI_Detector_Tab">
+   <property name="text">
+    <string>Detector Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_TSI_Conditioner_Tab">
+   <property name="text">
+    <string>Conditioner Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_TSI_Feature_Extractor_Tab">
+   <property name="text">
+    <string>Feature Extractor Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_TSI_Classifier_Tab">
+   <property name="text">
+    <string>Classifier Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_TSI_Direction_Finding_Tab">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Direction Finding Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_TSI_SOI_Aggregator_Tab">
+   <property name="text">
+    <string>SOI Aggregator Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Attack_Single_Stage_Tab">
+   <property name="text">
+    <string>Single-Stage Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Attack_Multi_Stage_Tab">
+   <property name="text">
+    <string>Multi-Stage Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Attack_Fuzzing_Tab">
+   <property name="text">
+    <string>Fuzzing Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Attack_History_Tab">
+   <property name="text">
+    <string>History Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Attack_Packet_Crafter_Tab">
+   <property name="text">
+    <string>Packet Crafter Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Data_Viewer">
+   <property name="text">
+    <string>Data Viewer</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Record_Tab">
+   <property name="text">
+    <string>Record Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Playback_Tab">
+   <property name="text">
+    <string>Playback Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Inspection_Tab">
+   <property name="text">
+    <string>Inspection Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Crop_Tab">
+   <property name="text">
+    <string>Crop Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Convert_Tab">
+   <property name="text">
+    <string>Convert Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Append_Tab">
+   <property name="text">
+    <string>Append Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Transfer_Tab">
+   <property name="text">
+    <string>Transfer Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Timeslot_Tab">
+   <property name="text">
+    <string>Timeslot Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Overlap_Tab">
+   <property name="text">
+    <string>Overlap Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Resample_Tab">
+   <property name="text">
+    <string>Resample Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_OFDM_Tab">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OFDM Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Normalize_Tab">
+   <property name="text">
+    <string>Normalize Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Strip_Tab">
+   <property name="text">
+    <string>Strip Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_Split_Tab">
+   <property name="text">
+    <string>Split Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_IQ_Data_OOK_Tab">
+   <property name="text">
+    <string>OOK Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Archive_Download_Tab">
+   <property name="text">
+    <string>Download Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Archive_Replay_Tab">
+   <property name="text">
+    <string>Replay Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Archive_Datasets_Tab">
+   <property name="text">
+    <string>Datasets Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Sensor_Nodes_Autorun_Tab">
+   <property name="text">
+    <string>Autorun Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Sensor_Nodes_File_Navigation_Tab">
+   <property name="text">
+    <string>File Navigation Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Library_Browse_Tab">
+   <property name="text">
+    <string>Browse Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Library_Gallery_Tab">
+   <property name="text">
+    <string>Gallery Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Library_Search_Tab">
+   <property name="text">
+    <string>Search Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Library_Add_Tab">
+   <property name="text">
+    <string>Add Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Automation_Tab">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Automation Tab</string>
+   </property>
+  </action>
+  <action name="actionDemo_Configuration_All">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Demo All (Configuration)</string>
+   </property>
+  </action>
+  <action name="actionDemo_Configuration_Software_Server">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Software Server</string>
+   </property>
+  </action>
+  <action name="actionDemo_Configuration_View_Menu">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>View Menu</string>
+   </property>
+  </action>
+  <action name="actionDemo_Configuration_Options_Menu">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Options Menu</string>
+   </property>
+  </action>
+  <action name="actionDemo_Configuration_Standalone_Menu">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Standalone Menu</string>
+   </property>
+  </action>
+  <action name="actionDemo_Configuration_Tools_Menu">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tools Menu</string>
+   </property>
+  </action>
+  <action name="actionDemo_Configuration_Lessons_Menu">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Lessons Menu</string>
+   </property>
+  </action>
+  <action name="actionDemo_Configuration_Help_Menu">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Help Menu</string>
+   </property>
+  </action>
+  <action name="actionRemote_Server">
+   <property name="text">
+    <string>Remote Server</string>
    </property>
   </action>
  </widget>

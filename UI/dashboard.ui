@@ -343,6 +343,19 @@
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_demo">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>5</y>
+      <width>300</width>
+      <height>65</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Stop Demo Mode</string>
+    </property>
+   </widget>
    <zorder>label_diagram</zorder>
    <zorder>pushButton_automation_system_start</zorder>
    <zorder>label_top_node1_picture</zorder>
@@ -355,6 +368,7 @@
    <zorder>pushButton_top_node4</zorder>
    <zorder>pushButton_top_node2</zorder>
    <zorder>pushButton_top_node3</zorder>
+   <zorder>pushButton_demo</zorder>
   </widget>
   <widget class="QTabWidget" name="tabWidget">
    <property name="enabled">

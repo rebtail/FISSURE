@@ -20,3 +20,4 @@ class UI_Types:
     Trim, _ = uic.loadUiType(os.path.join(fissure.utils.UI_DIR, "trim.ui"))
     Triggers, _ = uic.loadUiType(os.path.join(fissure.utils.UI_DIR, "triggers.ui"))
     Features, _ = uic.loadUiType(os.path.join(fissure.utils.UI_DIR, "features.ui"))
+

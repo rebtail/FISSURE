@@ -8,6 +8,7 @@ import yaml
 import random
 import qasync
 import urllib.parse
+import asyncio
 
 from fissure.Dashboard.Slots import (
     # ArchiveTabSlots,
@@ -25,7 +26,10 @@ from fissure.Dashboard.Slots import (
 )
 
 from fissure.Dashboard.UI_Components.Qt5 import (
-    CustomColor
+    CustomColor,
+)
+from fissure.Dashboard.Demo import (
+    DemoConfigurationScripts
 )
 
 
@@ -5049,7 +5053,7 @@ def _slotMenuLessonZ_WaveClicked():
     )
 
 
-@QtCore.pyqtSlot()
+@qasync.asyncSlot(QtCore.QObject)
 def _slotMenuLessonCeilingFansClicked():
     """
     Opens the html file in a browser.
@@ -5057,3 +5061,550 @@ def _slotMenuLessonCeilingFansClicked():
     os.system(
         f"xdg-open file://{os.path.join(fissure.utils.FISSURE_ROOT, 'docs', 'Lessons', 'HTML', 'Lesson14_Ceiling_Fans.html')}"
     )
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoAllClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoConfigurationAllClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    # Reset the Flag
+    dashboard.stop_demo_flag = False
+    dashboard.ui.pushButton_demo.setText("Stop Demo Mode")
+
+    # Define Demo Name
+    demo_name = "Configuration > Demo All (Configuration)"
+
+    # Show the Pushbutton
+    dashboard.ui.label_diagram.setVisible(False)
+    dashboard.ui.pushButton_demo.setVisible(True)
+
+    # Execute Demo Steps
+    try:
+        demo_name1 = "Configuration > Standalone Menu"
+        dashboard.logger.info(f"Demo Started: {demo_name1}")
+        await DemoConfigurationScripts.standaloneMenu(dashboard, demo_name1)
+        dashboard.logger.info(f"Demo Completed: {demo_name1}")
+
+        await asyncio.sleep(3)
+        if dashboard.stop_demo_flag:
+            return
+
+        demo_name2 = "Configuration > Tools Menu"
+        dashboard.logger.info(f"Demo Started: {demo_name2}")
+        await DemoConfigurationScripts.toolsMenu(dashboard, demo_name2)
+        dashboard.logger.info(f"Demo Completed: {demo_name2}")
+    
+    except Exception as e:
+        error_message = f"Error in Demo - {demo_name}: {str(e)}"
+        dashboard.logger.error(error_message)
+
+    finally:
+        dashboard.stop_demo_flag = False
+        dashboard.ui.pushButton_demo.setVisible(False)
+        dashboard.ui.label_diagram.setVisible(True)
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoConfigurationSensorNodeConfigurationClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    # Reset the Flag
+    dashboard.stop_demo_flag = False
+    dashboard.ui.pushButton_demo.setText("Stop Demo Mode")
+
+    # Define Demo Name
+    demo_name = "Configuration > Sensor Node Configuration"
+
+    # Show the Pushbutton
+    dashboard.ui.label_diagram.setVisible(False)
+    dashboard.ui.pushButton_demo.setVisible(True)
+
+    # Execute Demo Steps
+    try:
+        dashboard.logger.info(f"Demo Started: {demo_name}")
+        await DemoConfigurationScripts.sensorNodeConfiguration(dashboard, demo_name)
+        dashboard.logger.info(f"Demo Completed: {demo_name}")
+    
+    except Exception as e:
+        error_message = f"Error in Demo - {demo_name}: {str(e)}"
+        dashboard.logger.error(error_message)
+
+    finally:
+        dashboard.stop_demo_flag = False
+        dashboard.ui.pushButton_demo.setVisible(False)
+        dashboard.ui.label_diagram.setVisible(True)
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoConfigurationSoftwareServerClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoConfigurationViewMenuClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoConfigurationOptionsMenuClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoConfigurationStandaloneMenuClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    # Reset the Flag
+    dashboard.stop_demo_flag = False
+    dashboard.ui.pushButton_demo.setText("Stop Demo Mode")
+
+    # Define Demo Name
+    demo_name = "Configuration > Standalone Menu"
+
+    # Show the Pushbutton
+    dashboard.ui.label_diagram.setVisible(False)
+    dashboard.ui.pushButton_demo.setVisible(True)
+
+    # Execute Demo Steps
+    try:
+        dashboard.logger.info(f"Demo Started: {demo_name}")
+        await DemoConfigurationScripts.standaloneMenu(dashboard, demo_name)
+        dashboard.logger.info(f"Demo Completed: {demo_name}")
+    
+    except Exception as e:
+        error_message = f"Error in Demo - {demo_name}: {str(e)}"
+        dashboard.logger.error(error_message)
+
+    finally:
+        dashboard.stop_demo_flag = False
+        dashboard.ui.pushButton_demo.setVisible(False)
+        dashboard.ui.label_diagram.setVisible(True)
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoConfigurationToolsMenuClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    # Reset the Flag
+    dashboard.stop_demo_flag = False
+    dashboard.ui.pushButton_demo.setText("Stop Demo Mode")
+
+    # Define Demo Name
+    demo_name = "Configuration > Tools Menu"
+
+    # Show the Pushbutton
+    dashboard.ui.label_diagram.setVisible(False)
+    dashboard.ui.pushButton_demo.setVisible(True)
+
+    # Execute Demo Steps
+    try:
+        dashboard.logger.info(f"Demo Started: {demo_name}")
+        await DemoConfigurationScripts.toolsMenu(dashboard, demo_name)
+        dashboard.logger.info(f"Demo Completed: {demo_name}")
+    
+    except Exception as e:
+        error_message = f"Error in Demo - {demo_name}: {str(e)}"
+        dashboard.logger.error(error_message)
+
+    finally:
+        dashboard.stop_demo_flag = False
+        dashboard.ui.pushButton_demo.setVisible(False)
+        dashboard.ui.label_diagram.setVisible(True)
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoConfigurationLessonsMenuClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoConfigurationHelpMenuClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoTSI_AllClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoTSI_AutomationTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoTSI_DetectorTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoTSI_ConditionerTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoTSI_FeatureExtractorTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoTSI_ClassifierTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoTSI_DirectionFindingTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoTSI_SOI_AggregatorTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoPD_AllClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoAttackAllClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoAttackSingleStageTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoAttackMultiStageTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoAttackFuzzingTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoAttackHistoryTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoAttackPacketCrafterTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataAllClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataDataViewerClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataRecordTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataPlaybackTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataInspectionTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataCropTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataConvertTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataAppendTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataTransferTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataTimeslotTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataOverlapTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataResampleTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataOFDM_TabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataNormalizeTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataStripTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataSplitTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoIQ_DataOOK_TabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoArchiveAllClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoArchiveDownloadTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoArchiveReplayTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoArchiveDatasetsTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoSensorNodesAllClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoSensorNodesAutorunTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoSensorNodesFileNavigationTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoLibraryAllClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoLibraryBrowseTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoLibraryGalleryTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoLibrarySearchTabClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoLibraryAddTabClickedClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotMenuDemoLogAllClicked(dashboard: QtWidgets.QMainWindow):
+    """
+    Executes the demo script and logs its progress.
+    """
+    pass
+

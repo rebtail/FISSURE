@@ -1,6 +1,28 @@
 import subprocess
 
 
+SUPPORTED_HARDWARE = [
+    "Computer",
+    "USRP X3x0",
+    "USRP B2x0",
+    "HackRF",
+    "RTL2832U",
+    "802.11x Adapter",
+    "USRP B20xmini",
+    "LimeSDR",
+    "bladeRF",
+    "Open Sniffer",
+    "PlutoSDR",
+    "USRP2",
+    "USRP N2xx",
+    "bladeRF 2.0",
+    "USRP X410",
+    "RSPduo",
+    "RSPdx",
+    "RSPdx R2"
+]
+    
+
 def hardwareID_Column(hardware_type):
     """
     Returns the column in the Sensor Node Configuration Scan Results table that is used as the hardware ID.

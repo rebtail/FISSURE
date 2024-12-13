@@ -106,6 +106,103 @@ async def async_ok_dialog(parent, message_text, width=None):
     return msg_box.standardButton(future.result())
 
 
+async def async_textedit_dialog(parent, label_text):
+    """
+    Asynchronous dialog with label and text edit.
+    """
+    # Create the dialog
+    dialog = QtWidgets.QDialog(parent)
+    dialog.setWindowTitle("Custom Dialog")
+
+    # Set up layout
+    layout = QtWidgets.QVBoxLayout(dialog)
+
+    # Add label
+    label = QtWidgets.QLabel(label_text, dialog)
+    layout.addWidget(label)
+
+    # Add text edit
+    text_edit = QtWidgets.QTextEdit(dialog)
+    layout.addWidget(text_edit)
+
+    # Add buttons
+    button_box = QtWidgets.QDialogButtonBox(
+        QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
+        dialog
+    )
+    layout.addWidget(button_box)
+
+    # Create a future to handle async completion
+    loop = asyncio.get_event_loop()
+    future = loop.create_future()
+
+    # Define dialog completion behavior
+    def on_finished(result):
+        if result == QtWidgets.QDialog.Accepted:
+            future.set_result(text_edit.toPlainText())
+        else:
+            future.set_result(None)
+
+    # Connect signals
+    button_box.accepted.connect(lambda: dialog.accept())
+    button_box.rejected.connect(lambda: dialog.reject())
+    dialog.finished.connect(on_finished)
+
+    # Show the dialog
+    dialog.show()
+
+    return await future
+
+
+async def async_listwidget_dialog(parent, title, label, options):
+    """
+    Asynchronous dialog with label and list widget.
+    """
+    # Create dialog
+    dialog = QtWidgets.QDialog(parent)
+    dialog.setWindowTitle(title)
+    
+    # Set up layout and widgets
+    layout = QtWidgets.QVBoxLayout(dialog)
+    label_widget = QtWidgets.QLabel(label, dialog)
+    list_widget = QtWidgets.QListWidget(dialog)
+    list_widget.addItems(options)
+    list_widget.setCurrentRow(0)
+    button_box = QtWidgets.QDialogButtonBox(
+        QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
+        dialog
+    )
+    
+    layout.addWidget(label_widget)
+    layout.addWidget(list_widget)
+    layout.addWidget(button_box)
+    
+    # Future for async handling
+    loop = asyncio.get_event_loop()
+    future = loop.create_future()
+    
+    # Define behavior for buttons
+    def accept():
+        selected_items = list_widget.selectedItems()
+        if selected_items:
+            future.set_result(selected_items[0].text())
+        else:
+            future.set_result(None)
+        dialog.accept()
+    
+    def reject():
+        future.set_result(None)
+        dialog.reject()
+
+    button_box.accepted.connect(accept)
+    button_box.rejected.connect(reject)
+
+    # Show dialog and wait for the result
+    dialog.show()
+    await future
+    return future.result()
+
+
 class MiscChooser(QtWidgets.QDialog, UI_Types.Chooser):
     def __init__(self, parent, label_text, chooser_items):
         """

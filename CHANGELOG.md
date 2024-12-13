@@ -1,6 +1,22 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2024-12-12
+
+Demo Menu for future automated testing.
+
+### Added
+
+- Demo Menu and menu items for testing/demonstrating Dashboard features 
+- Slot functions for Demo Menu items
+- Stop Demo Mode button behind FISSURE logo
+- Asynchronous list widget, text edit dialog functions
+- Standalone Menu and Tools Menu Demo Menu items
+
+### Fixed
+
+- Set backupCount to 1 in logging.yaml to prevent the event log from growing beyond maxBytes
+
 ## 2024-12-09
 
 Networking and logging fixes.

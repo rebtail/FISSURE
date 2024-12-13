@@ -130,6 +130,8 @@ class Dashboard(QtWidgets.QMainWindow):
 
         # Load FISSURE Logo
         self.ui.label_diagram.setPixmap(QtGui.QPixmap(os.path.join(fissure.utils.UI_DIR, "Icons", "logo.png")))
+        self.ui.pushButton_demo.setVisible(False)
+        self.stop_demo_flag = False
 
         # Auto Connect HIPRFISR
         if self.backend.settings["auto_connect_hiprfisr"] == True:
@@ -1558,6 +1560,9 @@ def connect_top_bar_slots(dashboard: Dashboard):
 
     dashboard.ui.pushButton_automation_system_start.clicked.connect(lambda: TopBarSlots.start(dashboard))
 
+    # Demo Mode
+    dashboard.ui.pushButton_demo.clicked.connect(lambda: TopBarSlots.demoClicked(dashboard))
+
 
 def connect_dashboard_slots(dashboard: Dashboard):
     signal.signal(signal.SIGINT, lambda signum, frame: DashboardSlots._slotInterruptHandler(dashboard, signum, frame))
@@ -1936,7 +1941,7 @@ def connect_menuBar_slots(dashboard: Dashboard):
     dashboard.window.actionpgAdmin.triggered.connect(MenuBarSlots._slotMenuPgAdminClicked)
     dashboard.window.actionFIRMS.triggered.connect(MenuBarSlots._slotMenuFIRMS_Clicked)
     
-    # Lessons
+    # Lessons Menu
     dashboard.window.actionLessonOpenBTS.triggered.connect(MenuBarSlots._slotMenuLessonOpenBTS_Clicked)
     dashboard.window.actionLessonLuaDissectors.triggered.connect(MenuBarSlots._slotMenuLessonLuaDissectorsClicked)
     dashboard.window.actionLessonSound_eXchange.triggered.connect(MenuBarSlots._slotMenuLessonSound_eXchangeClicked)
@@ -1973,6 +1978,63 @@ def connect_menuBar_slots(dashboard: Dashboard):
     dashboard.window.actionHamSCI_Resources.triggered.connect(MenuBarSlots._slotMenuLessonHamSCI_ResourcesClicked)
     dashboard.window.actionLesson_Z_Wave.triggered.connect(MenuBarSlots._slotMenuLessonZ_WaveClicked)
     dashboard.window.actionLesson_Ceiling_Fans.triggered.connect(MenuBarSlots._slotMenuLessonCeilingFansClicked)
+
+    # Demo Menu
+    dashboard.window.actionDemo_All.triggered.connect(lambda: MenuBarSlots._slotMenuDemoAllClicked(dashboard))
+    dashboard.window.actionDemo_Configuration_All.triggered.connect(lambda: MenuBarSlots._slotMenuDemoConfigurationAllClicked(dashboard))
+    dashboard.window.actionDemo_Configuration_Sensor_Node_Configuration.triggered.connect(lambda: MenuBarSlots._slotMenuDemoConfigurationSensorNodeConfigurationClicked(dashboard))
+    dashboard.window.actionDemo_Configuration_Software_Server.triggered.connect(lambda: MenuBarSlots._slotMenuDemoConfigurationSoftwareServerClicked(dashboard))
+    dashboard.window.actionDemo_Configuration_View_Menu.triggered.connect(lambda: MenuBarSlots._slotMenuDemoConfigurationViewMenuClicked(dashboard))
+    dashboard.window.actionDemo_Configuration_Options_Menu.triggered.connect(lambda: MenuBarSlots._slotMenuDemoConfigurationOptionsMenuClicked(dashboard))
+    dashboard.window.actionDemo_Configuration_Standalone_Menu.triggered.connect(lambda: MenuBarSlots._slotMenuDemoConfigurationStandaloneMenuClicked(dashboard))
+    dashboard.window.actionDemo_Configuration_Tools_Menu.triggered.connect(lambda: MenuBarSlots._slotMenuDemoConfigurationToolsMenuClicked(dashboard))
+    dashboard.window.actionDemo_Configuration_Lessons_Menu.triggered.connect(lambda: MenuBarSlots._slotMenuDemoConfigurationLessonsMenuClicked(dashboard))
+    dashboard.window.actionDemo_Configuration_Help_Menu.triggered.connect(lambda: MenuBarSlots._slotMenuDemoConfigurationHelpMenuClicked(dashboard))
+    dashboard.window.actionDemo_TSI_All.triggered.connect(lambda: MenuBarSlots._slotMenuDemoTSI_AllClicked(dashboard))
+    dashboard.window.actionDemo_TSI_Automation_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoTSI_AutomationTabClicked(dashboard))
+    dashboard.window.actionDemo_TSI_Detector_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoTSI_DetectorTabClicked(dashboard))
+    dashboard.window.actionDemo_TSI_Conditioner_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoTSI_ConditionerTabClicked(dashboard))
+    dashboard.window.actionDemo_TSI_Feature_Extractor_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoTSI_FeatureExtractorTabClicked(dashboard))
+    dashboard.window.actionDemo_TSI_Classifier_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoTSI_ClassifierTabClicked(dashboard))
+    dashboard.window.actionDemo_TSI_Direction_Finding_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoTSI_DirectionFindingTabClicked(dashboard))
+    dashboard.window.actionDemo_TSI_SOI_Aggregator_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoTSI_SOI_AggregatorTabClicked(dashboard))
+    dashboard.window.actionDemo_PD_All.triggered.connect(lambda: MenuBarSlots._slotMenuDemoPD_AllClicked(dashboard))
+    dashboard.window.actionDemo_Attack_All.triggered.connect(lambda: MenuBarSlots._slotMenuDemoAttackAllClicked(dashboard))
+    dashboard.window.actionDemo_Attack_Single_Stage_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoAttackSingleStageTabClicked(dashboard))
+    dashboard.window.actionDemo_Attack_Multi_Stage_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoAttackMultiStageTabClicked(dashboard))
+    dashboard.window.actionDemo_Attack_Fuzzing_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoAttackFuzzingTabClicked(dashboard))
+    dashboard.window.actionDemo_Attack_History_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoAttackHistoryTabClicked(dashboard))
+    dashboard.window.actionDemo_Attack_Packet_Crafter_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoAttackPacketCrafterTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_All.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataAllClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Data_Viewer.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataDataViewerClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Record_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataRecordTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Playback_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataPlaybackTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Inspection_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataInspectionTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Crop_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataCropTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Convert_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataConvertTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Append_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataAppendTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Transfer_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataTransferTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Timeslot_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataTimeslotTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Overlap_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataOverlapTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Resample_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataResampleTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_OFDM_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataOFDM_TabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Normalize_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataNormalizeTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Strip_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataStripTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_Split_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataSplitTabClicked(dashboard))
+    dashboard.window.actionDemo_IQ_Data_OOK_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoIQ_DataOOK_TabClicked(dashboard))
+    dashboard.window.actionDemo_Archive_All.triggered.connect(lambda: MenuBarSlots._slotMenuDemoArchiveAllClicked(dashboard))
+    dashboard.window.actionDemo_Archive_Download_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoArchiveDownloadTabClicked(dashboard))
+    dashboard.window.actionDemo_Archive_Replay_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoArchiveReplayTabClicked(dashboard))
+    dashboard.window.actionDemo_Archive_Datasets_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoArchiveDatasetsTabClicked(dashboard))
+    dashboard.window.actionDemo_Sensor_Nodes_All.triggered.connect(lambda: MenuBarSlots._slotMenuDemoSensorNodesAllClicked(dashboard))
+    dashboard.window.actionDemo_Sensor_Nodes_Autorun_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoSensorNodesAutorunTabClicked(dashboard))
+    dashboard.window.actionDemo_Sensor_Nodes_File_Navigation_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoSensorNodesFileNavigationTabClicked(dashboard))
+    dashboard.window.actionDemo_Library_All.triggered.connect(lambda: MenuBarSlots._slotMenuDemoLibraryAllClicked(dashboard))
+    dashboard.window.actionDemo_Library_Browse_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoLibraryBrowseTabClicked(dashboard))
+    dashboard.window.actionDemo_Library_Gallery_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoLibraryGalleryTabClicked(dashboard))
+    dashboard.window.actionDemo_Library_Search_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoLibrarySearchTabClicked(dashboard))
+    dashboard.window.actionDemo_Library_Add_Tab.triggered.connect(lambda: MenuBarSlots._slotMenuDemoLibraryAddTabClickedClicked(dashboard))
+    dashboard.window.actionDemo_Log_All.triggered.connect(lambda: MenuBarSlots._slotMenuDemoLogAllClicked(dashboard))
 
     # Help Menu
     dashboard.window.actionUser_Manual.triggered.connect(MenuBarSlots._slotMenuHelpUserManualClicked)
