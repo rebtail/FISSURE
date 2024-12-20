@@ -4,13 +4,14 @@ import os
 from dotenv import load_dotenv
 import psycopg2
 from psycopg2 import sql
+from psycopg2.extensions import connection
 from fissure.utils import FISSURE_ROOT, get_fg_library_dir
 from decimal import Decimal
 from datetime import datetime, date
 import json
 
 
-def openDatabaseConnection():
+def openDatabaseConnection() -> connection:
     """
     Connects to the FISSURE database at the HIPRFISR computer/network.
     """
@@ -846,9 +847,9 @@ def addArchiveFavorite(file_name, date, format, modulation, notes, protocol, sam
     conn.close()
 
 
-def addProtocol(conn, protocol, data_rates, median_packet_lengths):
+def addProtocol(conn: connection, protocol_name: str, data_rates: float=None, median_packet_lengths: float=None):
     """
-    Adds a new protocol to the protocols table.
+    Adds a new protocol_name to the protocols table.
     """
     cur = None
     try:
@@ -856,7 +857,7 @@ def addProtocol(conn, protocol, data_rates, median_packet_lengths):
 
         # Check if the second column already has the value
         check_query = sql.SQL("SELECT 1 FROM protocols WHERE protocol_name = %s")
-        cur.execute(check_query, (protocol,))
+        cur.execute(check_query, (protocol_name,))
         result = cur.fetchone()
 
         # If no matching value in column2, insert the new row
@@ -865,11 +866,11 @@ def addProtocol(conn, protocol, data_rates, median_packet_lengths):
                 "INSERT INTO {} (protocol_name, data_rates, median_packet_lengths) VALUES (%s, %s, %s)"
             ).format(sql.Identifier("protocols"))
             
-            cur.execute(insert_query, (protocol, None, None))
+            cur.execute(insert_query, (protocol_name, None, None))
             conn.commit()
             print("Row inserted successfully.")
         else:
-            print("Row with protocol_name value '{}' already exists.".format(protocol))
+            print("Row with protocol_name value '{}' already exists.".format(protocol_name))
 
     except Exception as e:
         print(f"Error: {e}")
@@ -879,7 +880,7 @@ def addProtocol(conn, protocol, data_rates, median_packet_lengths):
             cur.close()
 
 
-def addModulationType(conn, protocol, modulation):
+def addModulationType(conn: connection, protocol: str, modulation_type: str):
     """
     Adds a new modulation type to the modulation_types table.
     """
@@ -889,7 +890,7 @@ def addModulationType(conn, protocol, modulation):
 
         # Check if the columns already have the values
         check_query = sql.SQL("SELECT 1 FROM modulation_types WHERE protocol = %s AND modulation_type = %s")
-        cur.execute(check_query, (protocol, modulation))
+        cur.execute(check_query, (protocol, modulation_type))
         result = cur.fetchone()
 
         # If no matching value, insert the new row
@@ -898,11 +899,11 @@ def addModulationType(conn, protocol, modulation):
                 "INSERT INTO {} (protocol, modulation_type) VALUES (%s, %s)"
             ).format(sql.Identifier("modulation_types"))
             
-            cur.execute(insert_query, (protocol, modulation))
+            cur.execute(insert_query, (protocol, modulation_type))
             conn.commit()
             print("Row inserted successfully.")
         else:
-            print(f"Row with modulation_type '{modulation}' for protocol '{protocol}' already exists.")
+            print(f"Row with modulation_type '{modulation_type}' for protocol '{protocol}' already exists.")
 
     except Exception as e:
         print(f"Error: {e}")
@@ -912,7 +913,7 @@ def addModulationType(conn, protocol, modulation):
             cur.close()
 
 
-def addPacketType(conn, protocol, packet_name, dissector, fields, sort_order):
+def addPacketType(conn: connection, protocol: str, packet_name: str, dissector: dict, fields: dict, sort_order: int):
     """
     Adds a new packet type to the packet_types table.
     """
@@ -928,8 +929,8 @@ def addPacketType(conn, protocol, packet_name, dissector, fields, sort_order):
         # If no matching value, insert the new row
         if result is None:
             # Convert dictionaries to JSON strings
-            dissector_json = json.dumps(dissector)
-            fields_json = json.dumps(fields)
+            dissector_json = dissector if dissector.__class__ is str else json.dumps(dissector)
+            fields_json = fields if fields.__class__ is str else json.dumps(fields)
 
             insert_query = sql.SQL(
                 "INSERT INTO packet_types (protocol, packet_name, dissector, fields, sort_order) VALUES (%s, %s, %s, %s, %s)"
@@ -949,7 +950,7 @@ def addPacketType(conn, protocol, packet_name, dissector, fields, sort_order):
             cur.close()
 
 
-def addSOI(conn, protocol, soi_name, center_frequency, start_frequency, end_frequency, bandwidth, continuous, modulation, notes):
+def addSOI(conn: connection, protocol: str, soi_name: str, center_frequency: float, start_frequency: float, end_frequency: float, bandwidth: float, continuous: str, modulation: str, notes: str):
     """
     Adds a signal of interest (SOI) to the soi_data table.
     """
@@ -994,7 +995,7 @@ def addSOI(conn, protocol, soi_name, center_frequency, start_frequency, end_freq
             cur.close()
 
 
-def addDemodulationFlowGraph(conn, protocol, modulation_type, hardware, filename, output_type):
+def addDemodulationFlowGraph(conn: connection, protocol: str, modulation_type: str, hardware: str, filename: str, output_type: str, version: str):
     """
     Adds a demodulation flow graph to the demodulation_flow_graphs table.
     """
@@ -1035,7 +1036,7 @@ def addDemodulationFlowGraph(conn, protocol, modulation_type, hardware, filename
             cur.close()
 
 
-def addAttack(conn, protocol, attack_name, modulation_type, hardware, attack_type, filename, category_name):
+def addAttack(conn: connection, protocol: str, attack_name: str, modulation_type: str, hardware: str, attack_type: str, filename: str, category_name: str, version: str):
     """
     Adds a new attack to the attacks table.
     """
@@ -1059,12 +1060,13 @@ def addAttack(conn, protocol, attack_name, modulation_type, hardware, attack_typ
                     hardware,
                     attack_type,
                     filename,
-                    category_name
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    category_name,
+                    version
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """
             )
             
-            cur.execute(insert_query, (protocol, attack_name, modulation_type, hardware, attack_type, filename, category_name))
+            cur.execute(insert_query, (protocol, attack_name, modulation_type, hardware, attack_type, filename, category_name, version))
             conn.commit()
             print("Row inserted successfully.")
         else:
@@ -1189,6 +1191,263 @@ def removeFromTable(conn, table_name, row_id, delete_files, os_version):
         if cur is not None:
             cur.close()
 
+
+def findMatchingRow(conn, table_name, provided_row):
+    """
+    Checks a PostgreSQL table to see if all columns match a provided row 
+    (ignoring the first column, which is the ID).
+
+    Parameters:
+        connection: psycopg2 connection object to the PostgreSQL database.
+        table_name (str): The name of the table to check.
+        provided_row (list): The values to match against (excluding the ID).
+
+    Returns:
+        int: The ID of the matching row, or None if no match is found.
+    """
+    try:
+        with conn.cursor() as cursor:
+            # Dynamically retrieve column names from the table
+            cursor.execute(sql.SQL("SELECT * FROM {} LIMIT 1").format(sql.Identifier(table_name)))
+            column_names = [desc[0] for desc in cursor.description]
+
+            if len(provided_row) + 1 != len(column_names):
+                raise ValueError("The provided row does not match the number of columns in the table.")
+
+            # Build the WHERE clause dynamically for all columns except the first (ID)
+            conditions = []
+            for i, column_name in enumerate(column_names[1:], start=1):  # Skip the first column (ID)
+                if provided_row[i - 1] is not None:  # Exclude columns with None values from filtering
+                    conditions.append(sql.SQL("{} = %s").format(sql.Identifier(column_name)))
+
+            # Construct the SQL query
+            query = sql.SQL("""
+                SELECT {} FROM {} 
+                WHERE {}
+                LIMIT 1
+            """).format(
+                sql.Identifier(column_names[0]),  # ID column
+                sql.Identifier(table_name),
+                sql.SQL(" AND ").join(conditions)
+            )
+
+            # Execute the query with the provided row values
+            cursor.execute(query, [value for value in provided_row if value is not None])
+            result = cursor.fetchone()
+
+            # Return the ID of the matching row, or None if no match is found
+            return result[0] if result else None
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
+def removeProtocol(conn: connection, protocol_name: str, data_rates: float=None, median_packet_lengths: float=None) -> bool:
+    """Remove protocol from `protocols` table
+
+    Parameters
+    ----------
+    conn : connection
+        Database connection
+    protocol_name : str
+        Protocol name
+
+    Returns
+    -------
+    bool
+        True if entries have been removed from the table, False if entries were not found in the table
+    """
+    cur = None
+    result = False
+    try:
+        cur = conn.cursor()
+        query = sql.SQL("DELETE FROM protocols WHERE protocol_name = '" + protocol_name + "' RETURNING *;")
+        cur.execute(query)
+        conn.commit()
+        result = len(cur.fetchall()) > 0
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+    return result
+
+
+def removeModulationType(conn: connection, protocol: str, modulation_type: str) -> bool:
+    """Remove protocol modulation type from `modulation_types` table
+
+    Parameters
+    ----------
+    conn : connection
+        Database connection
+    protocol : str
+        Protocol name
+    modulation_type : str
+        Modulation type
+
+    Returns
+    -------
+    bool
+        True if entries have been removed from the table, False if entries were not found in the table
+    """
+    cur = None
+    result = False
+    try:
+        cur = conn.cursor()
+        query = sql.SQL("DELETE FROM modulation_types WHERE protocol = %s AND modulation_type = %s RETURNING *;")
+        cur.execute(query, (protocol, modulation_type))
+        conn.commit()
+        result = len(cur.fetchall()) > 0
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+    return result
+
+
+def removePacketType(conn: connection, protocol: str, packet_name: str, dissector: dict=None, fields: dict=None, sort_order: int=None) -> bool:
+    """Remove packet type from `packet_types` table
+
+    Parameters
+    ----------
+    conn : connection
+        Database connection
+    protocol : str
+        Protocol name
+    packet_name : str
+        Packet name
+
+    Returns
+    -------
+    bool
+        True if entries have been removed from the table, False if entries were not found in the table
+    """
+    cur = None
+    result = False
+    try:
+        cur = conn.cursor()
+        query = sql.SQL("DELETE FROM packet_types WHERE protocol = %s AND packet_name = %s RETURNING *;")
+        cur.execute(query, (protocol, packet_name))
+        conn.commit()
+        result = len(cur.fetchall()) > 0
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+    return result
+
+
+def removeSOI(conn: connection, protocol: str, soi_name: str, center_frequency: float=None, start_frequency: float=None, end_frequency: float=None, bandwidth: float=None, continuous: str=None, modulation: str=None, notes: str=None) -> bool:
+    """Remove SOI from `soi_data` table
+
+    Parameters
+    ----------
+    conn : connection
+        Database connection
+    protocol : str
+        Protocol name
+    soi_name : str
+        SOI name
+
+    Returns
+    -------
+    bool
+        True if entries have been removed from the table, False if entries were not found in the table
+    """
+    cur = None
+    result = False
+    try:
+        cur = conn.cursor()
+        query = sql.SQL("DELETE FROM soi_data WHERE protocol = %s AND soi_name = %s RETURNING *;")
+        cur.execute(query, (protocol, soi_name))
+        conn.commit()
+        result = len(cur.fetchall()) > 0
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+    return result
+
+
+def removeDemodulationFlowGraph(conn: connection, protocol: str, modulation_type: str=None, hardware: str=None, filename: str=None, output_type: str=None, version: str=None) -> bool:
+    """Remove demodulation flow graph from `demodulation_flow_graphs` table
+
+    Parameters
+    ----------
+    conn : connection
+        Database connection
+    protocol : str
+        Protocol name
+    filename : str
+        Demod file name
+
+    Returns
+    -------
+    bool
+        True if entries have been removed from the table, False if entries were not found in the table
+    """
+    if filename is None:
+        raise RuntimeError('`filename` must be a value other than None')
+
+    cur = None
+    result = False
+    try:
+        cur = conn.cursor()
+        query = sql.SQL("DELETE FROM demodulation_flow_graphs WHERE protocol = %s AND filename = %s RETURNING *;")
+        cur.execute(query, (protocol, filename))
+        conn.commit()
+        result = len(cur.fetchall()) > 0
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+    return result
+
+
+def removeAttack(conn: connection, protocol: str, attack_name: str=None, modulation_type: str=None, hardware: str=None, attack_type: str=None, filename: str=None, category_name: str=None, version: str=None) -> bool:
+    """Remove attack from `attacks` table
+
+    Parameters
+    ----------
+    conn : connection
+        Database connection
+    protocol : str
+        Protocol name
+    filename : str
+        Attack file name
+
+    Returns
+    -------
+    bool
+        True if entries have been removed from the table, False if entries were not found in the table
+    """
+    if filename is None:
+        raise RuntimeError('`filename` must be a value other than None')
+
+    cur = None
+    result = False
+    try:
+        cur = conn.cursor()
+        query = sql.SQL("DELETE FROM attacks WHERE protocol = %s AND filename = %s RETURNING *;")
+        cur.execute(query, (protocol, filename))
+        conn.commit()
+        result = len(cur.fetchall()) > 0
+    except Exception as e:
+        print(f"Error: {e}")
+        conn.rollback()  # Rollback in case of error
+    finally:
+        if cur is not None:
+            cur.close()
+    return result
 
 
 # =============================================================

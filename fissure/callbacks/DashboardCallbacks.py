@@ -1,12 +1,14 @@
 import fissure.comms
 import time
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 import yaml
 import os
 import subprocess
 import threading
 import ast
 import asyncio
+from typing import List
+import json
 
 from fissure.Dashboard.UI_Components.Qt5 import MyMessageBox
 # from ..Dashboard.Slots import StatusBarSlots  # how do you go from callbacks to slots?
@@ -20,6 +22,7 @@ from fissure.Dashboard.Slots import (
     MenuBarSlots,
     PDTabSlots,
     SensorNodesTabSlots,
+    SensorNodesPluginsTabSlots,
     StatusBarSlots,
     TopBarSlots,
     TSITabSlots,
@@ -357,7 +360,7 @@ async def detectorReturn(component: object, frequency_value=0, power_value=0, ti
 
     # Add it to the Tables (Detector, Conditioner)
     component.frontend.ui.tableWidget1_tsi_wideband.setRowCount(component.frontend.ui.tableWidget1_tsi_wideband.rowCount()+1)
-    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.setRowCount(component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.rowCount()+1)
+    component.frontend.ui.tableWidget_tsi_conditioner_input_detector.setRowCount(component.frontend.ui.tableWidget_tsi_conditioner_input_detector.rowCount()+1)
 
     # Frequency
     frequency_item = QtWidgets.QTableWidgetItem(str(frequency_value))
@@ -365,7 +368,7 @@ async def detectorReturn(component: object, frequency_value=0, power_value=0, ti
     component.frontend.ui.tableWidget1_tsi_wideband.setItem(component.frontend.ui.tableWidget1_tsi_wideband.rowCount()-1,0,frequency_item)
     frequency_item2 = QtWidgets.QTableWidgetItem(str(frequency_value))
     frequency_item2.setTextAlignment(QtCore.Qt.AlignCenter)
-    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.setItem(component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.rowCount()-1,0,frequency_item2)
+    component.frontend.ui.tableWidget_tsi_conditioner_input_detector.setItem(component.frontend.ui.tableWidget_tsi_conditioner_input_detector.rowCount()-1,0,frequency_item2)
 
     # Power
     power_item = QtWidgets.QTableWidgetItem(str(power_value))
@@ -373,7 +376,7 @@ async def detectorReturn(component: object, frequency_value=0, power_value=0, ti
     component.frontend.ui.tableWidget1_tsi_wideband.setItem(component.frontend.ui.tableWidget1_tsi_wideband.rowCount()-1,1,power_item)
     power_item2 = QtWidgets.QTableWidgetItem(str(power_value))
     power_item2.setTextAlignment(QtCore.Qt.AlignCenter)
-    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.setItem(component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.rowCount()-1,1,power_item2)
+    component.frontend.ui.tableWidget_tsi_conditioner_input_detector.setItem(component.frontend.ui.tableWidget_tsi_conditioner_input_detector.rowCount()-1,1,power_item2)
 
     # Time
     get_time = time.strftime('%H:%M:%S', time.localtime(time_value))  # time format?
@@ -386,21 +389,21 @@ async def detectorReturn(component: object, frequency_value=0, power_value=0, ti
     time_item2.setTextAlignment(QtCore.Qt.AlignCenter)
     time_obj2 = QtCore.QTime.fromString(get_time, "HH:mm:ss")
     time_item2.setData(QtCore.Qt.UserRole, time_obj2.msecsSinceStartOfDay())
-    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.setItem(component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.rowCount()-1,2,time_item2)
+    component.frontend.ui.tableWidget_tsi_conditioner_input_detector.setItem(component.frontend.ui.tableWidget_tsi_conditioner_input_detector.rowCount()-1,2,time_item2)
 
     # Sort by Time
     component.frontend.ui.tableWidget1_tsi_wideband.sortItems(2,order=QtCore.Qt.DescendingOrder)
-    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.sortItems(2,order=QtCore.Qt.DescendingOrder)
+    component.frontend.ui.tableWidget_tsi_conditioner_input_detector.sortItems(2,order=QtCore.Qt.DescendingOrder)
 
     # Resize Table Columns and Rows
     component.frontend.ui.tableWidget1_tsi_wideband.resizeColumnsToContents()
     component.frontend.ui.tableWidget1_tsi_wideband.resizeRowsToContents()
     component.frontend.ui.tableWidget1_tsi_wideband.horizontalHeader().setStretchLastSection(False)
     component.frontend.ui.tableWidget1_tsi_wideband.horizontalHeader().setStretchLastSection(True)
-    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.resizeColumnsToContents()
-    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.resizeRowsToContents()
-    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.horizontalHeader().setStretchLastSection(False)
-    component.frontend.ui.tableWidget1_tsi_conditioner_input_frequencies.horizontalHeader().setStretchLastSection(True)
+    component.frontend.ui.tableWidget_tsi_conditioner_input_detector.resizeColumnsToContents()
+    component.frontend.ui.tableWidget_tsi_conditioner_input_detector.resizeRowsToContents()
+    component.frontend.ui.tableWidget_tsi_conditioner_input_detector.horizontalHeader().setStretchLastSection(False)
+    component.frontend.ui.tableWidget_tsi_conditioner_input_detector.horizontalHeader().setStretchLastSection(True)
 
 
 async def conditionerProgressBarReturn(component: object, progress=0, file_index=0):
@@ -1206,3 +1209,168 @@ async def retrieveDatabaseCacheReturn(component: object, database_return={}, ref
     # Refresh Library Dependent Widgets
     if refresh_frontend_widgets is True:
         await libraryUpdateFinished(component)
+
+
+async def checkSensorNodePluginResults(component: object, sensor_node_id: int, plugin_status: dict):
+    """Update Based on Results of Sensor Node Plugin Status Response
+
+    Parameters
+    ----------
+    component : object
+        Dashboard Backend
+    sensor_node_id : int
+        Sensor node ID
+    plugin_status : dict
+        Status (values) of plugins (keys)
+    """
+    if sensor_node_id == component.frontend.active_sensor_node:
+        # Update Row Items
+        table: QtWidgets.QTableWidget = component.frontend.ui.pluginsTable
+        items = [table.item(i,0).text() for i in range(table.rowCount())]
+        for plugin_name in plugin_status.keys():
+            status = plugin_status.get(plugin_name)
+            if plugin_name in items:
+                # Plugin Already on Table; Update
+                rowindex = items.index(plugin_name)
+                table.item(rowindex,0).setBackground(QtGui.QBrush(QtGui.QColor('white')))
+                table.item(rowindex,1).setText(str(status.get('deployed')))
+                table.item(rowindex,1).setBackground(QtGui.QBrush(QtGui.QColor('white')))
+                table.item(rowindex,2).setText(str(status.get('installed')))
+                table.item(rowindex,2).setBackground(QtGui.QBrush(QtGui.QColor('white')))
+
+            else:
+                # New Plugin; add to table
+                rowindex = table.rowCount()
+                table.insertRow(rowindex)
+                table.setItem(rowindex, 0, QtWidgets.QTableWidgetItem(plugin_name))
+                table.setItem(rowindex, 1, QtWidgets.QTableWidgetItem(str(status.get('deployed'))))
+                table.setItem(rowindex, 2, QtWidgets.QTableWidgetItem(str(status.get('installed'))))
+
+        # Check for Stale Items
+        for item in items:
+            if not item in plugin_status.keys():
+                # Item is no Longer in the Plugin List; Remove
+                table.removeRow(items.index(item))
+
+
+async def requestPluginsTransferInstall(component: object, sensor_node_id: int, plugin_names: str):
+    """Transfer Plugin to Sensor Node by Request of Sensor Node
+
+    Parameters
+    ----------
+    component : object
+        Dashboard Backend
+    sensor_node_id : int
+        Sensor node ID
+    plugin_names : str
+        Plugin name with file extension or no extension if folder
+    """
+    await component.transferPlugin(sensor_node_id, plugin_names, True)
+    await SensorNodesPluginsTabSlots._slotSensorNodesPluginsPluginsListRefresh(component.frontend)
+
+
+async def responsePluginNamesHiprfisr(component: object, plugin_names: List[str]):
+    """Handle Request for Plugin Names
+
+    Parameters
+    ----------
+    component : object
+        Component
+    """
+    plugin_names.sort()
+    comboBox_library_plugin_selection: QtWidgets.QComboBox = component.frontend.ui.comboBox_library_plugin_selection
+    comboBox_library_plugin_selection.clear()
+    for plugin_name in plugin_names:
+        comboBox_library_plugin_selection.addItem(plugin_name)
+
+
+async def responsePluginTableData(component: object, plugin_name: str, table_data_json: dict):
+    """Populates table data after opening a plugin.
+
+    Parameters
+    ----------
+    component : object
+        Component
+    """
+    table_data = json.loads(table_data_json)  # Convert JSON back to dictionary
+
+    for table_name, rows in table_data.items():
+        # Match Table to ComboBox Item
+        current_combobox_index = component.frontend.ui.comboBox_library_plugin_edit.findText(table_name)
+        if current_combobox_index == -1:
+            # QtWidgets.QMessageBox.warning(None, "Warning", f"No matching table found for: {table_name}")
+            continue
+
+        # Get Corresponding Table Widget
+        component.frontend.ui.stackedWidget_library_plugin.setCurrentIndex(current_combobox_index)
+        current_page = component.frontend.ui.stackedWidget_library_plugin.currentWidget()
+        target_table = current_page.findChild(QtWidgets.QTableWidget)
+
+        if target_table:
+            # Insert rows into the table
+            for row in rows:
+                target_row = target_table.rowCount()
+                target_table.insertRow(target_row)
+                for col_index, value in enumerate(row):
+                    item = QtWidgets.QTableWidgetItem(value)
+                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    target_table.setItem(target_row, col_index, item)
+    
+    # Reset Combobox/Pages
+    if component.frontend.ui.comboBox_library_plugin_edit.currentIndex() == 0:
+        LibraryTabSlots._slotLibraryPluginEditChanged(component.frontend)
+    else:
+        component.frontend.ui.comboBox_library_plugin_edit.setCurrentIndex(0)  # Function not called when already 0
+
+
+async def responsePluginProtocolParameters(component: object, plugin_name: str, protocol_name: str, parameters: dict):
+    """Handle Request for Plugin Names
+
+    Parameters
+    ----------
+    component : object
+        Component
+    """
+    # UI Widgets
+    doubleSpinBox_protocol_data_rate: QtWidgets.QDoubleSpinBox = component.frontend.ui.doubleSpinBox_protocol_data_rate
+    checkBox_protocol_data_rates: QtWidgets.QCheckBox = component.frontend.ui.checkBox_protocol_data_rates
+    doubleSpinBox_protocol_median_packet_lengths: QtWidgets.QDoubleSpinBox = component.frontend.ui.doubleSpinBox_protocol_median_packet_lengths
+    checkBox_protocol_median_packet_lengths: QtWidgets.QCheckBox = component.frontend.ui.checkBox_protocol_median_packet_lengths
+    listWidget_plugin_protocol_mod_type_list: QtWidgets.QListWidget = component.frontend.ui.listWidget_plugin_protocol_mod_type_list
+    tableWidget_protocol_packet_type: QtWidgets.QTableWidget = component.frontend.ui.tableWidget_protocol_packet_type
+
+    print('PARAMETERS: ' + str(parameters))
+
+    # Update Values
+    data_rates = parameters.get('data_rates')
+    if data_rates is None:
+        doubleSpinBox_protocol_data_rate.setEnabled(False)
+        checkBox_protocol_data_rates.setChecked(True)
+    else:
+        doubleSpinBox_protocol_data_rate.setEnabled(True)
+        doubleSpinBox_protocol_data_rate.setValue(data_rates)
+        checkBox_protocol_data_rates.setChecked(False)
+
+    median_packet_lengths = parameters.get('median_packet_lengths')
+    if median_packet_lengths is None:
+        doubleSpinBox_protocol_median_packet_lengths.setEnabled(False)
+        checkBox_protocol_median_packet_lengths.setChecked(True)
+    else:
+        doubleSpinBox_protocol_median_packet_lengths.setEnabled(True)
+        doubleSpinBox_protocol_median_packet_lengths.setValue(median_packet_lengths)
+        checkBox_protocol_median_packet_lengths.setChecked(False)
+
+    listWidget_plugin_protocol_mod_type_list.clear()
+    listWidget_plugin_protocol_mod_type_list.addItems(parameters.get('mod_types'))
+
+    pkt_types = parameters.get('pkt_types')
+    tableWidget_protocol_packet_type.clearContents()
+    tableWidget_protocol_packet_type.setWordWrap(True)
+    if not pkt_types is None:
+        tableWidget_protocol_packet_type.setRowCount(len(pkt_types))
+        cols = range(len(pkt_types[0]))
+        for (r, row) in enumerate(pkt_types):
+            for c in cols:
+                tableWidget_protocol_packet_type.setItem(r, c, QtWidgets.QTableWidgetItem(row[c]))
+    else:
+        tableWidget_protocol_packet_type.setRowCount(0)

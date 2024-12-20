@@ -11,6 +11,7 @@ from fissure.Dashboard.Slots import (
     MenuBarSlots,
     PDTabSlots,
     SensorNodesTabSlots,
+    SensorNodesPluginsTabSlots,
     StatusBarSlots,
     TopBarSlots,
     TSITabSlots,
@@ -105,6 +106,10 @@ class Dashboard(QtWidgets.QMainWindow):
             ["", "", "", "", "", "", ""],
         ]
 
+        # Temporarily Disable Plugin Tabs until Developed Further
+        self.ui.tabWidget_sensor_nodes.setTabEnabled(2, False)
+        self.ui.tabWidget_library.setTabEnabled(4, False)
+
         # Disable Buttons for Disconnected HIPRFISR
         self.ui.pushButton_top_node2.setVisible(False)
         self.ui.pushButton_top_node3.setVisible(False)
@@ -134,6 +139,7 @@ class Dashboard(QtWidgets.QMainWindow):
         self.stop_demo_flag = False
 
         # Auto Connect HIPRFISR
+        self.active_sensor_node = -1  # Needed for Plugin Loading
         if self.backend.settings["auto_connect_hiprfisr"] == True:
             self.window.actionAuto_Connect_HIPRFISR.setChecked(True)
             StatusBarSlots.startLocalSession(self)
@@ -774,6 +780,9 @@ class Dashboard(QtWidgets.QMainWindow):
         self.ui.comboBox_library_pd_protocol.addItem("-- New Protocol --")
         self.ui.comboBox_library_pd_protocol.addItems(sorted(protocols))
 
+        # Initialize Plugins Editor Comboboxes
+        # self.ui.comboBox_library_plugin_select.addItem("-- New Plugin --")  # doesn't exist, replace/delete
+
         # Configure PD\Construct Packet Tables
         self.ui.tableWidget_library_pd_packet.resizeRowsToContents()
 
@@ -803,6 +812,38 @@ class Dashboard(QtWidgets.QMainWindow):
 
         # Refresh Browse Table
         LibraryTabSlots._slotLibraryBrowseChanged(self)
+
+        # Plugins Edit Tables Headers
+        get_table_names = list(fissure.utils.DATABASE_TABLE_HEADERS.keys())
+        get_tables = [
+            self.ui.tableWidget1_library_plugin_archive_collection,
+            self.ui.tableWidget1_library_plugin_archive_favorites,
+            self.ui.tableWidget1_library_plugin_attack_categories,
+            self.ui.tableWidget1_library_plugin_attacks,
+            self.ui.tableWidget1_library_plugin_conditioner_flow_graphs,
+            self.ui.tableWidget1_library_plugin_demodulation_flow_graphs,
+            self.ui.tableWidget1_library_plugin_detector_flow_graphs,
+            self.ui.tableWidget1_library_plugin_inspection_flow_graphs,
+            self.ui.tableWidget1_library_plugin_modulation_types,
+            self.ui.tableWidget1_library_plugin_packet_types,
+            self.ui.tableWidget1_library_plugin_protocols,
+            self.ui.tableWidget1_library_plugin_soi_data,
+            self.ui.tableWidget1_library_plugin_triggers,
+        ]
+        for idx, table in enumerate(get_tables):
+            table.setColumnCount(len(fissure.utils.DATABASE_TABLE_HEADERS[get_table_names[idx]]))
+            for index, header in enumerate(fissure.utils.DATABASE_TABLE_HEADERS[get_table_names[idx]]):
+                header_item = QtWidgets.QTableWidgetItem(header)
+                header_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                table.setHorizontalHeaderItem(index, header_item)
+            table.resizeColumnsToContents()
+            table.horizontalHeader().setStretchLastSection(False)
+            table.horizontalHeader().setStretchLastSection(True)
+
+        # Plugin Widgets
+        self.ui.comboBox_library_plugin_new_existing.setCurrentText("Existing")
+        self.ui.stackedWidget_library_plugin_selection.setCurrentIndex(0)
+        LibraryTabSlots._slotLibraryPluginNewExistingChanged(self)
 
 
     def __init_signals__(self):
@@ -1187,6 +1228,25 @@ class Dashboard(QtWidgets.QMainWindow):
             self.ui.comboBox_archive_replay_hardware.addItems(get_sensor_node_hardware)
 
 
+    def configureSensorNodeHardware(self, node_number: int):
+        """Update Sensor Node Tab Based on Hardware
+
+        Parameters
+        ----------
+        node_number : int
+            Sensor node index
+        """
+        deploy_button: QtWidgets.QPushButton = self.ui.pluginsPushButtonDeploy
+        deploy_button.setEnabled(False)
+        remove_button: QtWidgets.QPushButton = self.ui.pluginsPushButtonRemove
+        remove_button.setEnabled(False)
+        get_sensor_node = ['sensor_node1','sensor_node2','sensor_node3','sensor_node4','sensor_node5']
+        if node_number > -1 and self.backend.settings[get_sensor_node[node_number]]['local_remote'] == 'remote':
+            deploy_button.setEnabled(True)
+            remove_button.setEnabled(True)
+        SensorNodesPluginsTabSlots._slotSensorNodesPluginsPluginsListRefresh(self)
+
+
     def refreshStatusBarText(self):
         """
         Refreshes the status bar text after a value is changed for a sensor node.
@@ -1498,8 +1558,21 @@ class SplashScreen(QtWidgets.QDialog):
 
         # Create a text label for loading message
         self.label = QtWidgets.QLabel("Loading...", self)
-        self.label.move(int((splash_pix.width() - 100) / 2), int(splash_pix.height() - 50))
-        self.label.setStyleSheet("color: #f0f0f0; font-size: 16px; font-weight: bold;")
+        self.label.setStyleSheet("color: #f0f0f0; font-size: 14px; font-weight: bold;")
+
+        # Center the text label within the window
+        label_width = self.label.fontMetrics().boundingRect(self.label.text()).width() + 10
+        label_height = self.label.fontMetrics().boundingRect(self.label.text()).height()
+        
+        # Calculate position to center the text
+        x_pos = (splash_pix.width() - label_width) / 2
+        y_pos = splash_pix.height() - label_height - 35  # Adjusted Y-position for better vertical centering
+
+        # Set the label's position and size
+        self.label.setGeometry(int(x_pos), int(y_pos), int(label_width), int(label_height))
+
+        # Center the text inside the label
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
     
     def show_with_delay(self, delay_ms: int = 100):
         """Show the splash screen with a slight delay."""
@@ -1650,8 +1723,8 @@ def connect_menuBar_slots(dashboard: Dashboard):
     dashboard.window.actionWireshark.triggered.connect(lambda: MenuBarSlots._slotMenuWiresharkClicked(dashboard))
     dashboard.window.actionBluetoothctl.triggered.connect(lambda: MenuBarSlots._slotMenuBluetoothctlClicked(dashboard))
     dashboard.window.actionV2Verifier.triggered.connect(lambda: MenuBarSlots._slotMenuV2VerifierClicked(dashboard))
-    dashboard.window.actionV2Verifier_wifi_tx.triggered.connect(MenuBarSlots._slotMenuV2VerifierWifiTxClicked)
-    dashboard.window.actionV2Verifier_wifi_rx.triggered.connect(MenuBarSlots._slotMenuV2VerifierWifiRxClicked)
+    dashboard.window.actionV2Verifier_wifi_tx.triggered.connect(lambda: MenuBarSlots._slotMenuV2VerifierWifiTxClicked(dashboard))
+    dashboard.window.actionV2Verifier_wifi_rx.triggered.connect(lambda: MenuBarSlots._slotMenuV2VerifierWifiRxClicked(dashboard))
     dashboard.window.actionFALCON.triggered.connect(lambda: MenuBarSlots._slotMenuFALCON_Clicked(dashboard))
     dashboard.window.actionCyberChef.triggered.connect(MenuBarSlots._slotMenuCyberChefClicked)
     dashboard.window.actionESP8266_beacon_spammer.triggered.connect(MenuBarSlots._slotMenuESP8266BeaconSpammerClicked)
@@ -1674,8 +1747,8 @@ def connect_menuBar_slots(dashboard: Dashboard):
     dashboard.window.actionRtl_zwave_916_MHz.triggered.connect(lambda: MenuBarSlots._slotMenuRtlZwave916_Clicked(dashboard))
     dashboard.window.actionWaving_z_908_42_MHz.triggered.connect(lambda: MenuBarSlots._slotMenuWavingZ_908_Clicked(dashboard))
     dashboard.window.actionWaving_z_916_MHz.triggered.connect(lambda: MenuBarSlots._slotMenuWavingZ_916_Clicked(dashboard))
-    dashboard.window.actionZwave_tx.triggered.connect(MenuBarSlots._slotMenuStandaloneZwaveTxClicked)
-    dashboard.window.actionZwave_rx.triggered.connect(MenuBarSlots._slotMenuStandaloneZwaveRxClicked)
+    dashboard.window.actionZwave_tx.triggered.connect(lambda: MenuBarSlots._slotMenuStandaloneZwaveTxClicked(dashboard))
+    dashboard.window.actionZwave_rx.triggered.connect(lambda: MenuBarSlots._slotMenuStandaloneZwaveRxClicked(dashboard))
     dashboard.window.actionLimeUtilUpdate.triggered.connect(lambda: MenuBarSlots._slotMenuLimeUtilUpdateClicked(dashboard))
     dashboard.window.actionBaudline.triggered.connect(lambda: MenuBarSlots._slotMenuBaudlineClicked(dashboard))
     dashboard.window.actionUniversal_Radio_Hacker.triggered.connect(lambda: MenuBarSlots._slotMenuURH_Clicked(dashboard))
@@ -1811,7 +1884,7 @@ def connect_menuBar_slots(dashboard: Dashboard):
     dashboard.window.actionL2ping.triggered.connect(lambda: MenuBarSlots._slotMenuL2pingClicked(dashboard))
     dashboard.window.actionBtscanner.triggered.connect(lambda: MenuBarSlots._slotMenuBtscannerClicked(dashboard))
     dashboard.window.actionHcidump.triggered.connect(lambda: MenuBarSlots._slotMenuHcidumpClicked(dashboard))
-    dashboard.window.actionFM_Radio_Capture.triggered.connect(MenuBarSlots._slotMenuStandaloneFM_RadioCaptureClicked)
+    dashboard.window.actionFM_Radio_Capture.triggered.connect(lambda: MenuBarSlots._slotMenuStandaloneFM_RadioCaptureClicked(dashboard))
     dashboard.window.actionUhd_image_loader.triggered.connect(lambda: MenuBarSlots._slotMenuUHD_ImageLoaderClicked(dashboard))
     dashboard.window.actionTinyWow.triggered.connect(MenuBarSlots._slotMenuTinyWowClicked)
     dashboard.window.actionGr_paint_Converter.triggered.connect(
@@ -3467,6 +3540,12 @@ def connect_attack_slots(dashboard: Dashboard):
     dashboard.ui.pushButton_attack_fuzzing_apply_changes.clicked.connect(
         lambda: AttackTabSlots._slotAttackFuzzingApplyChangesClicked(dashboard)
     )
+    dashboard.ui.pushButton_attack_single_stage_triggers_clear.clicked.connect(
+        lambda: AttackTabSlots._slotAttackSingleStageTriggersClearClicked(dashboard)
+    )
+    dashboard.ui.pushButton_attack_multi_stage_triggers_clear.clicked.connect(
+        lambda: AttackTabSlots._slotAttackMultiStageTriggersClearClicked(dashboard)
+    )    
 
     # Table Widget
     dashboard.ui.tableWidget1_attack_packet_editor.cellChanged.connect(
@@ -3594,6 +3673,9 @@ def connect_archive_slots(dashboard: Dashboard):
     dashboard.ui.pushButton_archive_download_rename.clicked.connect(
         lambda: ArchiveTabSlots._slotArchiveDownloadRenameClicked(dashboard)
     )
+    dashboard.ui.pushButton_archive_replay_triggers_clear.clicked.connect(
+        lambda: ArchiveTabSlots._slotArchiveReplayTriggersClearClicked(dashboard)
+    )  
 
     # Table Widget
     dashboard.ui.tableWidget_archive_datasets.horizontalHeader().sectionClicked.connect(
@@ -3672,6 +3754,12 @@ def connect_sensor_nodes_slots(dashboard: Dashboard):
     dashboard.ui.pushButton_sensor_nodes_fn_local_transfer.clicked.connect(
         lambda: SensorNodesTabSlots._slotSensorNodesFileNavigationLocalTransferClicked(dashboard)
     )
+    dashboard.ui.pushButton_sensor_nodes_autorun_triggers_clear.clicked.connect(
+        lambda: SensorNodesTabSlots._slotSensorNodesAutorunTriggersClearClicked(dashboard)
+    ) 
+
+    # create connections for sensor nodes pluginsList tab
+    SensorNodesPluginsTabSlots.connect_plugins_slots(dashboard)
 
 
 def connect_library_slots(dashboard: Dashboard):
@@ -3693,6 +3781,12 @@ def connect_library_slots(dashboard: Dashboard):
     )
     dashboard.ui.comboBox_library_browse.currentIndexChanged.connect(
         lambda: LibraryTabSlots._slotLibraryBrowseChanged(dashboard)
+    )
+    dashboard.ui.comboBox_library_plugin_edit.currentIndexChanged.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginEditChanged(dashboard)
+    )
+    dashboard.ui.comboBox_library_plugin_new_existing.currentIndexChanged.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginNewExistingChanged(dashboard)
     )
     
     # List Widget
@@ -3725,7 +3819,9 @@ def connect_library_slots(dashboard: Dashboard):
     dashboard.ui.pushButton_library_pd_remove_field.clicked.connect(
         lambda: LibraryTabSlots._slotLibraryAddRemoveFieldClicked(dashboard)
     )
-    dashboard.ui.pushButton_library_pd_up.clicked.connect(lambda: LibraryTabSlots._slotLibraryAddUpClicked(dashboard))
+    dashboard.ui.pushButton_library_pd_up.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryAddUpClicked(dashboard)
+    )
     dashboard.ui.pushButton_library_pd_down.clicked.connect(
         lambda: LibraryTabSlots._slotLibraryAddDownClicked(dashboard)
     )
@@ -3743,6 +3839,48 @@ def connect_library_slots(dashboard: Dashboard):
     )
     dashboard.ui.pushButton_library_browse_delete_row.clicked.connect(
         lambda: LibraryTabSlots._slotLibraryBrowseDeleteRowClicked(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_add_row.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginAddRowClicked(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_delete_row.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginDeleteRowClicked(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_clear_table.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginClearTableClicked(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_clear_all_tables.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginClearAllTablesClicked(dashboard)
+    )
+    dashboard.ui.pushButton_library_browse_copy_row.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryBrowseCopyClicked(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_import.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginImportClicked(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_export_tables.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginExportTablesClicked(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_export_zip.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginExportZipClicked(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_apply_changes.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginApplyChangesClicked(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_append.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginAppendClicked(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_create.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginCreate(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_selection_open_close.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginOpenClose(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_refresh.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginPluginRefresh(dashboard)
+    )
+    dashboard.ui.pushButton_library_plugin_delete.clicked.connect(
+        lambda: LibraryTabSlots._slotLibraryPluginPluginDelete(dashboard)
     )
 
     # Radio Button

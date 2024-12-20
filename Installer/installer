@@ -89,6 +89,7 @@ sudo snap install netron
 sudo python3 -m pip install ipython
 sudo python3 -m pip install scikit-learn==1.3.2
 sudo python3 -m pip install opencv-python
+sudo python3 -m pip install pyzipper
 . ~/.bashrc
 """,True,'Minimum Install'))
 
@@ -2248,6 +2249,7 @@ sudo snap install netron
 sudo python3 -m pip install ipython
 sudo python3 -m pip install scikit-learn==1.3.2
 sudo python3 -m pip install opencv-python
+sudo python3 -m pip install pyzipper
 . ~/.bashrc
 """,True,"Minimum Install"))
 
@@ -4376,6 +4378,7 @@ sudo snap install netron
 sudo python3 -m pip install ipython
 sudo python3 -m pip install scikit-learn==1.3.2
 sudo python3 -m pip install opencv-python
+sudo python3 -m pip install pyzipper
 . ~/.bashrc
 """,True,"Minimum Install"))
 
@@ -8620,6 +8623,7 @@ sudo snap install netron
 sudo python3 -m pip install ipython --break-system-packages
 sudo python3 -m pip install scikit-learn==1.3.2 --break-system-packages
 sudo python3 -m pip install opencv-python --break-system-packages
+sudo python3 -m pip install pyzipper --break-system-packages
 . ~/.bashrc
 """,True,"Minimum Install"))
 
@@ -10753,6 +10757,7 @@ sudo snap install netron
 sudo python3 -m pip install ipython
 sudo python3 -m pip install scikit-learn==1.3.2
 sudo python3 -m pip install opencv-python
+sudo python3 -m pip install pyzipper
 . ~/.bashrc
 """,True,"Minimum Install"))
 
@@ -12869,6 +12874,7 @@ sudo snap install netron
 sudo python3 -m pip install ipython --break-system-packages
 sudo python3 -m pip install scikit-learn==1.3.2 --break-system-packages
 sudo python3 -m pip install opencv-python --break-system-packages
+sudo python3 -m pip install pyzipper --break-system-packages
 . ~/.bashrc
 """,True,"Minimum Install"))
 
@@ -14987,6 +14993,7 @@ sudo snap install netron
 sudo python3 -m pip install ipython
 sudo python3 -m pip install scikit-learn==1.3.2
 sudo python3 -m pip install opencv-python
+sudo python3 -m pip install pyzipper
 . ~/.bashrc
 """,True,"Minimum Install"))
 
@@ -17114,6 +17121,7 @@ sudo snap install netron
 sudo python3 -m pip install ipython --break-system-packages
 sudo python3 -m pip install scikit-learn==1.3.2 --break-system-packages
 sudo python3 -m pip install opencv-python --break-system-packages
+sudo python3 -m pip install pyzipper --break-system-packages
 . ~/.bashrc
 """,True,"Minimum Install"))
 
@@ -19249,6 +19257,7 @@ sudo snap install netron
 sudo python3 -m pip install ipython --break-system-packages
 sudo python3 -m pip install scikit-learn==1.3.2 --break-system-packages
 sudo python3 -m pip install opencv-python --break-system-packages
+sudo python3 -m pip install pyzipper --break-system-packages
 . ~/.bashrc
 """,True,"Minimum Install"))
 

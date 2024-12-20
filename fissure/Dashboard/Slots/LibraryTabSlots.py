@@ -4,6 +4,11 @@ import fissure.utils
 import qasync
 import yaml
 import shutil
+import csv
+import zipfile
+import shutil
+import pyzipper
+import json
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -797,45 +802,33 @@ def _slotLibraryBrowseChanged(dashboard: QtCore.QObject):
 
     if get_table_name == "archive_collection":
         get_rows = fissure.utils.library.getArchiveCollection(dashboard.backend.library)
-        headers = ["id", "name", "file_list", "filepath", "files", "format", "size", "notes", "parent_id", "created_at"]
     elif get_table_name == "archive_favorites":
         get_rows = fissure.utils.library.getArchiveFavorites(dashboard.backend.library)
-        headers = ["id", "file_name", "date", "format", "modulation", "notes", "protocol", "sample_rate", "samples", "size", "tuned_frequency"]
     elif get_table_name == "attack_categories":
         get_rows = fissure.utils.library.getAttackCategories(dashboard.backend.library)
-        headers = ["id", "category_name", "parent"]
     elif get_table_name == "attacks":
         get_rows = fissure.utils.library.getAttacks(dashboard.backend.library, None, None)
-        headers = ["id", "protocol", "attack_name", "modulation_type", "hardware", "attack_type", "filename", "category_name", "version"]
     elif get_table_name == "conditioner_flow_graphs":
         get_rows = fissure.utils.library.getConditionerFlowGraphsTable(dashboard.backend.library)
-        headers = ["id", "isolation_category", "isolation_method", "hardware", "file_type", "data_type", "version", "parameter_names", "parameter_values", "parameter_labels", "filepath"] 
     elif get_table_name == "demodulation_flow_graphs":
         get_rows = fissure.utils.library.getDemodulationFlowGraphs(dashboard.backend.library)
-        headers = ["id", "protocol", "modulation_type", "hardware", "filename", "output_type", "version"]
     elif get_table_name == "detector_flow_graphs":
         get_rows = fissure.utils.library.getDetectorFlowGraphsTable(dashboard.backend.library)
-        headers = ["id", "detector_type", "hardware", "filename", "file_type", "version"]
     elif get_table_name == "inspection_flow_graphs":
         get_rows = fissure.utils.library.getInspectionFlowGraphs(dashboard.backend.library)
-        headers = ["id", "hardware", "python_file", "version"]
     elif get_table_name == "modulation_types":
         get_rows = fissure.utils.library.getModulationTypes(dashboard.backend.library)
-        headers = ["id", "protocol", "modulation_type"]
     elif get_table_name == "packet_types":
         get_rows = fissure.utils.library.getPacketTypesTable(dashboard.backend.library)
-        headers = ["id", "protocol", "packet_name", "dissector", "fields", "sort_order"]
     elif get_table_name == "protocols":
         get_rows = fissure.utils.library.getProtocolsTable(dashboard.backend.library)
-        headers = ["id", "protocol_name", "data_rates", "median_packet_lengths"]
     elif get_table_name == "soi_data":
         get_rows = fissure.utils.library.getSOIs(dashboard.backend.library, None)
-        headers = ["id", "protocol", "soi_name", "center_frequency", "start_frequency", "end_frequency", "bandwidth", "continuous", "modulation", "notes"]   
     elif get_table_name == "triggers":
         get_rows = fissure.utils.library.getTriggersTable(dashboard.backend.library)
-        headers = ["id", "category", "trigger_name", "default_settings", "filename", "file_type", "version"]
     else:
         return
+    headers = fissure.utils.DATABASE_TABLE_HEADERS[get_table_name]
 
     # Create Rows and Columns
     dashboard.ui.tableWidget1_library_browse.setRowCount(len(get_rows))
@@ -906,3 +899,595 @@ async def _slotLibraryBrowseDeleteRowClicked(dashboard: QtCore.QObject):
         if get_row_id is not None:
             await dashboard.backend.removeFromLibrary(get_table_name, get_row_id, delete_files)
 
+
+
+
+########################################################################################
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryPluginEditChanged(dashboard: QtCore.QObject):
+    """
+    Changes the table and stackedwidget page for viewing/editing plugins.
+    """
+    # Change Stacked Widget Page
+    get_table_name = str(dashboard.ui.comboBox_library_plugin_edit.currentText())
+
+    if get_table_name == "archive_collection":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(0)
+    elif get_table_name == "archive_favorites":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(1)
+    elif get_table_name == "attack_categories":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(2)
+    elif get_table_name == "attacks":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(3)
+    elif get_table_name == "conditioner_flow_graphs":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(4)
+    elif get_table_name == "demodulation_flow_graphs":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(5)
+    elif get_table_name == "detector_flow_graphs":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(6)
+    elif get_table_name == "inspection_flow_graphs":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(7)
+    elif get_table_name == "modulation_types":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(8)
+    elif get_table_name == "packet_types":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(9)
+    elif get_table_name == "protocols":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(10)
+    elif get_table_name == "soi_data":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(11)
+    elif get_table_name == "triggers":
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(12)
+    else:
+        return
+    
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryPluginAddRowClicked(dashboard: QtCore.QObject):
+    """
+    Adds a row to the current Edit Plugin table.
+    """
+    # Get the Current Page
+    current_page = dashboard.ui.stackedWidget_library_plugin.currentWidget()
+
+    # Find the QTableWidget on the Current Page
+    get_table = current_page.findChild(QtWidgets.QTableWidget)
+    if get_table:
+        # Add a New Empty Row
+        row_count = get_table.rowCount()
+        get_table.insertRow(row_count)
+
+        # Resize the Table
+        get_table.resizeRowsToContents()
+    else:
+        dashboard.logger.info("No QTableWidget found on the current page.")
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryPluginDeleteRowClicked(dashboard: QtCore.QObject):
+    """
+    Deletes a row from the current Edit Plugin table.
+    """
+    # Get the Current Page and Table Widget
+    current_page = dashboard.ui.stackedWidget_library_plugin.currentWidget()
+    get_table = current_page.findChild(QtWidgets.QTableWidget)
+    if get_table:
+        # Get the Currently Selected Row
+        selected_row = get_table.currentRow()
+
+        # Check if a Valid Row is Selected
+        if selected_row >= 0:
+            # Remove the Row
+            get_table.removeRow(selected_row)
+
+            # Resize the Table
+            get_table.resizeRowsToContents()
+
+            # Select the Next Logical Row, if Any
+            new_row = max(0, selected_row - 1)
+            if get_table.rowCount() > 0:
+                get_table.setCurrentCell(new_row, 0)
+        else:
+            dashboard.logger.info("No row selected!")
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryPluginClearTableClicked(dashboard: QtCore.QObject):
+    """
+    Clears the current Edit Plugin table.
+    """
+    # Remove All Rows
+    current_page = dashboard.ui.stackedWidget_library_plugin.currentWidget()
+    get_table = current_page.findChild(QtWidgets.QTableWidget)
+    if get_table:
+        get_table.setRowCount(0)
+    else:
+        dashboard.logger.info("No QTableWidget found on the current page.")
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryPluginClearAllTablesClicked(dashboard: QtCore.QObject):
+    """
+    Clears all the Edit Plugin tables.
+    """
+    # Iterate through all Pages in the Stacked Widget
+    for index in range(dashboard.ui.stackedWidget_library_plugin.count()):
+        page = dashboard.ui.stackedWidget_library_plugin.widget(index)
+        
+        # Find all QTableWidget Instances on the Current Page
+        tables = page.findChildren(QtWidgets.QTableWidget)
+        for table in tables:
+            # Clear all Rows in the Table
+            table.setRowCount(0)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryBrowseCopyClicked(dashboard: QtCore.QObject):
+    """
+    Copies the selected row from a table in the Browse tab to an Edit Plugin table.
+    """  
+    # Check If a Row Is Selected in the Source Table
+    selected_items = dashboard.ui.tableWidget1_library_browse.selectedItems()
+    if not selected_items:
+        dashboard.logger.info("No row selected in the Browse table.")
+        return
+
+    # Get the Selected Row Index
+    selected_row = selected_items[0].row()
+
+    # Copy the Row Data from the Source Table
+    row_data = [
+        dashboard.ui.tableWidget1_library_browse.item(selected_row, col).text() if dashboard.ui.tableWidget1_library_browse.item(selected_row, col) else ""
+        for col in range(dashboard.ui.tableWidget1_library_browse.columnCount())
+    ]
+    
+    # Get the Target Table via the Combobox and Stacked Widget
+    target_page_index = dashboard.ui.comboBox_library_browse.currentIndex()
+    target_page = dashboard.ui.stackedWidget_library_plugin.widget(target_page_index)
+    target_table = target_page.findChild(QtWidgets.QTableWidget)
+
+    if not target_table:
+        dashboard.logger.error("Target table not found.")
+        return
+
+    # Append the Copied Row Data to the Target Table
+    target_table.insertRow(target_table.rowCount())
+    for col, data in enumerate(row_data):
+        item = QtWidgets.QTableWidgetItem(data)
+        item.setTextAlignment(QtCore.Qt.AlignCenter)
+        target_table.setItem(target_table.rowCount() - 1, col, item)
+    
+    # Resize Rows to Fit Content
+    target_table.resizeRowsToContents()
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryPluginImportClicked(dashboard: QtCore.QObject):
+    """
+    Imports a plugin from a directory or zip file.
+    """
+    pass
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryPluginExportTablesClicked(dashboard: QtCore.QObject):
+    """
+    Exports the tables and files to a tables directory.
+    """
+    # Prompt the user to select a directory for saving the CSV files
+    folder_path = QtWidgets.QFileDialog.getExistingDirectory(
+        None, "Select Directory to Save Tables"
+    )
+    if not folder_path:
+        # QtWidgets.QMessageBox.warning(None, "Export Canceled", "No folder selected. Operation aborted.")
+        return
+
+    # Ensure the "tables" subdirectory exists
+    tables_dir = os.path.join(folder_path, "tables")
+    os.makedirs(tables_dir, exist_ok=True)
+
+    # Iterate over the ComboBox items
+    for index in range(dashboard.ui.comboBox_library_plugin_edit.count()):
+        table_name = dashboard.ui.comboBox_library_plugin_edit.itemText(index)
+        dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(index)
+        current_page = dashboard.ui.stackedWidget_library_plugin.currentWidget()
+
+        # Find the table widget on the current page
+        target_table = current_page.findChild(QtWidgets.QTableWidget)
+        if not target_table:
+            continue  # Skip if no table is found
+
+        # Check if the table is populated
+        if target_table.rowCount() == 0 or target_table.columnCount() == 0:
+            continue
+
+        populated = any(
+            target_table.item(row, col) is not None and target_table.item(row, col).text().strip() != ""
+            for row in range(target_table.rowCount())
+            for col in range(target_table.columnCount())
+        )
+        if not populated:
+            continue  # Skip empty tables
+
+        # Define the CSV file path
+        csv_filename = f"{table_name}.csv"
+        csv_filepath = os.path.join(tables_dir, csv_filename)
+
+        # Export the table data to a CSV file
+        try:
+            with open(csv_filepath, mode="w", newline="", encoding="utf-8") as file:
+                writer = csv.writer(file)
+
+                # Write each row of the table
+                for row in range(target_table.rowCount()):
+                    row_data = [
+                        target_table.item(row, col).text() if target_table.item(row, col) else ""
+                        for col in range(target_table.columnCount())
+                    ]
+                    writer.writerow(row_data)
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(
+                None,
+                "Error",
+                f"Failed to export table '{csv_filename}': {str(e)}",
+            )
+            continue
+
+    QtWidgets.QMessageBox.information(None, "Export Complete", "Tables successfully exported!")
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryPluginExportZipClicked(dashboard: QtCore.QObject):
+    """
+    Exports the plugin to zip file with optional password.
+    """
+    # Get the selected plugin name from the combobox
+    selected_plugin = dashboard.ui.comboBox_library_plugin_selection.currentText()
+    if not selected_plugin:
+        # QtWidgets.QMessageBox.warning(None, "Error", "No plugin selected.")
+        return
+
+    # Construct the full path to the plugins folder
+    plugins_root = os.path.join(fissure.utils.FISSURE_ROOT, "Plugins")
+    plugin_folder = os.path.join(plugins_root, selected_plugin)
+    if not os.path.exists(plugin_folder):
+        QtWidgets.QMessageBox.critical(None, "Error", f"Plugin folder '{plugin_folder}' does not exist.")
+        return
+
+    # Prompt the user to save the ZIP file
+    save_path, _ = QtWidgets.QFileDialog.getSaveFileName(
+        None, "Save ZIP File", f"{selected_plugin}.zip", "ZIP Files (*.zip)"
+    )
+    if not save_path:
+        QtWidgets.QMessageBox.warning(None, "Operation Canceled", "No save location selected.")
+        return
+
+    # Ensure the save path ends with .zip
+    if not save_path.lower().endswith(".zip"):
+        save_path += ".zip"
+
+    # Ask if the user wants to set a password
+    password, ok = QtWidgets.QInputDialog.getText(
+        None, "Set Password (Optional)", "Enter password for ZIP file (leave empty for no password):",
+        QtWidgets.QLineEdit.Password
+    )
+    if not ok:
+        QtWidgets.QMessageBox.warning(None, "Operation Canceled", "Password prompt canceled.")
+        return
+
+    try:
+        # Create the ZIP file
+        with pyzipper.AESZipFile(save_path, 'w', compression=pyzipper.ZIP_DEFLATED) as zipf:
+            if password:
+                zipf.setpassword(password.encode())
+                zipf.setencryption(pyzipper.WZ_AES)
+
+            # Walk through the selected plugin folder and add files to the zip
+            for root, _, files in os.walk(plugin_folder):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, plugins_root)
+                    zipf.write(file_path, arcname)
+
+        QtWidgets.QMessageBox.information(None, "Success", f"Plugin '{selected_plugin}' successfully zipped to {save_path}")
+
+    except Exception as e:
+        QtWidgets.QMessageBox.critical(None, "Error", f"Failed to create ZIP file: {e}")
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotLibraryPluginApplyChangesClicked(dashboard: QtCore.QObject):
+    """
+    Applies changes to existing plugins by copying all the table data and overwriting the csv files at the HIPRFISR.
+    """
+    table_data = {}
+    
+    # Iterate through each page of the stacked widget
+    for page_index in range(dashboard.ui.stackedWidget_library_plugin.count()):
+        page = dashboard.ui.stackedWidget_library_plugin.widget(page_index)  # Get the page at index
+        target_table = page.findChild(QtWidgets.QTableWidget)  # Find the QTableWidget in the page
+        
+        if target_table:
+            table_name = target_table.objectName()  # You can use the table's object name as the key
+            
+            # Extract column headers
+            # headers = [target_table.horizontalHeaderItem(col).text() for col in range(target_table.columnCount())]
+            
+            # Extract table rows
+            rows = []
+            for row in range(target_table.rowCount()):
+                row_data = [target_table.item(row, col).text() if target_table.item(row, col) else "" for col in range(target_table.columnCount())]
+                rows.append(row_data)
+            
+            # Store data in a dictionary with table_name as key
+            # table_data[table_name] = {"headers": headers, "rows": rows}
+            table_data[table_name] = {"rows": rows}
+    
+    # Convert the dictionary to JSON format for easy transfer (if needed)
+    table_data_json = json.dumps(table_data)
+
+    await dashboard.backend.pluginApplyChanges(table_data_json)
+    
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryPluginNewExistingChanged(dashboard: QtCore.QObject):
+    """Change Plugin Selector or Creator
+
+    Parameters
+    ----------
+    dashboard : QtCore.QObject
+        FISSURE Dashboard
+    """
+    comboBox_library_plugin_new_existing: QtWidgets.QComboBox = dashboard.ui.comboBox_library_plugin_new_existing
+    stackedWidget_library_plugin_selection: QtWidgets.QStackedWidget = dashboard.ui.stackedWidget_library_plugin_selection
+    if comboBox_library_plugin_new_existing.currentText() == "Existing":
+        stackedWidget_library_plugin_selection.setCurrentIndex(0)
+        if dashboard.ui.pushButton_library_plugin_selection_open_close.text() == "Close Plugin":
+            dashboard.ui.frame1_library_plugin_edit_plugin.setEnabled(True)
+            dashboard.ui.label1_library_plugin_edit_plugin.setEnabled(True)
+        else:
+            dashboard.ui.frame1_library_plugin_edit_plugin.setEnabled(False)
+            dashboard.ui.label1_library_plugin_edit_plugin.setEnabled(False)    
+    elif comboBox_library_plugin_new_existing.currentText() == "New":
+        stackedWidget_library_plugin_selection.setCurrentIndex(1)
+        dashboard.ui.frame1_library_plugin_edit_plugin.setEnabled(False)
+        dashboard.ui.label1_library_plugin_edit_plugin.setEnabled(False)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotLibraryPluginAppendClicked(dashboard: QtCore.QObject):
+    """
+    Imports a plugin and appends it to an existing plugin but does not create a new plugin.
+    """
+    # Open File Dialog to Select a Folder or ZIP File
+    options = QtWidgets.QFileDialog.Options()
+    file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
+        None,
+        "Select Plugin Folder or ZIP File",
+        "",
+        "ZIP Files (*.zip);;Folders (*.*)",
+        options=options,
+    )
+
+    if not file_path:
+        return  # User canceled
+
+    extracted_path = None
+    password = None  # For password-protected ZIP files
+
+    # Check if the Selected File is a ZIP File
+    try:
+        with pyzipper.AESZipFile(file_path, 'r') as zf:
+            # Check if password is required
+            if zf.pwd is None:
+                password, ok = QtWidgets.QInputDialog.getText(
+                    None,
+                    "Password Required",
+                    "Enter password for ZIP archive:",
+                    QtWidgets.QLineEdit.Password
+                )
+                if not ok or not password:
+                    QtWidgets.QMessageBox.warning(
+                        None, "Import Canceled", "Password not provided. Operation aborted."
+                    )
+                    return
+
+                zf.setpassword(password.encode())
+
+            # Define the extraction path
+            extracted_path = os.path.join(os.path.dirname(file_path), "temp_extracted")
+            os.makedirs(extracted_path, exist_ok=True)
+
+            # Extract all files and directories
+            for file_info in zf.infolist():
+                try:
+                    # Construct full file path
+                    file_path = os.path.join(extracted_path, file_info.filename)
+                    if file_info.is_dir():
+                        os.makedirs(file_path, exist_ok=True)  # Create directory
+                    else:
+                        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # Create parent directories
+                        with open(file_path, "wb") as f:
+                            f.write(zf.read(file_info.filename))  # Write file content
+                except RuntimeError as e:
+                    QtWidgets.QMessageBox.critical(
+                        None, "Error", f"Failed to extract {file_info.filename}: {e}"
+                    )
+                    continue
+    except (pyzipper.BadZipFile, RuntimeError) as e:
+        QtWidgets.QMessageBox.critical(None, "Error", f"Failed to process ZIP file: {e}")
+        return
+
+    # Look for 'tables' folder anywhere under extracted_path
+    tables_path = None
+    for root, dirs, _ in os.walk(extracted_path):
+        if "tables" in dirs:
+            tables_path = os.path.join(root, "tables")
+            print(f"'tables' folder found at: {tables_path}")
+            break  # Stop after finding the first occurrence of 'tables'
+
+    # Handle case where no 'tables' folder is found
+    if not tables_path:
+        print("No 'tables' folder found.")
+        QtWidgets.QMessageBox.critical(None, "Error", "The selected plugin does not contain a 'tables' folder.")
+        return
+    else:
+        print(f"Proceeding with 'tables' folder at: {tables_path}")
+
+    # Iterate Over CSV Files in the 'tables' Folder
+    for file_name in os.listdir(tables_path):
+        if file_name.endswith(".csv"):
+            table_name = os.path.splitext(file_name)[0]
+
+            # Match Table to ComboBox Item
+            current_combobox_index = dashboard.ui.comboBox_library_plugin_edit.findText(table_name)
+            if current_combobox_index == -1:
+                QtWidgets.QMessageBox.warning(None, "Warning", f"No matching table found for: {table_name}")
+                continue
+
+            # Get Corresponding Table Widget
+            dashboard.ui.stackedWidget_library_plugin.setCurrentIndex(current_combobox_index)
+            current_page = dashboard.ui.stackedWidget_library_plugin.currentWidget()
+            target_table = current_page.findChild(QtWidgets.QTableWidget)
+
+            if target_table:
+                # Append Data from CSV File to the Table
+                csv_file_path = os.path.join(tables_path, file_name)
+                with open(csv_file_path, "r", newline="") as csv_file:
+                    reader = csv.reader(csv_file)
+                    for row in reader:
+                        target_row = target_table.rowCount()
+                        target_table.insertRow(target_row)
+                        for col_index, value in enumerate(row):
+                            item = QtWidgets.QTableWidgetItem(value)
+                            item.setTextAlignment(QtCore.Qt.AlignCenter)
+                            target_table.setItem(target_row, col_index, item)
+
+    # Cleanup: Remove temporary extracted files
+    if os.path.isdir(extracted_path) and "temp_extracted" in extracted_path:
+        shutil.rmtree(extracted_path, ignore_errors=True)
+
+    # Notify User of Success
+    QtWidgets.QMessageBox.information(None, "Success", "Data successfully appended to tables!")
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotLibraryPluginCreate(dashboard: QtCore.QObject):
+    # UI objects
+    textEdit_library_plugin_plugin_name: QtWidgets.QLineEdit = dashboard.ui.textEdit_library_plugin_plugin_name
+    comboBox_library_plugin_new_existing: QtWidgets.QComboBox = dashboard.ui.comboBox_library_plugin_new_existing
+    stackedWidget_library_plugin_selection: QtWidgets.QStackedWidget = dashboard.ui.stackedWidget_library_plugin_selection
+    pushButton_library_plugin_selection_open_close: QtWidgets.QPushButton = dashboard.ui.pushButton_library_plugin_selection_open_close
+
+    # Get plugin name
+    plugin_name = textEdit_library_plugin_plugin_name.toPlainText()
+
+    if len(plugin_name) > 0:
+        # Open editor on hiprfisr to create plugin
+        await dashboard.backend.openPluginHiprfisr(plugin_name)
+
+        # Switch to existing stacked widget page
+        comboBox_library_plugin_new_existing.setCurrentText("Existing")
+        stackedWidget_library_plugin_selection.setCurrentIndex(0)
+
+        # Disable plugin selection boxes
+        comboBox_library_plugin_new_existing.setEnabled(False)
+
+        # Change button text
+        pushButton_library_plugin_selection_open_close.setText("Close Plugin")
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotLibraryPluginOpenClose(dashboard: QtCore.QObject):
+    """
+    Opens and closes a plugin at the HIPRFISR to retrieve and edit plugin data.
+    """
+    # UI objects
+    pushButton_library_plugin_selection_open_close: QtWidgets.QPushButton = dashboard.ui.pushButton_library_plugin_selection_open_close
+    comboBox_library_plugin_new_existing: QtWidgets.QComboBox = dashboard.ui.comboBox_library_plugin_new_existing
+
+    if pushButton_library_plugin_selection_open_close.text() == "Open Plugin":
+        # Open editor on hiprfisr
+        await dashboard.backend.openPluginHiprfisr(dashboard.ui.comboBox_library_plugin_selection.currentText())
+
+        # Disable plugin selection boxes
+        comboBox_library_plugin_new_existing.setEnabled(False)
+        dashboard.ui.comboBox_library_plugin_selection.setEnabled(False)
+        dashboard.ui.pushButton_library_plugin_refresh.setEnabled(False)
+        dashboard.ui.pushButton_library_plugin_delete.setEnabled(False)
+
+        # Change button text
+        pushButton_library_plugin_selection_open_close.setText("Close Plugin")
+
+        # Enable Edit Plugin Widgets
+        dashboard.ui.frame1_library_plugin_edit_plugin.setEnabled(True)
+        dashboard.ui.label1_library_plugin_edit_plugin.setEnabled(True)        
+
+    else:
+        # Close editor on hiprfisr
+        await dashboard.backend.closePluginHiprfisr()
+
+        # Enable plugin selection boxes
+        comboBox_library_plugin_new_existing.setEnabled(True)
+        dashboard.ui.comboBox_library_plugin_selection.setEnabled(True)
+        dashboard.ui.pushButton_library_plugin_refresh.setEnabled(True)
+        dashboard.ui.pushButton_library_plugin_delete.setEnabled(True)
+
+        # Change button text
+        pushButton_library_plugin_selection_open_close.setText("Open Plugin")
+
+        # Disable Edit Plugin Widgets
+        dashboard.ui.frame1_library_plugin_edit_plugin.setEnabled(False)
+        dashboard.ui.label1_library_plugin_edit_plugin.setEnabled(False)
+
+        # Clear the Tables
+        for page_index in range(dashboard.ui.stackedWidget_library_plugin.count()):
+            page = dashboard.ui.stackedWidget_library_plugin.widget(page_index)  # Get the page at index
+            target_table = page.findChild(QtWidgets.QTableWidget)  # Find the QTableWidget in the page
+            
+            if target_table:
+                # Set the row count to zero to clear the table
+                target_table.setRowCount(0)
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotLibraryPluginPluginRefresh(dashboard: QtCore.QObject):
+    """
+    Queries the HIPRFISR and refreshes the combobox of plugins.
+    """
+    # Send the Message
+    await dashboard.backend.requestPluginNamesHiprfisr()
+
+
+@qasync.asyncSlot(QtCore.QObject)
+async def _slotLibraryPluginPluginDelete(dashboard: QtCore.QObject):
+    """
+    Deletes a plugin from the Plugin directory.
+    """
+    # Ask the user for confirmation
+    plugin_name = dashboard.ui.comboBox_library_plugin_selection.currentText()
+    if plugin_name:
+        ret = await fissure.Dashboard.UI_Components.Qt5.async_yes_no_dialog(
+            dashboard,
+            f"Are you sure you want to delete the plugin '{plugin_name}'?"
+        )
+        if ret == QtWidgets.QMessageBox.Yes:
+            pass
+        else:
+            return
+
+        # Ask the user to delete files from library
+        ret = await fissure.Dashboard.UI_Components.Qt5.async_yes_no_dialog(
+            dashboard,
+            "The plugin folder will be removed. Do you also want to remove all associated plugin data from the library and database?"
+        )
+        if ret == QtWidgets.QMessageBox.Yes:
+            delete_from_library = True
+        else:
+            delete_from_library = False
+            
+        # Send the Message
+        await dashboard.backend.pluginDelete(plugin_name, delete_from_library)
+
+    

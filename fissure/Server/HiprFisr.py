@@ -6,6 +6,7 @@ import asyncio
 import fissure.callbacks
 import fissure.comms
 import fissure.utils
+from fissure.utils.plugin_editor import PluginEditor
 import logging
 import sys
 import time
@@ -44,6 +45,7 @@ class SensorNode:
     UUID: str
     last_heartbeat: float  # FIX: Use this or self.heartbeats?
     terminated: bool
+    plugins: list = []
 
     def __init__(self):
         """
@@ -79,6 +81,7 @@ class HiprFisr:
     pd_id: bytes
     pd_connected: bool
     sensor_nodes: List[SensorNode]
+    local_plugins: List[str] = []
     heartbeats: Dict[str, Union[float, Dict[int, float]]]  # {name: time, name: time, ... sensor_nodes: {node_id: time}}
     callbacks: Dict = {}
     shutdown: bool
@@ -690,6 +693,24 @@ class HiprFisr:
 
         except Exception as e:
             self.logger.error(f"Error: {e}")
+
+
+    def openPluginEditor(self, plugin_name: str):
+        self.plugin_editor = PluginEditor(plugin_name)
+
+
+    # def closePluginEditor(self):
+    #     self.plugin_editor = None
+
+
+    # def pluginEditorGetProtocols(self):
+    #     return self.plugin_editor.get_protocols()
+
+
+    def pluginAddProtocolHiprfisr(self, protocol_name: str):
+        # add protocol (or edit if it already exists)
+        self.plugin_editor.add_protocol(protocol_name)
+        return self.plugin_editor.get_protocol_parameters(protocol_name)
 
 
 if __name__ == "__main__":

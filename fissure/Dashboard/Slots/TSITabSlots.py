@@ -4040,10 +4040,7 @@ async def _slotTSI_ConditionerOperationStartClicked(dashboard: QtCore.QObject):
                     
     # Start
     elif dashboard.ui.pushButton_tsi_conditioner_operation_start.text() == "Start": 
-    
-        # Toggle the Text
-        dashboard.ui.pushButton_tsi_conditioner_operation_start.setText("Stop")  
-        
+            
         # Reset Progress Bar
         dashboard.ui.progressBar_tsi_conditioner_operation.setValue(0)
         
@@ -4173,6 +4170,11 @@ async def _slotTSI_ConditionerOperationStartClicked(dashboard: QtCore.QObject):
             get_method = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_frequencies_method.currentText())
             get_hardware = str(dashboard.ui.comboBox_tsi_conditioner_settings_isolation_hardware.currentText()).split(" - ")[0].strip()
 
+        # Ignore Empty Method
+        if get_method == "None":
+            ret = await fissure.Dashboard.UI_Components.Qt5.async_ok_dialog(dashboard, "Please choose a valid isolation method.")
+            return
+
         # Collect Parameters from Database and Table
         get_row = fissure.utils.library.getConditionerRow(
             dashboard.backend.library, 
@@ -4189,6 +4191,9 @@ async def _slotTSI_ConditionerOperationStartClicked(dashboard: QtCore.QObject):
         # Assemble
         common_parameter_names = ['category','method','output_directory','prefix','sample_rate','tuned_frequency','data_type','max_files','min_samples','all_filepaths','detect_saturation','saturation_min','saturation_max','normalize_output','normalize_min','normalize_max']
         common_parameter_values = [get_category,get_method,get_output_directory,get_prefix,get_sample_rate,get_tuned_freq,get_type,get_max_files,get_min_samples,get_all_filepaths,get_detect_saturation,get_saturation_min,get_saturation_max,get_normalize_output,get_normalize_min,get_normalize_max]
+
+        # Toggle the Text
+        dashboard.ui.pushButton_tsi_conditioner_operation_start.setText("Stop")
 
         # Start the Progress Bar
         dashboard.ui.progressBar_tsi_conditioner_operation.setValue(1)

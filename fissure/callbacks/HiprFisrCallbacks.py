@@ -7,11 +7,15 @@ import binascii
 import fissure.comms
 import fissure.utils
 import fissure.utils.library
+from fissure.utils.common import PLUGIN_DIR
+from fissure.utils import plugin
+from fissure.utils import plugin_editor
 import os
 import time
 import yaml
 import asyncio
 import socket
+import shutil
 
 """ HiprFisr Specific Callback Functions """
 
@@ -2097,3 +2101,579 @@ async def ignoreSOIs(component: object, dashboard_soi_blacklist=[]):
         for x in reversed(range(0, len(component.soi_list))):
             if soi == component.soi_list[x][1] + "," + component.soi_list[x][0]:
                 del component.soi_list[x]
+
+
+async def checkPlugin(component: object, sensor_node_id: int):
+    """Check Status of Plugins on Sensor Node
+
+    Parameters
+    ----------
+    component : object
+        Component
+    sensor_node_id : int, optional
+        Sensor node ID
+    """
+    # get plugin names
+    plugin_names = plugin.get_local_plugin_names()
+
+    if sensor_node_id > -1:
+        # forward message to sensor node
+        PARAMETERS = {
+            "sensor_node_id": sensor_node_id,
+            "plugin_names": plugin_names
+        }
+        msg = {
+            fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+            fissure.comms.MessageFields.MESSAGE_NAME: "checkPlugin",
+            fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+        }
+        await component.sensor_nodes[sensor_node_id].listener.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+    else:
+        # Sensor node is local to hiprfisr
+        # Get status; deployed is N/A as it is local
+        status = {}
+        run_db_install = False
+        uninstall_plugins = []
+        for plugin_name in plugin_names:
+            # Check if installed
+            installed = plugin.installed(plugin_name)
+
+            # Create status entry
+            status[plugin_name] = {
+                'deployed': 'N/A',
+                'installed': installed
+            }
+
+            if installed and (not plugin_name in component.local_plugins):
+                # Plugin is installed on sensor node but not registered in HIPRFISR; register for installation
+                run_db_install = True
+                await registerPlugin(component, -1, plugin_name)
+
+            elif (not installed) and (plugin_name in component.local_plugins):
+                # Plugin is not installed on sensor node but is registered in hipfisr; deregister and remove from database
+                uninstall_plugins += [plugin_name]
+                await deregisterPlugin(component, -1, plugin_name)
+
+        if len(uninstall_plugins) > 0:
+            # Uninstall plugins from database
+            await uninstallPluginsDatabase(component, -1, uninstall_plugins)
+        if run_db_install:
+            # Install plugins to database
+            await installPluginsDatabase(component, -1, True)
+
+        # return status
+        PARAMETERS = {
+            "sensor_node_id": sensor_node_id,
+            "plugin_status": status,
+        }
+        msg = {
+            fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+            fissure.comms.MessageFields.MESSAGE_NAME: "checkSensorNodePluginResults",
+            fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+        }
+        await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+
+async def checkSensorNodePluginResults(component: object, sensor_node_id: int, plugin_status: dict):
+    """Handle checkPlugin Response from Sensor Node
+
+    Parameters
+    ----------
+    component : object
+        Component
+    sensor_node_id : int, optional
+        Sensor node ID
+    plugin_status : dict
+        Status (values) of plugins (keys)
+    """
+    # Align database to sensor node
+    run_db_install = False
+    uninstall_plugins = []
+    for plugin_name in plugin_status.keys():
+        installed = plugin_status.get(plugin_name).get('installed')
+        if installed and (not plugin_name in component.sensor_nodes[sensor_node_id].plugins):
+            # Plugin is installed on sensor node but not registered in hipfisr; register for installation
+            run_db_install = True
+            await registerPlugin(component, sensor_node_id, plugin_name)
+
+        elif (not installed) and (plugin_name in component.sensor_nodes[sensor_node_id].plugins):
+            # Plugin is not installed on sensor node but is registered in hipfisr; deregister and remove from database
+            uninstall_plugins += [plugin_name]
+            await deregisterPlugin(component, sensor_node_id, plugin_name)
+
+    if len(uninstall_plugins) > 0:
+        # Uninstall plugins from database
+        await uninstallPluginsDatabase(component, sensor_node_id, uninstall_plugins)
+    if run_db_install:
+        # Install plugins to database
+        await installPluginsDatabase(component, sensor_node_id, True)
+
+    # Forward results to Dashboard
+    PARAMETERS = {
+        "sensor_node_id": sensor_node_id,
+        "plugin_status": plugin_status,
+    }
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "checkSensorNodePluginResults",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+
+async def transferPlugins(component: object, sensor_node_id: int, plugin_names: List[str], install: bool=False):
+    """Send Plugin to Sensor Node
+
+    Parameters
+    ----------
+    component : object
+        Component
+    sensor_node_id : int
+        Sensor node ID
+    plugin_names : str
+        Plugin names with file extension or no extension if folder
+    install : bool
+        Install plugin after transfer
+    """
+    plugins = []
+    for plugin_name in plugin_names:
+        pathname = os.path.join(fissure.utils.PLUGIN_DIR, plugin_name)
+        if os.path.exists(pathname):
+            zip_filename = None
+
+            if not os.path.isfile(pathname):
+                # zip directory
+                shutil.make_archive(pathname, "zip", pathname)
+                zip_filename = filename = pathname + ".zip"
+                plugin_name += '.zip'
+            else:
+                filename = pathname
+
+            # Read file
+            try:
+                with open(filename, "rb") as f:
+                    plugin_data = f.read()
+                plugin_data = binascii.hexlify(plugin_data)
+                plugin_data = plugin_data.decode("utf-8").upper()
+            except:
+                component.logger.error("Error reading file: " + str(filename))
+                return
+            
+            # Append to plugin data
+            plugins += [(plugin_name, plugin_data)]
+
+            # Delete the .zip File
+            if not zip_filename is None:
+                os.system('rm "' + zip_filename + '"')
+
+    # Send File
+    PARAMETERS = {
+        "sensor_node_id": sensor_node_id,
+        "plugins": plugins,
+    }
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: fissure.comms.Identifiers.DASHBOARD,
+        fissure.comms.MessageFields.MESSAGE_NAME: "transferPlugins" if not install else "transferPluginsInstall",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.sensor_nodes[sensor_node_id].listener.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+
+async def installPlugins(component: object, sensor_node_id: int, plugin_names: List[str]):
+    """Install Plugins to Sensor Node
+
+    Parameters
+    ----------
+    component : object
+        Component
+    sensor_node_id : int
+        Sensor node ID
+    plugin_names : List[str]
+        Plugin names
+    """
+    if sensor_node_id > -1:
+        # Install through sensor node
+        PARAMETERS = {
+            "sensor_node_id": sensor_node_id,
+            "plugin_names": plugin_names,
+        }
+        msg = {
+            fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+            fissure.comms.MessageFields.MESSAGE_NAME: "installPlugins",
+            fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+        }
+        await component.sensor_nodes[sensor_node_id].listener.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+    else:
+        # Install Locally
+        for plugin_name in plugin_names:
+            # Run Installation
+            plugin.install(plugin_name)
+
+            # Register in HIPRFISR
+            await registerPlugin(component, -1, plugin_name)
+
+        # Install to Database
+        await installPluginsDatabase(component, -1, True)
+
+
+async def registerPlugin(component: object, sensor_node_id: int, plugin_name: str):
+    """Register Plugin in HIPRFISR Sensor Node Plugin List
+
+    Parameters
+    ----------
+    component : object
+        Component
+    sensor_node_id : int
+        Sensor node ID
+    plugin_name : str
+        Plugin name
+    """
+    if sensor_node_id > -1:
+        if not plugin_name in component.sensor_nodes[sensor_node_id].plugins:
+            # Add plugin to list for sensor node
+            component.sensor_nodes[sensor_node_id].plugins += [plugin_name]
+    else:
+        if not plugin_name in component.local_plugins:
+            # Add plugin to list for hiprfisr
+            component.local_plugins += [plugin_name]
+
+
+async def deregisterPlugin(component: object, sensor_node_id: int, plugin_name: str):
+    """Remove Plugin from HIPRFISR Sensor Node Plugin List
+
+    Parameters
+    ----------
+    component : object
+        Component
+    sensor_node_id : int
+        Sensor node ID
+    plugin_name : str
+        Plugin name
+    """
+    if sensor_node_id > -1:
+        if plugin_name in component.sensor_nodes[sensor_node_id].plugins:
+            # Remove plugin from list for sensor node
+            component.sensor_nodes[sensor_node_id].plugins.remove(plugin_name)
+    else:
+        if plugin_name in component.local_plugins:
+            # Remove plugin from list for hiprfisr
+            component.local_plugins.remove(plugin_name)
+
+
+async def installPluginsDatabase(component: object, sensor_node_id: int, refresh_frontend_widgets: bool=True):
+    """Install Plugin in Database
+
+    Parameters
+    ----------
+    component : object
+        Component
+    sensor_node_id : int
+        Sensor node ID
+    refresh_frontend_widgets : bool, optional
+        Update dashboard UI widgets after installation, by default True
+    """
+    # Get registered active plugins list
+    if sensor_node_id > -1:
+        plugins = component.sensor_nodes[sensor_node_id].plugins
+    else:
+        plugins = component.local_plugins
+
+    # Install plugins to database
+    plugin.modify_database(component.logger, plugins, 'add')
+
+    # Update database cache and dashboard
+    await retrieveDatabaseCache(component, refresh_frontend_widgets)
+
+    # Update plugin table\list
+    await checkPlugin(component, sensor_node_id)
+
+
+async def uninstallPluginsDatabase(component: object, sensor_node_id: int, plugin_names: List[str]):
+    """Uninstall Plugin from Database
+
+    Parameters
+    ----------
+    component : object
+        Component
+    sensor_node_id : int
+        Sensor node ID
+    plugin_names : List[str]
+        Plugin names
+    """
+    # Uninstall plugins from database
+    plugin.modify_database(component.logger, plugin_names, 'remove')
+
+    # Update database cache and dashboard
+    await retrieveDatabaseCache(component, True)
+
+    # Update plugin table\list
+    await checkPlugin(component, sensor_node_id)
+
+
+async def requestPluginsTransferInstall(component: object, sensor_node_id: int, plugin_names: str):
+    """Sensor Node Request for Plugin Transfer then Install
+
+    Parameters
+    ----------
+    component : object
+        Component
+    sensor_node_id : int
+        Sensor node ID
+    plugin_names : str
+        Plugin name
+    """
+    PARAMETERS = {
+        "sensor_node_id": sensor_node_id,
+        "plugin_names": plugin_names
+    }
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "requestPluginsTransferInstall",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+
+async def uninstallPlugins(component: object, sensor_node_id: int, plugin_names: str):
+    """Uninstall Plugins from Sensor Node
+
+    Parameters
+    ----------
+    component : object
+        Component
+    sensor_node_id : int
+        Sensor node ID
+    plugin_names : str
+        Plugin names
+    """
+    if sensor_node_id > -1:
+        # Uninstall through sensor node
+        PARAMETERS = {
+            "sensor_node_id": sensor_node_id,
+            "plugin_names": plugin_names,
+        }
+        msg = {
+            fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+            fissure.comms.MessageFields.MESSAGE_NAME: "uninstallPlugins",
+            fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+        }
+        await component.sensor_nodes[sensor_node_id].listener.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+    
+    else:
+        # Uninstall locally
+        for plugin_name in plugin_names:
+            # run uninstallation
+            plugin.uninstall(plugin_name)
+
+        # Update database and dashboard
+        await uninstallPluginsDatabase(component, -1, plugin_names)
+
+
+async def removePlugin(component: object, sensor_node_id: int, plugin_name: str):
+    """Remove Plugin from Sensor Node
+
+    **WARNING**: This will remove the plugin from the sensor node file system
+
+    Parameters
+    ----------
+    component : object
+        Component
+    sensor_node_id : int
+        Sensor node ID
+    plugin_name : str
+        Plugin name
+    """
+    PARAMETERS = {
+        "sensor_node_id": sensor_node_id,
+        "plugin_name": plugin_name,
+    }
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "removePlugin",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.sensor_nodes[sensor_node_id].listener.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+    
+
+async def requestPluginNamesHiprfisr(component: object):
+    """Handle Request for Plugin Names
+
+    Parameters
+    ----------
+    component : object
+        Component
+    """
+    PARAMETERS = {
+        "plugin_names": plugin.get_local_plugin_names(),
+    }
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "responsePluginNamesHiprfisr",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+
+async def openPluginHiprfisr(component: object, plugin_name: str):
+    """Handle Request for Plugin Names
+
+    Parameters
+    ----------
+    component : object
+        Component
+    """
+    # Read the Files
+    component.openPluginEditor(plugin_name)
+
+    # Return the Table Data
+    PARAMETERS = {
+        "plugin_name": component.plugin_editor.name,
+        "table_data_json": component.plugin_editor.table_data,
+    }
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "responsePluginTableData",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+
+async def closePluginHiprfisr(component: object):
+    """Handle Request for Plugin Names
+
+    Parameters
+    ----------
+    component : object
+        Component
+    """
+    component.plugin_editor = None
+
+
+async def pluginDelete(component: object, plugin_name: str, delete_from_library: bool):
+    """
+    Deletes a plugin folder and library/database files (optional).
+
+    Parameters
+    ----------
+    component : object
+        Component
+    delete_from_library : bool
+        Delete from database in addition to plugin folder
+    """
+    component.openPluginEditor(plugin_name)
+    component.plugin_editor.deletePlugin(plugin_name, delete_from_library, component.os_info)
+    component.plugin_editor = None
+
+    # Update the Combobox of Plugins
+    await requestPluginNamesHiprfisr(component)
+
+
+async def pluginApplyChanges(component: object, table_data_json: dict):
+    """Handle Request for Plugin Names
+
+    Parameters
+    ----------
+    component : object
+        Component
+    table_data_json : dict
+        Table data from Plugin Editor tab
+    """
+    component.plugin_editor.applyChanges(table_data_json)
+    
+
+async def pluginAddProtocolHiprfisr(component: object, protocol_name: str):
+    """Handle Request to Add Protocol Plugin Names
+
+    Parameters
+    ----------
+    component : object
+        Component
+    """
+    #component.pluginAddProtocolHiprfisr(protocol_name)
+
+    # run add and get returned parameters
+    PARAMETERS = {
+        "plugin_name": component.plugin_editor.name,
+        "protocol_name": protocol_name,
+        "parameters": component.pluginAddProtocolHiprfisr(protocol_name)
+    }
+    print(PARAMETERS)
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "responsePluginProtocolParameters",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+
+async def pluginSetProtocolParameters(component: object, protocol_name: str, parameters: dict):
+    component.plugin_editor.edit_protocol(protocol_name, parameters.get('data_rates'), parameters.get('median_packet_lengths'))
+
+    # run add and get returned parameters
+    PARAMETERS = {
+        "plugin_name": component.plugin_editor.name,
+        "protocol_name": protocol_name,
+        "parameters": component.pluginAddProtocolHiprfisr(protocol_name)
+    }
+    print(PARAMETERS)
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "responsePluginProtocolParameters",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+
+async def pluginAddProtocolModType(component: object, protocol_name: str, mod_type: str):
+    component.plugin_editor.add_mod_type(protocol_name, mod_type)
+
+    # run add and get returned parameters
+    PARAMETERS = {
+        "plugin_name": component.plugin_editor.name,
+        "protocol_name": protocol_name,
+        "parameters": component.plugin_editor.get_protocol_parameters(protocol_name)
+    }
+    print('PARAMETERS: ' + str(component.plugin_editor.get_protocol_parameters(protocol_name)))
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "responsePluginProtocolParameters",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+
+async def pluginRemoveProtocolModTypes(component: object, protocol_name: str, mod_types: str):
+    component.plugin_editor.remove_mod_types(protocol_name, mod_types)
+
+    # run add and get returned parameters
+    PARAMETERS = {
+        "plugin_name": component.plugin_editor.name,
+        "protocol_name": protocol_name,
+        "parameters": component.plugin_editor.get_protocol_parameters(protocol_name)
+    }
+    print('PARAMETERS: ' + str(component.plugin_editor.get_protocol_parameters(protocol_name)))
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "responsePluginProtocolParameters",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)
+
+async def pluginEditProtocolPktTypes(component: object, protocol_name: str, pkt_types: List[List[str]]):
+    component.plugin_editor.edit_pkt_types(protocol_name, pkt_types)
+
+    # run add and get returned parameters
+    PARAMETERS = {
+        "plugin_name": component.plugin_editor.name,
+        "protocol_name": protocol_name,
+        "parameters": component.plugin_editor.get_protocol_parameters(protocol_name)
+    }
+    print('PARAMETERS: ' + str(component.plugin_editor.get_protocol_parameters(protocol_name)))
+    msg = {
+        fissure.comms.MessageFields.IDENTIFIER: component.identifier,
+        fissure.comms.MessageFields.MESSAGE_NAME: "responsePluginProtocolParameters",
+        fissure.comms.MessageFields.PARAMETERS: PARAMETERS,
+    }
+    await component.dashboard_socket.send_msg(fissure.comms.MessageTypes.COMMANDS, msg)

@@ -19,6 +19,14 @@ The friendly Python codebase and user interface allows beginners to quickly lear
 
 ![NEW](https://img.shields.io/badge/NEW-Feature-brightgreen) 
 
+**Plugins** to import and export capabilities into the FISSURE library and share with collaborators. 
+
+![NEW](https://img.shields.io/badge/NEW-Feature-brightgreen) 
+
+**Demo Menu** to aid with future automated testing and to provide examples of Dashboard operation to users.
+
+![NEW](https://img.shields.io/badge/NEW-Feature-brightgreen) 
+
 **Z-Wave and Ceiling Fans Lessons** to highlight FISSURE as a reverse engineering tool. [Lesson13: Z-Wave](/docs/Lessons/Markdown/Lesson13_Z-Wave.md), [Lesson14: Ceiling Fans](/docs/Lessons/Markdown/Lesson14_Ceiling_Fans.md)
 
 ![NEW](https://img.shields.io/badge/NEW-Feature-brightgreen) 
@@ -338,7 +346,7 @@ FISSURE comes with several helpful guides to become familiar with different tech
 - [x] Release a signal classifier that allows users to select and add AI/ML techniques. In addition, a decision tree with adjustable features and weights.
 - [ ] Implement recursive demodulation mechanisms for producing a bitstream from unknown signals
 - [x] Increase the online signal archive, support download of selectable collections
-- [ ] Support the addition of both closed source and user-developed plugins
+- [x] Support the addition of both closed source and user-developed plugins
 - [ ] Improve the look for different resolutions and window sizes, dark mode
 - [x] Group third-party programs in the installer by type
 - [x] Resolve DragonOS conflicts

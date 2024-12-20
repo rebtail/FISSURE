@@ -800,3 +800,12 @@ async def _slotSensorNodesFileNavigationLocalTransferClicked(dashboard: QtCore.Q
             
             # Send the Message
             await dashboard.backend.transferSensorNodeFile(dashboard.active_sensor_node, get_local_file, get_remote_folder, refresh_file_list)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotSensorNodesAutorunTriggersClearClicked(dashboard: QtCore.QObject):
+    """ 
+    Clears the list of triggers.
+    """
+    # Remove Rows
+    dashboard.ui.tableWidget1_sensor_nodes_autorun_triggers.setRowCount(0)

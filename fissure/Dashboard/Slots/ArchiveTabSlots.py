@@ -1858,6 +1858,15 @@ def _slotArchiveDatasetsStartClicked(dashboard: QtCore.QObject):
         dashboard.ui.progressBar_archive_datasets.setVisible(False)
 
 
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotArchiveReplayTriggersClearClicked(dashboard: QtCore.QObject):
+    """ 
+    Clears the list of triggers.
+    """
+    # Remove Rows
+    dashboard.ui.tableWidget1_archive_replay_triggers.setRowCount(0)
+
+
 @QtCore.pyqtSlot()
 def on_finished(dashboard: QtCore.QObject):
     """ 

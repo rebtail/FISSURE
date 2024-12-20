@@ -5074,3 +5074,21 @@ async def _slotAttackFuzzingApplyChangesClicked(dashboard: QtCore.QObject):
     attack_name = str(dashboard.ui.label2_attack_fuzzing_selected_attack.text())
     protocol = str(dashboard.ui.label2_attack_fuzzing_selected_protocol.text())
     updateAttackHistory(dashboard, attack_name, protocol, list(dashboard.attack_flow_graph_variables.keys()), list(dashboard.attack_flow_graph_variables.values()))
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotAttackSingleStageTriggersClearClicked(dashboard: QtCore.QObject):
+    """ 
+    Clears the list of triggers.
+    """
+    # Remove Rows
+    dashboard.ui.tableWidget1_attack_single_stage_triggers.setRowCount(0)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotAttackMultiStageTriggersClearClicked(dashboard: QtCore.QObject):
+    """ 
+    Clears the list of triggers.
+    """
+    # Remove Rows
+    dashboard.ui.tableWidget1_attack_multi_stage_triggers.setRowCount(0)

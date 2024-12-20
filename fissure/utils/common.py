@@ -27,6 +27,7 @@ IQ_RECORDINGS_DIR: os.PathLike = os.path.join(FISSURE_ROOT, "IQ Recordings")
 SENSOR_NODE_DIR: os.PathLike = os.path.join(FISSURE_ROOT, "fissure", "Sensor_Node")
 GALLERY_DIR: os.PathLike = os.path.join(FISSURE_ROOT, "docs", "Gallery")
 CLASSIFIER_DIR: os.PathLike = os.path.join(FISSURE_ROOT, "Classifier")
+PLUGIN_DIR: os.PathLike = os.path.join(FISSURE_ROOT, "Plugins")
 
 
 FISSURE_CONFIG_FILE = "fissure_config.yaml"
@@ -39,6 +40,22 @@ OS_3_10_KEYWORDS = ["Ubuntu 22.04", "Kali", "DragonOS FocalX", "Raspberry Pi OS"
 QTERMINAL_LIST = ["DragonOS Focal", "DragonOS FocalX", "Kali"]
 LXTERMINAL_LIST = ["Raspberry Pi OS"]
 GNOME_TERMINAL_LIST = ["Ubuntu 20.04", "Ubuntu 22.04", "Parrot", "Ubuntu 24.04"]
+
+DATABASE_TABLE_HEADERS = {
+    "archive_collection": ["id", "name", "file_list", "filepath", "files", "format", "size", "notes", "parent_id", "created_at"],
+    "archive_favorites": ["id", "file_name", "date", "format", "modulation", "notes", "protocol", "sample_rate", "samples", "size", "tuned_frequency"],
+    "attack_categories": ["id", "category_name", "parent"],
+    "attacks": ["id", "protocol", "attack_name", "modulation_type", "hardware", "attack_type", "filename", "category_name", "version"],
+    "conditioner_flow_graphs": ["id", "isolation_category", "isolation_method", "hardware", "file_type", "data_type", "version", "parameter_names", "parameter_values", "parameter_labels", "filepath"],
+    "demodulation_flow_graphs": ["id", "protocol", "modulation_type", "hardware", "filename", "output_type", "version"],
+    "detector_flow_graphs": ["id", "detector_type", "hardware", "filename", "file_type", "version"],
+    "inspection_flow_graphs": ["id", "hardware", "python_file", "version"],
+    "modulation_types": ["id", "protocol", "modulation_type"],
+    "packet_types": ["id", "protocol", "packet_name", "dissector", "fields", "sort_order"],
+    "protocols": ["id", "protocol_name", "data_rates", "median_packet_lengths"],
+    "soi_data": ["id", "protocol", "soi_name", "center_frequency", "start_frequency", "end_frequency", "bandwidth", "continuous", "modulation", "notes"],
+    "triggers": ["id", "category", "trigger_name", "default_settings", "filename", "file_type", "version"]
+}
 
 
 class FissureUtilObjects:

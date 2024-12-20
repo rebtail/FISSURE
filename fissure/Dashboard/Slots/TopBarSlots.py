@@ -28,6 +28,7 @@ def sensor_node_rightClick(dashboard: QtCore.QObject, node_idx: int):
         dashboard.configureAttackHardware(node_idx)
         dashboard.configureIQ_Hardware(node_idx)
         dashboard.configureArchiveHardware(node_idx)
+        dashboard.configureSensorNodeHardware(node_idx)
         dashboard.statusBar().dialog.label1_sensor_node.setText("No Sensor Nodes Connected")
         dashboard.refreshStatusBarText()
         return
@@ -57,6 +58,9 @@ def sensor_node_rightClick(dashboard: QtCore.QObject, node_idx: int):
         # Archive
         dashboard.configureArchiveHardware(node_idx)
         
+        # Sensor Node
+        dashboard.configureSensorNodeHardware(node_idx)
+
         # Change Status Bar Text
         dashboard.statusBar().dialog.label1_sensor_node.setText("Sensor Node " + str(node_idx + 1))
         dashboard.refreshStatusBarText()

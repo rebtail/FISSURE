@@ -1,6 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2024-12-16
+
+Partial plugin updates and bug fixes.
+
+### Added
+
+- Initial plugin code for Library and Sensor Nodes tabs (disabled while under development)
+- pyzipper in installer
+- Clear buttons for triggers
+
+### Fixed
+
+- Adding missing parameters variable in Backend.py:retrieveDatabaseCache()
+- Better centering for the splash screen "Loading..." label
+- Inserted missing dashboard references to many standalone flow graph menu items that prevented flow graphs from opening
+- Renamed "tableWidget1_tsi_conditioner_input_frequencies" to "tableWidget_tsi_conditioner_input_detector" to fix TSI detectors not updating results and progress
+- User can no longer start TSI Conditioner if isolation method is not selected
+- Guess no longer removes highlight in sensor node configuration
+
 ## 2024-12-12
 
 Demo Menu for future automated testing.

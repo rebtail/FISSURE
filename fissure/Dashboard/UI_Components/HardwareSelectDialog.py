@@ -627,6 +627,9 @@ class HardwareSelectDialog(QtWidgets.QDialog, UI_Types.HW_Select):
             table_item = QtWidgets.QTableWidgetItem(new_serial)
             table_item.setTextAlignment(QtCore.Qt.AlignCenter)
             scan_results_tables[tab_index].setItem(get_row, 3, table_item)
+
+        # Highlight
+        self.highlight_hardware_id(scan_results_tables[tab_index], get_row)
             
         # Resize the Scan Results Table
         scan_results_tables[tab_index].resizeColumnsToContents()
