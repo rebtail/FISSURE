@@ -992,9 +992,28 @@ def _slotIQ_TabClicked(dashboard: QtCore.QObject, button_name):
         dashboard.ui.stackedWidget3_iq.setCurrentIndex(13)
     elif button_name == "pushButton1_iq_tab_ook":
         dashboard.ui.stackedWidget3_iq.setCurrentIndex(14)
+    elif button_name == "pushButton1_iq_tab_endianness":
+        dashboard.ui.stackedWidget3_iq.setCurrentIndex(15)
 
     # Reset All Stylesheets
-    button_list = ['pushButton1_iq_tab_record','pushButton1_iq_tab_playback','pushButton1_iq_tab_inspection','pushButton1_iq_tab_crop','pushButton1_iq_tab_convert','pushButton1_iq_tab_append','pushButton1_iq_tab_transfer','pushButton1_iq_tab_timeslot','pushButton1_iq_tab_overlap','pushButton1_iq_tab_resample','pushButton1_iq_tab_ofdm','pushButton1_iq_tab_normalize','pushButton1_iq_tab_strip','pushButton1_iq_tab_split','pushButton1_iq_tab_ook']
+    button_list = [
+        'pushButton1_iq_tab_record',
+        'pushButton1_iq_tab_playback',
+        'pushButton1_iq_tab_inspection',
+        'pushButton1_iq_tab_crop',
+        'pushButton1_iq_tab_convert',
+        'pushButton1_iq_tab_append',
+        'pushButton1_iq_tab_transfer',
+        'pushButton1_iq_tab_timeslot',
+        'pushButton1_iq_tab_overlap',
+        'pushButton1_iq_tab_resample',
+        'pushButton1_iq_tab_ofdm',
+        'pushButton1_iq_tab_normalize',
+        'pushButton1_iq_tab_strip',
+        'pushButton1_iq_tab_split',
+        'pushButton1_iq_tab_ook',
+        'pushButton1_iq_tab_endianness'
+    ]
     for n in button_list:
         exec("dashboard.ui." + n + """.setStyleSheet("QPushButton#""" + n + """ {}")""")
         # ~ exec("dashboard.ui." + n + """.setStyleSheet("QPushButton#""" + n + """ {"
@@ -1267,6 +1286,18 @@ def _slotIQ_LoadIQ_Data(dashboard: QtCore.QObject):
             dashboard.ui.textEdit_iq_end.setPlainText(str(int(number_of_bytes/16)))
         elif get_type == "Complex Int 64":
             dashboard.ui.textEdit_iq_end.setPlainText(str(int(number_of_bytes/16)))
+        elif get_type == "Unsigned Int 8":
+            dashboard.ui.textEdit_iq_end.setPlainText(str(int(number_of_bytes/1)))
+        elif get_type == "Unsigned Int 16":
+            dashboard.ui.textEdit_iq_end.setPlainText(str(int(number_of_bytes/2)))
+        elif get_type == "Unsigned Int 32":
+            dashboard.ui.textEdit_iq_end.setPlainText(str(int(number_of_bytes/4)))
+        elif get_type == "Complex Unsigned Int 64":
+            dashboard.ui.textEdit_iq_end.setPlainText(str(int(number_of_bytes/16)))
+        elif get_type == "Complex Unsigned Int 16":
+            dashboard.ui.textEdit_iq_end.setPlainText(str(int(number_of_bytes/4)))
+        elif get_type == "Complex Unsigned Int 8":
+            dashboard.ui.textEdit_iq_end.setPlainText(str(int(number_of_bytes/2)))
     else:
         dashboard.ui.textEdit_iq_start.setPlainText("n/a")
         dashboard.ui.textEdit_iq_end.setPlainText("n/a")
@@ -1517,6 +1548,18 @@ def _slotIQ_CropClicked(dashboard: QtCore.QObject):
         bs = "4"
     elif get_data_type == "Complex Int 8":
         bs = "2"
+    elif get_data_type == "Unsigned Int 8":
+        bs = "1"
+    elif get_data_type == "Unsigned Int 16":
+        bs = "2"
+    elif get_data_type == "Unsigned Int 32":
+        bs = "4"
+    elif get_data_type == "Complex Unsigned Int 64":
+        bs = "16"
+    elif get_data_type == "Complex Unsigned Int 16":
+        bs = "4"
+    elif get_data_type == "Complex Unsigned Int 8":
+        bs = "2"
     else:
         fissure.Dashboard.UI_Components.Qt5.errorMessage("Cannot crop " + get_data_type + ".")
         return
@@ -1673,6 +1716,24 @@ def _slotIQ_AppendAppendClicked(dashboard: QtCore.QObject):
                 elif get_type == "Complex Int 64":
                     num_bytes1 = str(16 * int(get_prepend))
                     num_bytes2 = str(16 * int(get_append))
+                elif get_type == "Unsigned Int 8":
+                    num_bytes1 = str(1 * int(get_prepend))
+                    num_bytes2 = str(1 * int(get_append))
+                elif get_type == "Unsigned Int 16":
+                    num_bytes1 = str(2 * int(get_prepend))
+                    num_bytes2 = str(2 * int(get_append))
+                elif get_type == "Unsigned Int 32":
+                    num_bytes1 = str(4 * int(get_prepend))
+                    num_bytes2 = str(4 * int(get_append))
+                elif get_type == "Complex Unsigned Int 64":
+                    num_bytes1 = str(16 * int(get_prepend))
+                    num_bytes2 = str(16 * int(get_append))
+                elif get_type == "Complex Unsigned Int 16":
+                    num_bytes1 = str(4 * int(get_prepend))
+                    num_bytes2 = str(4 * int(get_append))
+                elif get_type == "Complex Unsigned Int 8":
+                    num_bytes1 = str(2 * int(get_prepend))
+                    num_bytes2 = str(2 * int(get_append))
 
                 # Copy File
                 os.system('touch "' + get_output_file + '"')
@@ -1926,81 +1987,69 @@ def _slotIQ_ResampleClicked(dashboard: QtCore.QObject):
     get_new_rate = float(dashboard.ui.textEdit_iq_resample_new_rate.toPlainText())
     get_data_type = str(dashboard.ui.comboBox_iq_crop_data_type.currentText())
 
-    # Files Selected
-    if (len(get_original_file) > 0) and (len(get_new_file) > 0) and (get_original_rate > 0) and (get_new_rate > 0):
-        # Read the Data
-        file = open(get_original_file,"rb")
-        plot_data = file.read()
-        file.close()
+    # Define data type mappings
+    data_type_map = {
+        "Complex Float 32": ("f", 4, np.float32),
+        "Float/Float 32": ("f", 4, np.float32),
+        "Short/Int 16": ("h", 2, np.int16),
+        "Int/Int 32": ("i", 4, np.int32),
+        "Byte/Int 8": ("b", 1, np.int8),
+        "Complex Int 16": ("h", 4, np.int16),
+        "Complex Int 8": ("b", 2, np.int8),
+        "Complex Float 64": ("d", 8, np.float64),
+        "Complex Int 64": ("q", 8, np.int64),
+        "Unsigned Int 8": ("B", 1, np.uint8),
+        "Unsigned Int 16": ("H", 2, np.uint16),
+        "Unsigned Int 32": ("I", 4, np.uint32),
+        "Complex Unsigned Int 64": ("Q", 16, np.uint64),
+        "Complex Unsigned Int 16": ("H", 4, np.uint16),
+        "Complex Unsigned Int 8": ("B", 2, np.uint8),
+    }
 
-        # Complex Float 32
-        if get_data_type == "Complex Float 32":
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'f', plot_data)
+    # Validate input
+    if not (get_original_file and get_new_file and get_original_rate > 0 and get_new_rate > 0):
+        dashboard.logger.error("Invalid input parameters.")
+        return
 
-            # Resample
-            num_resampled_samples = int(math.floor((get_new_rate/get_original_rate)*len(plot_data_formatted)/2))
-            i_resampled = np.array(signal2.resample(plot_data_formatted[::2],num_resampled_samples), dtype=np.float32)
-            q_resampled = np.array(signal2.resample(plot_data_formatted[1::2],num_resampled_samples), dtype=np.float32)
-            new_data = np.empty((i_resampled.size + q_resampled.size,), dtype=np.float32)
+    if get_data_type not in data_type_map:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage(f"Cannot resample {get_data_type}.")
+        return
+
+    format_char, sample_size, np_dtype = data_type_map[get_data_type]
+
+    try:
+        # Read the data
+        with open(get_original_file, "rb") as file:
+            plot_data = file.read()
+
+        number_of_bytes = os.path.getsize(get_original_file)
+        num_samples = number_of_bytes // sample_size
+        plot_data_formatted = struct.unpack(f"{num_samples}{format_char}", plot_data)
+
+        if "Complex" in get_data_type:
+            # Resample complex data
+            num_resampled_samples = int(math.floor((get_new_rate / get_original_rate) * num_samples / 2))
+            i_resampled = np.array(signal2.resample(plot_data_formatted[::2], num_resampled_samples), dtype=np_dtype)
+            q_resampled = np.array(signal2.resample(plot_data_formatted[1::2], num_resampled_samples), dtype=np_dtype)
+            new_data = np.empty((i_resampled.size + q_resampled.size,), dtype=np_dtype)
             new_data[0::2] = i_resampled
             new_data[1::2] = q_resampled
-            new_data.tofile(get_new_file)
-
-        # Complex Int 16
-        elif get_data_type == "Complex Int 16":
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/2)*'h', plot_data)
-
-            # Resample
-            num_resampled_samples = int(math.floor((get_new_rate/get_original_rate)*len(plot_data_formatted)/2))
-            i_resampled = np.array(signal2.resample(plot_data_formatted[::2],num_resampled_samples), dtype=np.int16)
-            q_resampled = np.array(signal2.resample(plot_data_formatted[1::2],num_resampled_samples), dtype=np.int16)
-            new_data = np.empty((i_resampled.size + q_resampled.size,), dtype=np.int16)
-            new_data[0::2] = i_resampled
-            new_data[1::2] = q_resampled
-            #new_data = i_resampled + 1j*q_resampled  # Converts np.int16 to complex64
-            new_data.tofile(get_new_file)
-
-        # Complex Float 64
-        elif get_data_type == "Complex Float 64":
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'d', plot_data)
-
-            # Resample
-            num_resampled_samples = int(math.floor((get_new_rate/get_original_rate)*len(plot_data_formatted)/2))
-            i_resampled = np.array(signal2.resample(plot_data_formatted[::2],num_resampled_samples), dtype=np.float64)
-            q_resampled = np.array(signal2.resample(plot_data_formatted[1::2],num_resampled_samples), dtype=np.float64)
-            new_data = np.empty((i_resampled.size + q_resampled.size,), dtype=np.float64)
-            new_data[0::2] = i_resampled
-            new_data[1::2] = q_resampled
-            new_data.tofile(get_new_file)
-
-        # Complex Int 64
-        elif get_data_type == "Complex Int 64":
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'l', plot_data)
-
-            # Resample
-            num_resampled_samples = int(math.floor((get_new_rate/get_original_rate)*len(plot_data_formatted)/2))
-            i_resampled = np.array(signal2.resample(plot_data_formatted[::2],num_resampled_samples), dtype=np.float64)
-            q_resampled = np.array(signal2.resample(plot_data_formatted[1::2],num_resampled_samples), dtype=np.float64)
-            new_data = np.empty((i_resampled.size + q_resampled.size,), dtype=np.int64)
-            new_data[0::2] = i_resampled
-            new_data[1::2] = q_resampled
-            new_data.tofile(get_new_file)
-
-        # Unknown
         else:
-            fissure.Dashboard.UI_Components.Qt5.errorMessage("Cannot resample " + get_data_type + ".")
-            return
+            # Resample real data
+            num_resampled_samples = int(math.floor((get_new_rate / get_original_rate) * num_samples))
+            new_data = np.array(signal2.resample(plot_data_formatted, num_resampled_samples), dtype=np_dtype)
 
-        # Refresh Listbox
-        _slotIQ_RefreshClicked(dashboard)
+        # Write resampled data to the new file
+        new_data.tofile(get_new_file)
+        dashboard.logger.info("Resampling completed successfully.")
+
+    except Exception as e:
+        dashboard.logger.error(f"Error during resampling: {e}")
+        fissure.Dashboard.UI_Components.Qt5.errorMessage("Resampling failed. See logs for details.")
+        return
+
+    # Refresh Listbox
+    _slotIQ_RefreshClicked(dashboard)
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -2393,382 +2442,6 @@ def _slotIQ_FunctionsRightClicked(dashboard: QtCore.QObject):
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
-def _slotIQ_ConvertOriginalLoadClicked(dashboard: QtCore.QObject):
-    """ 
-    Selects a file to convert to a new data type.
-    """
-    # Select a File
-    dialog = QtWidgets.QFileDialog(dashboard)
-    directory = fissure.utils.IQ_RECORDINGS_DIR  # Default Directory
-    dialog.setDirectory(directory)
-    dialog.setNameFilters(['Data File (*.*)'])
-
-    if dialog.exec_():
-        for d in dialog.selectedFiles():
-            folder = d
-    try:
-        dashboard.ui.textEdit_iq_convert_original.setPlainText(folder)
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotIQ_ConvertNewLoadClicked(dashboard: QtCore.QObject):
-    """ 
-    Selects the location for the new data file.
-    """
-    # Select a File
-    dialog = QtWidgets.QFileDialog(dashboard)
-    directory = fissure.utils.IQ_RECORDINGS_DIR  # Default Directory
-    dialog.setDirectory(directory)
-    dialog.setNameFilters(['Data File (*.*)'])
-
-    if dialog.exec_():
-        for d in dialog.selectedFiles():
-            folder = d
-    try:
-        dashboard.ui.textEdit_iq_convert_new.setPlainText(folder)
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotIQ_ConvertClicked(dashboard: QtCore.QObject):
-    """ 
-    Converts the original file to a new data type.
-    """
-    # Get Values
-    get_original_file = str(dashboard.ui.textEdit_iq_convert_original.toPlainText())
-    get_original_type = str(dashboard.ui.comboBox_iq_convert_original.currentText())
-    get_new_file = str(dashboard.ui.textEdit_iq_convert_new.toPlainText())
-    get_new_type = str(dashboard.ui.comboBox_iq_convert_new.currentText())
-
-    # Files Selected
-    if (len(get_original_file) > 0) and (len(get_new_file) > 0):
-        # Read the Data
-        file = open(get_original_file,"rb")
-        plot_data = file.read()
-        file.close()
-
-        # Complex Float 64 >> Complex Int 64
-        if (get_original_type == "Complex Float 64") and (get_new_type == "Complex Int 64"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'d', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int64)
-            np_data.tofile(get_new_file)
-
-        # Complex Float 64, Complex Float 32 >> Complex Float 32
-        elif (get_original_type == "Complex Float 64") and ((get_new_type == "Complex Float 32") or (get_new_type == "Float/Float 32")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'d', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.float32)
-            np_data.tofile(get_new_file)
-
-        # Complex Float 64 >> Int/Int 32
-        elif (get_original_type == "Complex Float 64") and (get_new_type == "Int/Int 32"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'d', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int32)
-            np_data.tofile(get_new_file)
-
-        # Complex Float 64 >> Complex Int 16, Short/Int 16
-        elif (get_original_type == "Complex Float 64") and ((get_new_type == "Complex Int 16") or (get_new_type == "Short/Int 16")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'d', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int16)
-            np_data.tofile(get_new_file)
-
-        # Complex Float 64 >> Complex Int 8, Byte/Int 8
-        elif (get_original_type == "Complex Float 64") and ((get_new_type == "Complex Int 8") or (get_new_type == "Byte/Int 8")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'d', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int8)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 64 >> Complex Float 32, Float/Float 32
-        elif (get_original_type == "Complex Int 64") and ((get_new_type == "Complex Float 32") or (get_new_type == "Float/Float 32")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'q', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.float32)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 64 >> Complex Float 64
-        elif (get_original_type == "Complex Int 64") and (get_new_type == "Complex Float 64"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'q', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.float64)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 64 >> Int/Int 32
-        elif (get_original_type == "Complex Int 64") and (get_new_type == "Int/Int 32"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'q', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int32)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 64 >> Complex Int 16, Short/Int 16
-        elif (get_original_type == "Complex Int 64") and ((get_new_type == "Complex Int 16") or (get_new_type == "Short/Int 16")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'q', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int16)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 64 >> Complex Int 8, Byte/Int 8
-        elif (get_original_type == "Complex Int 64") and ((get_new_type == "Complex Int 8") or (get_new_type == "Byte/Int 8")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'q', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int8)
-            np_data.tofile(get_new_file)
-
-        # Complex Float 32 >> Complex Int 16, Short/Int 16
-        elif (get_original_type == "Complex Float 32") and ((get_new_type == "Complex Int 16") or (get_new_type == "Short/Int 16")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'f', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int16)
-            np_data.tofile(get_new_file)
-
-        # Complex Float 32, Float/Float 32 >> Complex Int 8, Byte/Int 8
-        elif ((get_original_type == "Complex Float 32") or (get_original_type == "Float/Float 32")) and ((get_new_type == "Complex Int 8") or (get_new_type == "Byte/Int 8")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'f', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int8)
-            np_data.tofile(get_new_file)
-
-        # Complex Float 32, Float/Float 32 >> Int/Int 32
-        elif ((get_original_type == "Complex Float 32") or (get_original_type == "Float/Float 32")) and (get_new_type == "Int/Int 32"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'f', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int32)
-            np_data.tofile(get_new_file)
-
-        # Complex Float 32, Float/Float 32 >> Complex Float 64
-        elif ((get_original_type == "Complex Float 32") or (get_original_type == "Float/Float 32")) and (get_new_type == "Complex Float 64"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'f', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.float64)
-            np_data.tofile(get_new_file)
-
-        # Complex Float 32, Float/Float 32 >> Complex Int 64
-        elif ((get_original_type == "Complex Float 32") or (get_original_type == "Float/Float 32")) and (get_new_type == "Complex Int 64"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'f', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int64)
-            np_data.tofile(get_new_file)
-
-        # Int/Int 32 >> Complex Float 64
-        elif (get_original_type == "Int/Int 32") and (get_new_type == "Complex Float 64"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'i', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.float64)
-            np_data.tofile(get_new_file)
-
-        # Int/Int 32 >> Complex Int 64
-        elif (get_original_type == "Int/Int 32") and (get_new_type == "Complex Int 64"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'i', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int64)
-            np_data.tofile(get_new_file)
-
-        # Int/Int 32 >> Complex Float 32, Float/Float 32
-        elif (get_original_type == "Int/Int 32") and ((get_new_type == "Complex Float 32") or (get_new_type == "Float/Float 32")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'i', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.float32)
-            np_data.tofile(get_new_file)
-
-        # Int/Int 32 >> Complex Int 16, Short/Int 16
-        elif (get_original_type == "Int/Int 32") and ((get_new_type == "Complex Int 16") or (get_new_type == "Short/Int 16")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'i', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int16)
-            np_data.tofile(get_new_file)
-
-        # Int/Int 32 >> Complex Int 8, Byte/Int 8
-        elif (get_original_type == "Int/Int 32") and ((get_new_type == "Complex Int 8") or (get_new_type == "Byte/Int 8")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'i', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int8)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 16, Short/Int 16 >> Complex Float 32, Float/Float 32
-        elif ((get_original_type == "Complex Int 16") or (get_original_type == "Short/Int 16")) and ((get_new_type == "Complex Float 32") or (get_new_type == "Float/Float 32")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/2)*'h', plot_data)
-            np_data = np.array(plot_data_formatted, dtype=np.float32)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 16, Short/Int 16 >> Complex Float 64
-        elif ((get_original_type == "Complex Int 16") or (get_original_type == "Short/Int 16")) and (get_new_type == "Complex Float 64"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/2)*'h', plot_data)
-            np_data = np.array(plot_data_formatted, dtype=np.float64)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 16, Short/Int 16 >> Complex Int 64
-        elif ((get_original_type == "Complex Int 16") or (get_original_type == "Short/Int 16")) and (get_new_type == "Complex Int 64"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/2)*'h', plot_data)
-            np_data = np.array(plot_data_formatted, dtype=np.int64)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 16, Short/Int 16 >> Int/Int 32
-        elif ((get_original_type == "Complex Int 16") or (get_original_type == "Short/Int 16")) and (get_new_type == "Int/Int 32"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/2)*'h', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int32)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 16, Short/Int 16 >> Complex Int 8, Byte/Int 8
-        elif ((get_original_type == "Complex Int 16") or (get_original_type == "Short/Int 16")) and ((get_new_type == "Complex Int 8") or (get_new_type == "Byte/Int 8")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/2)*'h', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int8)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 8, Byte/Int 8 >> Complex Float 32, Float/Float 32
-        elif ((get_original_type == "Complex Int 8") or (get_original_type == "Byte/Int 8")) and ((get_new_type == "Complex Float 32") or (get_new_type == "Float/Float 32")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes)*'b', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.float32)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 8, Byte/Int 8 >> Complex Float 64
-        elif ((get_original_type == "Complex Int 8") or (get_original_type == "Byte/Int 8")) and (get_new_type == "Complex Float 64"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes)*'b', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.float64)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 8, Byte/Int 8 >> Complex Int 64
-        elif ((get_original_type == "Complex Int 8") or (get_original_type == "Byte/Int 8")) and (get_new_type == "Complex Int 64"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes)*'b', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int64)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 8, Byte/Int 8 >> Int/Int 32
-        elif ((get_original_type == "Complex Int 8") or (get_original_type == "Byte/Int 8")) and (get_new_type == "Int/Int 32"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes)*'b', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int32)
-            np_data.tofile(get_new_file)
-
-        # Complex Int 8, Byte/Int 8 >> Complex Int 16, Short/Int 16
-        elif ((get_original_type == "Complex Int 8") or (get_original_type == "Byte/Int 8")) and ((get_new_type == "Complex Int 16") or (get_new_type == "Short/Int 16")):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes)*'b', plot_data)
-            np_data = np.asarray(plot_data_formatted, dtype=np.int16)
-            np_data.tofile(get_new_file)
-
-        # Unknown
-        else:
-            fissure.Dashboard.UI_Components.Qt5.errorMessage("Cannot convert " + str(get_original_type) + " to " + str(get_new_type) + ".")
-            return
-
-        dashboard.logger.info("Done.")
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotIQ_ConvertNewSelectClicked(dashboard: QtCore.QObject):
-    """ 
-    Loads the current file selected in the list widget as the output file.
-    """
-    try:
-        # Get Highlighted File from Listbox
-        get_file = str(dashboard.ui.listWidget_iq_files.currentItem().text())
-        get_folder = str(dashboard.ui.label_iq_folder.text())
-        dashboard.ui.textEdit_iq_convert_original.setPlainText(get_folder + '/' + get_file)
-
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotIQ_ConvertOriginalSelectClicked(dashboard: QtCore.QObject):
-    """ 
-    Loads the current file selected in the list widget as the output file.
-    """
-    try:
-        # Get Highlighted File from Listbox
-        get_file = str(dashboard.ui.listWidget_iq_files.currentItem().text())
-        get_folder = str(dashboard.ui.label_iq_folder.text())
-        dashboard.ui.textEdit_iq_convert_new.setPlainText(get_folder + '/' + get_file)
-
-    except:
-        pass
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
-def _slotIQ_ConvertCopyClicked(dashboard: QtCore.QObject):
-    """ 
-    Copies the contents from the "Original File" text edit box to the "New File" text edit box.
-    """
-    # Copy the Contents
-    get_original_file = str(dashboard.ui.textEdit_iq_convert_original.toPlainText())
-    dashboard.ui.textEdit_iq_convert_new.setPlainText(get_original_file)
-
-
-@QtCore.pyqtSlot(QtCore.QObject)
 def _slotIQ_TerminalClicked(dashboard: QtCore.QObject):
     """ 
     Opens a terminal to the current IQ folder.
@@ -2862,7 +2535,7 @@ def _slotIQ_NormalizeClicked(dashboard: QtCore.QObject):
         try:
             get_min = float(dashboard.ui.textEdit_iq_normalize_min.toPlainText())
             get_max = float(dashboard.ui.textEdit_iq_normalize_max.toPlainText())
-        except:
+        except ValueError:
             fissure.Dashboard.UI_Components.Qt5.errorMessage("Not a valid float.")
             return
 
@@ -2871,97 +2544,82 @@ def _slotIQ_NormalizeClicked(dashboard: QtCore.QObject):
     get_original_file = str(dashboard.ui.textEdit_iq_normalize_original.toPlainText())
     get_new_file = str(dashboard.ui.textEdit_iq_normalize_new.toPlainText())
 
-    # Files Selected
-    if (len(get_original_file) > 0) and (len(get_new_file) > 0):
-        # Read the Data
-        file = open(get_original_file,"rb")
-        plot_data = file.read()
-        file.close()
+    if not get_original_file or not get_new_file:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage("Please specify both input and output files.")
+        return
 
-        # Complex Float 64
-        if (get_data_type == "Complex Float 64"):
-            # Normalize and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'d', plot_data)
+    try:
+        with open(get_original_file, "rb") as file:
+            plot_data = file.read()
+    except IOError:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage("Error reading the original file.")
+        return
+
+    number_of_bytes = os.path.getsize(get_original_file)
+
+    try:
+        if get_data_type == "Complex Float 64":
+            plot_data_formatted = struct.unpack(f"{number_of_bytes // 8}d", plot_data)
             np_data = np.asarray(plot_data_formatted, dtype=np.float64)
-            array_min = float(min(np_data))
-            array_max = float(max(np_data))
-            for n in range(0, len(np_data)):
-                np_data[n] = (np_data[n] - array_min)*(get_max-get_min)/(array_max-array_min) + get_min
-            np_data.tofile(get_new_file)
 
-        # Complex Float 32
-        elif (get_data_type == "Complex Float 32") or (get_data_type == "Float/Float 32"):
-            # Normalize and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'f', plot_data)
+        elif get_data_type in ["Complex Float 32", "Float/Float 32"]:
+            plot_data_formatted = struct.unpack(f"{number_of_bytes // 4}f", plot_data)
             np_data = np.asarray(plot_data_formatted, dtype=np.float32)
-            array_min = float(min(np_data))
-            array_max = float(max(np_data))
-            for n in range(0, len(np_data)):
-                np_data[n] = (np_data[n] - array_min)*(get_max-get_min)/(array_max-array_min) + get_min
-            np_data.tofile(get_new_file)
 
-        # Complex Int 16
-        elif (get_data_type == "Complex Int 16") or (get_data_type == "Short/Int 16"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/2)*'h', plot_data)
-            np_data = np.array(plot_data_formatted, dtype=np.int16)
-            array_min = float(min(np_data))
-            array_max = float(max(np_data))
-            for n in range(0, len(np_data)):
-                np_data[n] = (float(np_data[n]) - array_min)*(get_max-get_min)/(array_max-array_min) + get_min
-            np_data.tofile(get_new_file)
+        elif get_data_type in ["Complex Int 16", "Short/Int 16"]:
+            plot_data_formatted = struct.unpack(f"{number_of_bytes // 2}h", plot_data)
+            np_data = np.asarray(plot_data_formatted, dtype=np.int16)
 
-        # Complex Int 64
-        elif (get_data_type == "Complex Int 64"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'l', plot_data)
-            np_data = np.array(plot_data_formatted, dtype=np.int64)
-            array_min = float(min(np_data))
-            array_max = float(max(np_data))
-            for n in range(0, len(np_data)):
-                np_data[n] = (float(np_data[n]) - array_min)*(get_max-get_min)/(array_max-array_min) + get_min
-            np_data.tofile(get_new_file)
+        elif get_data_type == "Complex Int 64":
+            plot_data_formatted = struct.unpack(f"{number_of_bytes // 8}q", plot_data)
+            np_data = np.asarray(plot_data_formatted, dtype=np.int64)
 
-        # Int/Int 32
-        elif (get_data_type == "Int/Int 32"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'h', plot_data)
-            np_data = np.array(plot_data_formatted, dtype=np.int32)
-            array_min = float(min(np_data))
-            array_max = float(max(np_data))
-            for n in range(0, len(np_data)):
-                np_data[n] = (float(np_data[n]) - array_min)*(get_max-get_min)/(array_max-array_min) + get_min
-            np_data.tofile(get_new_file)
+        elif get_data_type == "Int/Int 32":
+            plot_data_formatted = struct.unpack(f"{number_of_bytes // 4}i", plot_data)
+            np_data = np.asarray(plot_data_formatted, dtype=np.int32)
 
-        # Complex Int 8
-        elif (get_data_type == "Complex Int 8") or (get_data_type == "Byte/Int 8"):
-            # Convert and Write
-            dashboard.logger.info("Writing to file...")
-            number_of_bytes = os.path.getsize(get_original_file)
-            plot_data_formatted = struct.unpack(int(number_of_bytes)*'b', plot_data)
-            np_data = np.array(plot_data_formatted, dtype=np.int8)
-            array_min = float(min(np_data))
-            array_max = float(max(np_data))
-            for n in range(0, len(np_data)):
-                np_data[n] = (float(np_data[n]) - array_min)*(get_max-get_min)/(array_max-array_min) + get_min
-            np_data.tofile(get_new_file)
+        elif get_data_type in ["Complex Int 8", "Byte/Int 8"]:
+            plot_data_formatted = struct.unpack(f"{number_of_bytes}b", plot_data)
+            np_data = np.asarray(plot_data_formatted, dtype=np.int8)
 
-        # Unknown
+        elif get_data_type == "Unsigned Int 8":
+            plot_data_formatted = struct.unpack(f"{number_of_bytes}B", plot_data)
+            np_data = np.asarray(plot_data_formatted, dtype=np.uint8)
+
+        elif get_data_type == "Unsigned Int 16":
+            plot_data_formatted = struct.unpack(f"{number_of_bytes // 2}H", plot_data)
+            np_data = np.asarray(plot_data_formatted, dtype=np.uint16)
+
+        elif get_data_type == "Unsigned Int 32":
+            plot_data_formatted = struct.unpack(f"{number_of_bytes // 4}I", plot_data)
+            np_data = np.asarray(plot_data_formatted, dtype=np.uint32)
+
+        elif get_data_type == "Unsigned Int 64":
+            plot_data_formatted = struct.unpack(f"{number_of_bytes // 8}Q", plot_data)
+            np_data = np.asarray(plot_data_formatted, dtype=np.uint64)
+
         else:
-            fissure.Dashboard.UI_Components.Qt5.errorMessage("Cannot normalize " + get_data_type + ".")
+            fissure.Dashboard.UI_Components.Qt5.errorMessage(f"Cannot normalize {get_data_type}.")
             return
 
-        dashboard.logger.info("Done.")
+        array_min = float(np.min(np_data))
+        array_max = float(np.max(np_data))
+
+        if array_min == array_max:
+            fissure.Dashboard.UI_Components.Qt5.errorMessage("Data range is zero; cannot normalize.")
+            return
+
+        np_data = (np_data - array_min) * (get_max - get_min) / (array_max - array_min) + get_min
+        np_data.tofile(get_new_file)
+        dashboard.logger.info("Normalization complete and file saved.")
+
+    except (struct.error, ValueError) as e:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage(f"Error processing data: {e}")
+        return
+
+    # Refresh
+    _slotIQ_RefreshClicked(dashboard)
+    dashboard.logger.info("Convert Complete")
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
@@ -3166,11 +2824,12 @@ def _slotIQ_StripClicked(dashboard: QtCore.QObject):
     get_threshold = dashboard.ui.textEdit_iq_strip_amplitude.toPlainText()
     get_output_directory = str(dashboard.ui.textEdit_iq_strip_output.toPlainText())
 
-    if (get_overwrite == False) and (len(get_output_directory) == 0):
+    # Validate Inputs
+    if not get_overwrite and not get_output_directory:
         fissure.Dashboard.UI_Components.Qt5.errorMessage("Select output directory")
         return
 
-    if len(get_threshold) == 0:
+    if not get_threshold:
         fissure.Dashboard.UI_Components.Qt5.errorMessage("Enter amplitude threshold")
         return
 
@@ -3178,84 +2837,66 @@ def _slotIQ_StripClicked(dashboard: QtCore.QObject):
         fissure.Dashboard.UI_Components.Qt5.errorMessage("Select IQ files to be stripped")
         return
 
-    # Load the Data
-    for n in range(0,dashboard.ui.listWidget_iq_strip_input.count()):
+    # Process IQ Files
+    for n in range(dashboard.ui.listWidget_iq_strip_input.count()):
         fname = str(dashboard.ui.listWidget_iq_strip_input.item(n).text())
+        new_file = fname if get_overwrite else f"{get_output_directory}/{os.path.splitext(os.path.basename(fname))[0]}_stripped.{os.path.splitext(fname)[1]}"
 
-        if get_overwrite == True:
-            new_file = fname
-        else:
-            new_file = get_output_directory + '/' + fname.split('/')[-1].split('.')[0] + "_stripped." + fname.split('/')[-1].split('.')[1]
+        if not os.path.isfile(fname):
+            continue
 
-        if os.path.isfile(fname):
-            # Read the Data
-            dashboard.logger.info("Stripping: " + fname)
-            file = open(fname,"rb")
+        dashboard.logger.info(f"Stripping: {fname}")
+
+        with open(fname, "rb") as file:
             plot_data = file.read()
-            file.close()
 
-            # Complex Float 64
-            if (get_data_type == "Complex Float 64"):
-                # Strip and Write
-                number_of_bytes = os.path.getsize(fname)
-                plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'d', plot_data)
-                np_data = np.asarray(plot_data_formatted, dtype=np.float64)
+        number_of_bytes = os.path.getsize(fname)
+        try:
+            # Determine Data Type and Load Data
+            data_types = {
+                "Complex Float 32": ("f", np.complex64),
+                "Float/Float 32": ("f", np.float32),
+                "Short/Int 16": ("h", np.int16),
+                "Unsigned Int 16": ("H", np.uint16),
+                "Int/Int 32": ("i", np.int32),
+                "Unsigned Int 32": ("I", np.uint32),
+                "Byte/Int 8": ("b", np.int8),
+                "Unsigned Int 8": ("B", np.uint8),
+                "Complex Float 64": ("d", np.complex128),
+                "Complex Int 64": ("q", np.int64),
+                "Complex Unsigned Int 64": ("Q", np.uint64),
+                "Complex Int 16": ("h", np.int16),
+                "Complex Unsigned Int 16": ("H", np.uint16),
+                "Complex Int 8": ("b", np.int8),
+                "Complex Unsigned Int 8": ("B", np.uint8),
+            }
 
-            # Complex Float 32
-            elif (get_data_type == "Complex Float 32") or (get_data_type == "Float/Float 32"):
-                # Strip and Write
-                number_of_bytes = os.path.getsize(fname)
-                plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'f', plot_data)
-                np_data = np.asarray(plot_data_formatted, dtype=np.float32)
+            struct_format, numpy_dtype = data_types.get(get_data_type, (None, None))
+            if not struct_format:
+                raise ValueError("Unknown Data Type")
 
-            # Complex Int 16
-            elif (get_data_type == "Complex Int 16") or (get_data_type == "Short/Int 16"):
-                # Strip and Write
-                number_of_bytes = os.path.getsize(fname)
-                plot_data_formatted = struct.unpack(int(number_of_bytes/2)*'h', plot_data)
-                np_data = np.array(plot_data_formatted, dtype=np.int16)
+            plot_data_formatted = struct.unpack(int(number_of_bytes / struct.calcsize(struct_format)) * struct_format, plot_data)
+            np_data = np.array(plot_data_formatted, dtype=numpy_dtype)
 
-            # Complex Int 64
-            elif (get_data_type == "Complex Int 64"):
-                # Strip and Write
-                number_of_bytes = os.path.getsize(fname)
-                plot_data_formatted = struct.unpack(int(number_of_bytes/8)*'l', plot_data)
-                np_data = np.array(plot_data_formatted, dtype=np.int64)
-
-            # Int/Int 32
-            elif (get_data_type == "Int/Int 32"):
-                # Strip and Write
-                number_of_bytes = os.path.getsize(fname)
-                plot_data_formatted = struct.unpack(int(number_of_bytes/4)*'h', plot_data)
-                np_data = np.array(plot_data_formatted, dtype=np.int32)
-
-            # Complex Int 8
-            elif (get_data_type == "Complex Int 8") or (get_data_type == "Byte/Int 8"):
-                # Strip and Write
-                number_of_bytes = os.path.getsize(fname)
-                plot_data_formatted = struct.unpack(int(number_of_bytes)*'b', plot_data)
-                np_data = np.array(plot_data_formatted, dtype=np.int8)
-
-            # Unknown
-            else:
-                fissure.Dashboard.UI_Components.Qt5.errorMessage("Unknown Data Type")
-                return
-
-            # Strip and Save
-            strip_left = 0
-            strip_right = len(np_data)
-            if get_before == True:
-                for n in range(0, len(np_data)):
-                    if abs(np_data[n]) > float(get_threshold):
-                        strip_left = n
+            # Strip Data
+            strip_left, strip_right = 0, len(np_data)
+            if get_before:
+                for i, sample in enumerate(np_data):
+                    if abs(sample) > float(get_threshold):
+                        strip_left = i
                         break
-            if get_after == True:
-                for n in reversed(range(0, len(np_data))):
-                    if abs(np_data[n]) > float(get_threshold):
-                        strip_right = n
+            if get_after:
+                for i in reversed(range(len(np_data))):
+                    if abs(np_data[i]) > float(get_threshold):
+                        strip_right = i + 1
                         break
             np_data = np_data[strip_left:strip_right]
+
+            # Save Data
             np_data.tofile(new_file)
+        except ValueError as e:
+            fissure.Dashboard.UI_Components.Qt5.errorMessage(str(e))
+            return
 
     _slotIQ_RefreshClicked(dashboard)
     dashboard.logger.info("Complete")
@@ -3610,75 +3251,61 @@ def _slotIQ_SplitClicked(dashboard: QtCore.QObject):
     get_input_file = str(dashboard.ui.textEdit_iq_split_input.toPlainText())
     get_output_file = str(dashboard.ui.textEdit_iq_split_output.toPlainText())
     get_num_files = int(dashboard.ui.spinBox_iq_split.value())
-    if (len(get_input_file) == 0) or (len(get_output_file) == 0):
+    if not get_input_file or not get_output_file:
         fissure.Dashboard.UI_Components.Qt5.errorMessage("Enter filepaths")
         return
-    
+
     # Number of Samples
     number_of_bytes = os.path.getsize(get_input_file)
     num_samples = 0
+    type_to_bytes = {
+        "Complex Float 32": 8,
+        "Float/Float 32": 4,
+        "Short/Int 16": 2,
+        "Unsigned Int 16": 2,
+        "Int/Int 32": 4,
+        "Unsigned Int 32": 4,
+        "Byte/Int 8": 1,
+        "Unsigned Int 8": 1,
+        "Complex Float 64": 16,
+        "Complex Int 64": 16,
+        "Complex Unsigned Int 64": 16,
+        "Complex Int 16": 4,
+        "Complex Unsigned Int 16": 4,
+        "Complex Int 8": 2,
+        "Complex Unsigned Int 8": 2,
+    }
+
     if number_of_bytes > 0:
-        if get_data_type == "Complex Float 32":
-            num_samples = int(number_of_bytes/8)
-        elif get_data_type == "Float/Float 32":
-            num_samples = int(number_of_bytes/4)
-        elif get_data_type == "Short/Int 16":
-            num_samples = int(number_of_bytes/2)
-        elif get_data_type == "Int/Int 32":
-            num_samples = int(number_of_bytes/4)
-        elif get_data_type == "Byte/Int 8":
-            num_samples = int(number_of_bytes/1)
-        elif get_data_type == "Complex Int 16":
-            num_samples = int(number_of_bytes/4)
-        elif get_data_type == "Complex Int 8":
-            num_samples = int(number_of_bytes/2)
-        elif get_data_type == "Complex Float 64":
-            num_samples = int(number_of_bytes/16)
-        elif get_data_type == "Complex Int 64":
-            num_samples = int(number_of_bytes/16)
+        if get_data_type in type_to_bytes:
+            num_samples = number_of_bytes // type_to_bytes[get_data_type]
+        else:
+            fissure.Dashboard.UI_Components.Qt5.errorMessage("Invalid data type selected.")
+            return
     else:
         fissure.Dashboard.UI_Components.Qt5.errorMessage("Error. File is empty.")
         return
-    
+
     # Split
-    block_size = int(float(num_samples)/get_num_files)
-    remainder = int(float(num_samples)%get_num_files)
-    
+    block_size = num_samples // get_num_files
+    remainder = num_samples % get_num_files
+
     # Sample Size in Bytes
-    if get_data_type == "Complex Float 32":
-        bs = "8"
-    elif get_data_type == "Float/Float 32":
-        bs = "4"
-    elif get_data_type == "Short/Int 16":
-        bs = "2"
-    elif get_data_type == "Int/Int 32":
-        bs = "4"
-    elif get_data_type == "Byte/Int 8":
-        bs = "1"
-    elif get_data_type == "Complex Float 64":
-        bs = "16"
-    elif get_data_type == "Complex Int 64":
-        bs = "16"
-    elif get_data_type == "Complex Int 16":
-        bs = "4"
-    elif get_data_type == "Complex Int 8":
-        bs = "2"
+    bs = str(type_to_bytes.get(get_data_type, 1))  # Default to 1 if type is invalid
 
     # Save Files
     start_location = 0
-    for n in range(0, get_num_files):
+    for n in range(get_num_files):
         if '.' in get_output_file:
-            new_output_file = (get_output_file.rpartition('.')[0] + '_' + str(n+1) + '.' + get_output_file.rpartition('.')[2])
+            new_output_file = f"{get_output_file.rpartition('.')[0]}_{n+1}.{get_output_file.rpartition('.')[2]}"
         else:
-            new_output_file = get_output_file + '_' + str(n+1)
+            new_output_file = f"{get_output_file}_{n+1}"
         
         # Last File Gets Remainder
-        if n == get_num_files-1:
-            os.system('dd if="'+ get_input_file + '" of="' + new_output_file + '" bs=' + bs + ' skip=' + str(start_location) + ' count=' + str(block_size+remainder))
-        else:
-            os.system('dd if="'+ get_input_file + '" of="' + new_output_file + '" bs=' + bs + ' skip=' + str(start_location) + ' count=' + str(block_size))
-        start_location = start_location + block_size
-    
+        count = block_size + remainder if n == get_num_files - 1 else block_size
+        os.system(f'dd if="{get_input_file}" of="{new_output_file}" bs={bs} skip={start_location} count={count}')
+        start_location += block_size
+
     # Refresh the List
     _slotIQ_RefreshClicked(dashboard)
 
@@ -3716,55 +3343,71 @@ def generateOOK_Signal(dashboard: QtCore.QObject, chip0_pattern, chip1_pattern, 
     chip1_samples = int(float(chip1_duration) * 1e-6 * float(sample_rate) * 1e6)
     
     # Convert Bits to Chips
-    sequence = sequence.replace(' ','')
+    sequence = sequence.replace(' ', '')
     chip_stream = ''
-    for n in range(0,len(sequence)):
+    for n in range(len(sequence)):
         if sequence[n] == "0":
-            chip_stream = chip_stream + chip0_pattern
+            chip_stream += chip0_pattern
         elif sequence[n] == "1":
-            chip_stream = chip_stream + chip1_pattern
+            chip_stream += chip1_pattern
         else:
             fissure.Dashboard.UI_Components.Qt5.errorMessage("Invalid chip/bit sequence. Enter as a series of 0's and 1's.")
             return -1       
             
     # Convert Chips to Samples
     chip_samples = ''
-    for n in range(0,len(chip_stream)):
+    for n in range(len(chip_stream)):
         if chip_stream[n] == "0":
-            chip_samples = chip_samples + chip_stream[n] * chip0_samples
+            chip_samples += chip_stream[n] * chip0_samples
         elif chip_stream[n] == "1":
-            chip_samples = chip_samples + chip_stream[n] * chip1_samples
+            chip_samples += chip_stream[n] * chip1_samples
             
     # Add in Bursts
     burst_samples = ''
-    for n in range(0,int(number_of_bursts)):
-        burst_samples = burst_samples + chip_samples + "0" * int(float(burst_interval) * 1e-6 * float(sample_rate) * 1e6)
+    for n in range(int(number_of_bursts)):
+        burst_samples += chip_samples + "0" * int(float(burst_interval) * 1e-6 * float(sample_rate) * 1e6)
 
     # Format Samples
     sample_array = np.array([int(sample) for sample in burst_samples])
+    
     if data_type == "Complex Float 32":
         signal_array = np.zeros(len(sample_array), dtype=np.complex64)
         signal_array.real = sample_array.astype(np.float32)
     elif data_type == "Float/Float 32":
         signal_array = sample_array.astype(np.float32)
     elif data_type == "Short/Int 16":
-        signal_array = sample_array.astype(np.float16)
+        signal_array = sample_array.astype(np.int16)
+    elif data_type == "Unsigned Int 16":
+        signal_array = sample_array.astype(np.uint16)
     elif data_type == "Int/Int 32":
         signal_array = sample_array.astype(np.int32)
+    elif data_type == "Unsigned Int 32":
+        signal_array = sample_array.astype(np.uint32)
     elif data_type == "Byte/Int 8":
         signal_array = sample_array.astype(np.int8)
+    elif data_type == "Unsigned Int 8":
+        signal_array = sample_array.astype(np.uint8)
     elif data_type == "Complex Float 64":
         signal_array = np.zeros(len(sample_array), dtype=np.complex128)
         signal_array.real = sample_array.astype(np.float64)
     elif data_type == "Complex Int 64":
-        signal_array = np.zeros(len(sample_array), dtype=np.int64) + 1j * np.zeros(len(sample_array), dtype=np.int64)
+        signal_array = np.zeros(len(sample_array), dtype=np.complex128)
         signal_array.real = sample_array.astype(np.int64)
+    elif data_type == "Complex Unsigned Int 64":
+        signal_array = np.zeros(len(sample_array), dtype=np.complex128)
+        signal_array.real = sample_array.astype(np.uint64)
     elif data_type == "Complex Int 16":
-        signal_array = np.zeros(len(sample_array), dtype=np.int16) + 1j * np.zeros(len(sample_array), dtype=np.int16)
+        signal_array = np.zeros(len(sample_array), dtype=np.complex64)
         signal_array.real = sample_array.astype(np.int16)
+    elif data_type == "Complex Unsigned Int 16":
+        signal_array = np.zeros(len(sample_array), dtype=np.complex64)
+        signal_array.real = sample_array.astype(np.uint16)
     elif data_type == "Complex Int 8":
-        signal_array = np.zeros(len(sample_array), dtype=np.int8) + 1j * np.zeros(len(sample_array), dtype=np.int8)
+        signal_array = np.zeros(len(sample_array), dtype=np.complex64)
         signal_array.real = sample_array.astype(np.int8)
+    elif data_type == "Complex Unsigned Int 8":
+        signal_array = np.zeros(len(sample_array), dtype=np.complex64)
+        signal_array.real = sample_array.astype(np.uint8)
     else:
         signal_array = -1
         dashboard.logger.error("Invalid data type for OOK signal generation.")
@@ -3773,7 +3416,7 @@ def generateOOK_Signal(dashboard: QtCore.QObject, chip0_pattern, chip1_pattern, 
 
 
 @QtCore.pyqtSlot(QtCore.QObject)
-def _slotIQ_PlotClicked(dashboard: QtCore.QObject):
+def _slotIQ_PlotRangeClicked(dashboard: QtCore.QObject):
     """ 
     Plots the selected IQ file within the specified range.
     """
@@ -3831,6 +3474,24 @@ def _slotIQ_PlotClicked(dashboard: QtCore.QObject):
                 complex_multiple = 2
                 sample_size = 8
                 num_samples = complex_multiple * num_samples
+            elif get_type == "Unsigned Int 8":
+                sample_size = 1
+            elif get_type == "Unsigned Int 16":
+                sample_size = 2
+            elif get_type == "Unsigned Int 32":
+                sample_size = 4
+            elif get_type == "Complex Unsigned Int 64":
+                sample_size = 8
+                complex_multiple = 2
+                num_samples = complex_multiple * num_samples
+            elif get_type == "Complex Unsigned Int 16":
+                sample_size = 2
+                complex_multiple = 2
+                num_samples = complex_multiple * num_samples
+            elif get_type == "Complex Unsigned Int 8":
+                sample_size = 1
+                complex_multiple = 2
+                num_samples = complex_multiple * num_samples
 
             # Check the Range
             if (num_samples*sample_size > number_of_bytes) or (complex_multiple*end_sample*sample_size > number_of_bytes) or (start_sample < 1):
@@ -3866,6 +3527,18 @@ def _slotIQ_PlotClicked(dashboard: QtCore.QObject):
                 plot_data_formatted = struct.unpack(num_samples*'d', plot_data)
             elif get_type == "Complex Int 64":
                 plot_data_formatted = struct.unpack(num_samples*'l', plot_data)
+            elif get_type == "Unsigned Int 8":
+                plot_data_formatted = struct.unpack(int(len(plot_data)/1)*'B', plot_data)
+            elif get_type == "Unsigned Int 16":
+                plot_data_formatted = struct.unpack(int(len(plot_data)/2)*'H', plot_data)
+            elif get_type == "Unsigned Int 32":
+                plot_data_formatted = struct.unpack(int(len(plot_data)/4)*'I', plot_data)
+            elif get_type == "Complex Unsigned Int 64":
+                plot_data_formatted = struct.unpack(int(len(plot_data)/8)*'Q', plot_data)
+            elif get_type == "Complex Unsigned Int 16":
+                plot_data_formatted = struct.unpack(int(len(plot_data)/2)*'H', plot_data)
+            elif get_type == "Complex Unsigned Int 8":
+                plot_data_formatted = struct.unpack(int(len(plot_data)/1)*'B', plot_data)
 
             # Plot
             dashboard.iq_matplotlib_widget.clearPlot()
@@ -3957,6 +3630,24 @@ def _slotIQ_PlotAllClicked(dashboard: QtCore.QObject):
         sample_size = 8
         complex_multiple = 2
         num_samples = complex_multiple * num_samples
+    elif get_type == "Unsigned Int 8":
+        sample_size = 1
+    elif get_type == "Unsigned Int 16":
+        sample_size = 2
+    elif get_type == "Unsigned Int 32":
+        sample_size = 4
+    elif get_type == "Complex Unsigned Int 64":
+        sample_size = 8
+        complex_multiple = 2
+        num_samples = complex_multiple * num_samples
+    elif get_type == "Complex Unsigned Int 16":
+        sample_size = 2
+        complex_multiple = 2
+        num_samples = complex_multiple * num_samples
+    elif get_type == "Complex Unsigned Int 8":
+        sample_size = 1
+        complex_multiple = 2
+        num_samples = complex_multiple * num_samples
 
     # Read the Data
     plot_data = b''
@@ -3985,9 +3676,17 @@ def _slotIQ_PlotAllClicked(dashboard: QtCore.QObject):
             elif number_of_bytes > 4000000 and number_of_bytes <= 40000000:
                 skip = 100
 
-            # Skip 1000
-            else:
+            # Every 1000th Sample
+            elif number_of_bytes > 40000000 and number_of_bytes <= 400000000:
                 skip = 1000
+
+            # Every 10000th Sample
+            elif number_of_bytes > 400000000 and number_of_bytes <= 4000000000:
+                skip = 10000
+
+            # Skip 100000 Samples
+            else:
+                skip = 100000
 
             # Read
             for n in range(starting_byte,number_of_bytes,(sample_size*skip*complex_multiple)):
@@ -4023,6 +3722,18 @@ def _slotIQ_PlotAllClicked(dashboard: QtCore.QObject):
         plot_data_formatted = struct.unpack(int(len(plot_data)/8)*'d', plot_data)
     elif get_type == "Complex Int 64":
         plot_data_formatted = struct.unpack(int(len(plot_data)/8)*'l', plot_data)
+    elif get_type == "Unsigned Int 8":
+        plot_data_formatted = struct.unpack(int(len(plot_data)/1)*'B', plot_data)
+    elif get_type == "Unsigned Int 16":
+        plot_data_formatted = struct.unpack(int(len(plot_data)/2)*'H', plot_data)
+    elif get_type == "Unsigned Int 32":
+        plot_data_formatted = struct.unpack(int(len(plot_data)/4)*'I', plot_data)
+    elif get_type == "Complex Unsigned Int 64":
+        plot_data_formatted = struct.unpack(int(len(plot_data)/8)*'Q', plot_data)
+    elif get_type == "Complex Unsigned Int 16":
+        plot_data_formatted = struct.unpack(int(len(plot_data)/2)*'H', plot_data)
+    elif get_type == "Complex Unsigned Int 8":
+        plot_data_formatted = struct.unpack(int(len(plot_data)/1)*'B', plot_data)
 
     # Plot
     dashboard.iq_matplotlib_widget.clearPlot()
@@ -4048,8 +3759,12 @@ def _slotIQ_PlotAllClicked(dashboard: QtCore.QObject):
         dashboard.iq_matplotlib_widget.applyLabels("IQ Data",'Samples/10','Amplitude (LSB)',None,None,text_color=dashboard.backend.settings['color4'])
     elif skip == 100:
         dashboard.iq_matplotlib_widget.applyLabels("IQ Data",'Samples/100','Amplitude (LSB)',None,None,text_color=dashboard.backend.settings['color4'])
-    else:
+    elif skip == 1000:
         dashboard.iq_matplotlib_widget.applyLabels("IQ Data",'Samples/1000','Amplitude (LSB)',None,None,text_color=dashboard.backend.settings['color4'])
+    elif skip == 10000:
+        dashboard.iq_matplotlib_widget.applyLabels("IQ Data",'Samples/10000','Amplitude (LSB)',None,None,text_color=dashboard.backend.settings['color4'])
+    else:
+        dashboard.iq_matplotlib_widget.applyLabels("IQ Data",'Samples/100000','Amplitude (LSB)',None,None,text_color=dashboard.backend.settings['color4'])
 
     dashboard.ui.pushButton_iq_cursor1.setChecked(False)
     _slotIQ_Cursor1Clicked(dashboard)
@@ -6896,3 +6611,352 @@ def _slotIQ_IQEngineClicked(dashboard: QtCore.QObject):
 
     except Exception as e:
         dashboard.logger.error(f"Error: {e}")
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_EndiannessClearClicked(dashboard: QtCore.QObject):
+    """ 
+    Clears the Endianness tab list widget.
+    """
+    # Clear the List Widget
+    dashboard.ui.listWidget_iq_endianness_input.clear()
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_EndiannessSelectClicked(dashboard: QtCore.QObject):
+    """ 
+    Selects an IQ file from the Data Viewer and adds it to the listwidget.
+    """
+    try:
+        # Get Highlighted File from Listbox
+        get_file = str(dashboard.ui.listWidget_iq_files.currentItem().text())
+        get_folder = str(dashboard.ui.label_iq_folder.text())
+        dashboard.ui.listWidget_iq_endianness_input.addItem(get_folder + '/' + get_file)
+
+    except:
+        pass
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_EndiannessLoadClicked(dashboard: QtCore.QObject):
+    """ 
+    Load multiple IQ files into the listwidget.
+    """
+    # Choose Files
+    get_iq_folder = str(dashboard.ui.comboBox3_iq_folders.currentText()) + '/'
+    fname = QtWidgets.QFileDialog.getOpenFileNames(None,"Select IQ Files...", get_iq_folder, filter="All Files (*)")
+    if fname != "":
+        for n in fname[0]:
+            dashboard.ui.listWidget_iq_endianness_input.addItem(n)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_EndiannessRemoveClicked(dashboard: QtCore.QObject):
+    """ 
+    Removes a file from the list widget.
+    """
+    # Remove
+    if dashboard.ui.listWidget_iq_endianness_input.count() > 0:
+        get_index = int(dashboard.ui.listWidget_iq_endianness_input.currentRow())
+        for item in dashboard.ui.listWidget_iq_endianness_input.selectedItems():
+            dashboard.ui.listWidget_iq_endianness_input.takeItem(dashboard.ui.listWidget_iq_endianness_input.row(item))
+
+        # Refresh
+        if get_index == dashboard.ui.listWidget_iq_endianness_input.count():
+            get_index = get_index -1
+        dashboard.ui.listWidget_iq_endianness_input.setCurrentRow(get_index)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_EndiannessChooseClicked(dashboard: QtCore.QObject):
+    """ 
+    Choose an output directory to store new stripped IQ files.
+    """
+    # Select a Directory
+    dialog = QtWidgets.QFileDialog(dashboard)
+    dialog.setFileMode(QtWidgets.QFileDialog.Directory)
+    dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly, True)
+
+    if dialog.exec_():
+        for d in dialog.selectedFiles():
+            folder = d
+    try:
+        dashboard.ui.textEdit_iq_endianness_output.setText(folder)
+    except:
+        pass
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_EndiannessClicked(dashboard: QtCore.QObject):
+    """ 
+    Swaps the endianness for input IQ files.
+    """
+    # Get Inputs
+    get_overwrite = dashboard.ui.checkBox_iq_endianness_overwrite.isChecked()
+    get_data_type = str(dashboard.ui.comboBox_iq_endianness_data_type.currentText())
+    get_output_directory = str(dashboard.ui.textEdit_iq_endianness_output.toPlainText())
+
+    if not get_output_directory:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage("Select output directory")
+        return
+
+    if dashboard.ui.listWidget_iq_endianness_input.count() == 0:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage("Select IQ files to swap endianness")
+        return
+
+    # Define a mapping for data type sizes
+    data_type_map = {
+        "Complex Float 32": (">f", 4),
+        "Float/Float 32": (">f", 4),
+        "Short/Int 16": (">h", 2),
+        "Unsigned Int 16": (">H", 2),
+        "Int/Int 32": (">i", 4),
+        "Unsigned Int 32": (">I", 4),
+        "Byte/Int 8": (">b", 1),
+        "Unsigned Int 8": (">B", 1),
+        "Complex Float 64": (">d", 8),
+        "Complex Int 64": (">q", 8),
+        "Complex Unsigned Int 64": (">Q", 8),
+        "Complex Int 16": (">h", 2),
+        "Complex Unsigned Int 16": (">H", 2),
+        "Complex Int 8": (">b", 1),
+        "Complex Unsigned Int 8": (">B", 1),
+    }
+
+    # Process files
+    for n in range(dashboard.ui.listWidget_iq_endianness_input.count()):
+        fname = str(dashboard.ui.listWidget_iq_endianness_input.item(n).text())
+
+        if get_overwrite:
+            new_file = fname
+        else:
+            base_name = os.path.basename(fname)
+            new_file = os.path.join(get_output_directory, f"{os.path.splitext(base_name)[0]}_swapped{os.path.splitext(base_name)[1]}")
+
+        if not os.path.isfile(fname):
+            fissure.Dashboard.UI_Components.Qt5.errorMessage(f"File not found: {fname}")
+            continue
+
+        # Check data type
+        if get_data_type not in data_type_map:
+            fissure.Dashboard.UI_Components.Qt5.errorMessage("Unknown Data Type")
+            return
+
+        # Read, swap, and write data
+        dashboard.logger.info(f"Swapping Endianness for: {fname}")
+        with open(fname, "rb") as file:
+            file_data = file.read()
+
+        struct_format, byte_size = data_type_map[get_data_type]
+        try:
+            # Unpack data, swap endianness, and repack
+            unpacked_data = struct.iter_unpack(struct_format, file_data)
+            swapped_data = [struct.pack(struct_format.replace(">", "<"), *item) for item in unpacked_data]
+            
+            # Save swapped data
+            with open(new_file, "wb") as out_file:
+                out_file.writelines(swapped_data)
+        except Exception as e:
+            dashboard.logger.error(f"Error processing {fname}: {e}")
+            fissure.Dashboard.UI_Components.Qt5.errorMessage(f"Error processing {fname}: {e}")
+            continue
+
+    # Refresh
+    _slotIQ_RefreshClicked(dashboard)
+    dashboard.logger.info("Swap Endianness Complete")
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_ConvertClearClicked(dashboard: QtCore.QObject):
+    """ 
+    Clears the Convert tab list widget.
+    """
+    # Clear the List Widget
+    dashboard.ui.listWidget_iq_convert_input.clear()
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_ConvertSelectClicked(dashboard: QtCore.QObject):
+    """ 
+    Selects an IQ file from the Data Viewer and adds it to the listwidget.
+    """
+    try:
+        # Get Highlighted File from Listbox
+        get_file = str(dashboard.ui.listWidget_iq_files.currentItem().text())
+        get_folder = str(dashboard.ui.label_iq_folder.text())
+        dashboard.ui.listWidget_iq_convert_input.addItem(get_folder + '/' + get_file)
+
+    except:
+        pass
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_ConvertLoadClicked(dashboard: QtCore.QObject):
+    """ 
+    Load multiple IQ files into the listwidget.
+    """
+    # Choose Files
+    get_iq_folder = str(dashboard.ui.comboBox3_iq_folders.currentText()) + '/'
+    fname = QtWidgets.QFileDialog.getOpenFileNames(None,"Select IQ Files...", get_iq_folder, filter="All Files (*)")
+    if fname != "":
+        for n in fname[0]:
+            dashboard.ui.listWidget_iq_convert_input.addItem(n)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_ConvertRemoveClicked(dashboard: QtCore.QObject):
+    """ 
+    Removes a file from the list widget.
+    """
+    # Remove
+    if dashboard.ui.listWidget_iq_convert_input.count() > 0:
+        get_index = int(dashboard.ui.listWidget_iq_convert_input.currentRow())
+        for item in dashboard.ui.listWidget_iq_convert_input.selectedItems():
+            dashboard.ui.listWidget_iq_convert_input.takeItem(dashboard.ui.listWidget_iq_convert_input.row(item))
+
+        # Refresh
+        if get_index == dashboard.ui.listWidget_iq_convert_input.count():
+            get_index = get_index -1
+        dashboard.ui.listWidget_iq_convert_input.setCurrentRow(get_index)
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_ConvertChooseClicked(dashboard: QtCore.QObject):
+    """ 
+    Choose an output directory to store new converted IQ files.
+    """
+    # Select a Directory
+    dialog = QtWidgets.QFileDialog(dashboard)
+    dialog.setFileMode(QtWidgets.QFileDialog.Directory)
+    dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly, True)
+
+    if dialog.exec_():
+        for d in dialog.selectedFiles():
+            folder = d
+    try:
+        dashboard.ui.textEdit_iq_convert_output.setText(folder)
+    except:
+        pass
+
+
+@QtCore.pyqtSlot(QtCore.QObject)
+def _slotIQ_ConvertClicked(dashboard: QtCore.QObject):
+    """ 
+    Convert from one data type to another with the option to normalize to target data range.
+    """
+    # Get Inputs
+    get_overwrite = dashboard.ui.checkBox_iq_convert_overwrite.isChecked()
+    get_normalize = dashboard.ui.checkBox_iq_convert_normalize.isChecked()
+    get_original_data_type = str(dashboard.ui.comboBox_iq_convert_original_data_type.currentText())
+    get_new_data_type = str(dashboard.ui.comboBox_iq_convert_new_data_type.currentText())
+    get_output_directory = str(dashboard.ui.textEdit_iq_convert_output.toPlainText())
+
+    if not get_output_directory:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage("Select output directory")
+        return
+
+    if dashboard.ui.listWidget_iq_convert_input.count() == 0:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage("Select IQ files to convert")
+        return
+
+    # Define a mapping for data type sizes
+    data_type_map = {
+        "Complex Float 64": (">d", 8),
+        "Complex Float 32": (">f", 4),
+        "Float/Float 32": (">f", 4),
+        "Complex Int 16": (">h", 2),
+        "Short/Int 16": (">h", 2),
+        "Complex Int 64": (">q", 8),
+        "Int/Int 32": (">i", 4),
+        "Complex Int 8": (">b", 1),
+        "Byte/Int 8": (">b", 1),
+        "Unsigned Int 8": (">B", 1),
+        "Unsigned Int 16": (">H", 2),
+        "Unsigned Int 32": (">I", 4),
+        "Complex Unsigned Int 64": (">Q", 8),
+        "Complex Unsigned Int 16": (">H", 2),
+        "Complex Unsigned Int 8": (">B", 1),
+    }
+
+    dtype_mappings = {
+        "Complex Float 64": np.complex128,
+        "Complex Float 32": np.complex64,
+        "Float/Float 32": np.float32,
+        "Complex Int 64": np.complex128,
+        "Int/Int 32": np.int32,
+        "Complex Int 16": np.int16,
+        "Short/Int 16": np.int16,
+        "Complex Int 8": np.complex64,
+        "Byte/Int 8": np.int8,
+        "Unsigned Int 8": np.uint8,
+        "Unsigned Int 16": np.uint16,
+        "Unsigned Int 32": np.uint32,
+        "Complex Unsigned Int 64": np.complex128,
+        "Complex Unsigned Int 16": np.complex64,
+        "Complex Unsigned Int 8": np.complex64,
+    }
+
+    for n in range(dashboard.ui.listWidget_iq_convert_input.count()):
+        fname = str(dashboard.ui.listWidget_iq_convert_input.item(n).text())
+
+        if get_overwrite:
+            new_file = fname
+        else:
+            base_name = os.path.basename(fname)
+            new_file = os.path.join(get_output_directory, f"{os.path.splitext(base_name)[0]}_converted{os.path.splitext(base_name)[1]}")
+
+        if not os.path.isfile(fname):
+            dashboard.logger.error(f"File not found: {fname}")
+            continue
+
+        if (get_original_data_type not in data_type_map) or (get_new_data_type not in data_type_map):
+            dashboard.logger.error("Unknown Data Type")
+            return
+
+        # Convert Logic
+        original_dtype = dtype_mappings[get_original_data_type]
+        new_dtype = dtype_mappings[get_new_data_type]
+
+        try:
+            # Read input data
+            data = np.fromfile(fname, dtype=original_dtype)
+
+            if get_normalize:
+                # Normalize data to fit new data type range
+                if np.issubdtype(original_dtype, np.complexfloating):
+                    real_max = max(np.abs(data.real))
+                    imag_max = max(np.abs(data.imag))
+                    scale = max(real_max, imag_max)
+                    if scale > 0:
+                        data = data / scale
+                else:
+                    data_max = max(np.abs(data))
+                    if data_max > 0:
+                        data = data / data_max
+
+                # Scale to target type range
+                if np.issubdtype(new_dtype, np.integer):
+                    new_dtype_max = np.iinfo(new_dtype).max
+                elif np.issubdtype(new_dtype, np.floating):
+                    new_dtype_max = 1.0
+                else:
+                    new_dtype_max = 1.0  # Default fallback for unsupported cases
+                
+                data = data * new_dtype_max
+
+            # Convert to new data type
+            converted_data = data.astype(new_dtype)
+
+            # Write output data
+            converted_data.tofile(new_file)
+            dashboard.logger.info(f"File converted successfully: {new_file}")
+
+        except Exception as e:
+            dashboard.logger.error(f"Error processing file {fname}: {str(e)}")
+
+    # Refresh
+    _slotIQ_RefreshClicked(dashboard)
+    dashboard.logger.info("Convert Complete")
+
+
+

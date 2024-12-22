@@ -1,7 +1,27 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## 2024-12-16
+## 2024-12-22
+
+Endianness tab, unsigned integers, IQ Data tab upgrades.
+
+### Added
+
+- Endianness tab in IQ Data to swap between little endian and big endian formats
+- Support for unsigned integers in the IQ Data tab
+- previewIQ_File() to Qt5.py for opening a plot dialog to display truncated data
+- Archive data type changes the data type in IQ Data tab after Plot is clicked
+
+### Changed
+
+- Edited IQ preview functions to use common previewIQ_File() function
+- Expanded skip limits for plotting large IQ files
+- Updated IQ Data > Convert tab to support batch processing and normalization
+- Inserted extra data types and cleaned up IQ Data > Resample function
+- Cleaned up IQ Data > Strip function
+- Cleaned up IQ Data > OOK signal generation function
+
+## 2024-12-19
 
 Partial plugin updates and bug fixes.
 

@@ -11,6 +11,8 @@ import subprocess
 import yaml
 import asyncio
 import qasync
+import struct
+import matplotlib.pyplot as plt
 
 
 async def async_save_file_dialog(parent, directory, default_suffix, name_filter):
@@ -1381,3 +1383,216 @@ class FeaturesDialog(QtWidgets.QDialog, UI_Types.Features):
         self.tableWidget_features.resizeColumnsToContents()
         self.tableWidget_features.horizontalHeader().setStretchLastSection(False)
         self.tableWidget_features.horizontalHeader().setStretchLastSection(True)
+
+
+def previewIQ_File(get_type, get_filepath):
+    """
+    Creates a dialog with a preview plot for an IQ file. Not every sample is plotted for large files.
+    """
+    try:
+        number_of_bytes = os.path.getsize(get_filepath)
+    except:
+        number_of_bytes = -1
+        
+    # Number of Samples
+    num_samples = -1
+    if number_of_bytes > 0:            
+        if get_type == "Complex Float 32":
+            num_samples = int(number_of_bytes/8)
+        elif get_type == "Float/Float 32":
+            num_samples = int(number_of_bytes/4)
+        elif get_type == "Short/Int 16":
+            num_samples = int(number_of_bytes/2)
+        elif get_type == "Int/Int 32":
+            num_samples = int(number_of_bytes/4)
+        elif get_type == "Byte/Int 8":
+            num_samples = int(number_of_bytes/1)
+        elif get_type == "Complex Int 16":
+            num_samples = int(number_of_bytes/4)
+        elif get_type == "Complex Int 8":
+            num_samples = int(number_of_bytes/2)
+        elif get_type == "Complex Float 64":
+            num_samples = int(number_of_bytes/16)
+        elif get_type == "Complex Int 64":
+            num_samples = int(number_of_bytes/16)
+        elif get_type == "Unsigned Int 8":
+            num_samples = int(number_of_bytes/1)
+        elif get_type == "Unsigned Int 16":
+            num_samples = int(number_of_bytes/2)
+        elif get_type == "Unsigned Int 32":
+            num_samples = int(number_of_bytes/4)
+        elif get_type == "Complex Unsigned Int 64":
+            num_samples = int(number_of_bytes/8)
+        elif get_type == "Complex Unsigned Int 16":
+            num_samples = int(number_of_bytes/4)
+        elif get_type == "Complex Unsigned Int 8":
+            num_samples = int(number_of_bytes/2)
+    
+    # File with Zero Bytes
+    if number_of_bytes <= 0:
+        fissure.Dashboard.UI_Components.Qt5.errorMessage("File is empty")
+
+    # Skip Bytes if File is Too Large        
+    else:            
+        # Get the Number of Samples
+        start_sample = 1
+    
+        # Get the Size of Each Sample in Bytes   
+        complex_multiple = 1   
+        if get_type == "Complex Float 32":
+            sample_size = 4
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples               
+        elif get_type == "Float/Float 32":
+            sample_size = 4
+        elif get_type == "Short/Int 16":
+            sample_size = 2
+        elif get_type == "Int/Int 32":
+            sample_size = 4
+        elif get_type == "Byte/Int 8":
+            sample_size = 1
+        elif get_type == "Complex Int 16":
+            sample_size = 2
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples                  
+        elif get_type == "Complex Int 8":
+            sample_size = 1
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples   
+        elif get_type == "Complex Float 64":
+            sample_size = 8
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples 
+        elif get_type == "Complex Int 64":
+            sample_size = 8
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples
+        elif get_type == "Unsigned Int 8":
+            sample_size = 1
+        elif get_type == "Unsigned Int 16":
+            sample_size = 2
+        elif get_type == "Unsigned Int 32":
+            sample_size = 4
+        elif get_type == "Complex Unsigned Int 64":
+            sample_size = 8
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples
+        elif get_type == "Complex Unsigned Int 16":
+            sample_size = 2
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples
+        elif get_type == "Complex Unsigned Int 8":
+            sample_size = 1
+            complex_multiple = 2
+            num_samples = complex_multiple * num_samples
+                        
+        # Read the Data 
+        plot_data = b''
+        file = open(get_filepath,"rb")                          # Open the file
+        try:
+            if "Complex" in get_type:
+                starting_byte = 2*(start_sample-1) * sample_size
+            else:
+                starting_byte = (start_sample-1) * sample_size
+                
+            # No Skip
+            if number_of_bytes <= 400000:                   
+                skip = 1
+                file.seek(starting_byte)
+                plot_data = file.read(num_samples * sample_size)    # Read the right number of bytes
+                
+            # Skip
+            else:
+                # Every 10th Sample
+                if number_of_bytes > 400000 and number_of_bytes <= 4000000:
+                    skip = 10
+                    
+                # Every 100th Sample
+                elif number_of_bytes > 4000000 and number_of_bytes <= 40000000:
+                    skip = 100
+                    
+                # Every 1000th Sample
+                elif number_of_bytes > 40000000 and number_of_bytes <= 400000000:
+                    skip = 1000
+                    
+                # Every 10000th Sample
+                elif number_of_bytes > 400000000 and number_of_bytes <= 4000000000:
+                    skip = 10000
+                    
+                # Every 100000th Sample
+                elif number_of_bytes > 4000000000 and number_of_bytes <= 40000000000:
+                    skip = 100000
+                    
+                # Skip 1000000
+                else:
+                    skip = 1000000
+                
+                # Read
+                for n in range(starting_byte,number_of_bytes,(sample_size*skip*complex_multiple)):
+                    file.seek(n)
+                    plot_data = plot_data + file.read(sample_size)
+                    if "Complex" in get_type:
+                        plot_data = plot_data + file.read(sample_size)
+
+        except:
+            # Close the File
+            file.close() 
+        
+        # Close the File
+        file.close()         
+                            
+        # Format the Data
+        if get_type == "Complex Float 32":
+            #plot_data_formatted = struct.unpack(num_samples/skip*'f', plot_data)
+            plot_data_formatted = struct.unpack(int(len(plot_data)/4)*'f', plot_data)
+        elif get_type == "Float/Float 32":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/4)*'f', plot_data)
+        elif get_type == "Short/Int 16":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/2)*'h', plot_data)
+        elif get_type == "Int/Int 32":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/4)*'i', plot_data)
+        elif get_type == "Byte/Int 8":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/1)*'b', plot_data)
+        elif get_type == "Complex Int 16":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/2)*'h', plot_data)
+        elif get_type == "Complex Int 8":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/1)*'b', plot_data)
+        elif get_type == "Complex Float 64":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/8)*'d', plot_data)
+        elif get_type == "Complex Int 64":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/8)*'l', plot_data)
+        elif get_type == "Unsigned Int 8":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/1)*'B', plot_data)
+        elif get_type == "Unsigned Int 16":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/2)*'H', plot_data)
+        elif get_type == "Unsigned Int 32":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/4)*'I', plot_data)
+        elif get_type == "Complex Unsigned Int 64":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/8)*'Q', plot_data)
+        elif get_type == "Complex Unsigned Int 16":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/2)*'H', plot_data)
+        elif get_type == "Complex Unsigned Int 8":
+            plot_data_formatted = struct.unpack(int(len(plot_data)/1)*'B', plot_data)
+        
+        # Plot
+        plt.ion()
+        plt.close(1) 
+        if "Complex" in get_type:                    
+            # Plot
+            plt.plot(range(1,len(plot_data_formatted[::2])+1),plot_data_formatted[::2],'b',linewidth=1,zorder=2)
+            plt.plot(range(1,len(plot_data_formatted[::2])+1),plot_data_formatted[1::2],'r',linewidth=1,zorder=2)
+            plt.show()
+        else:
+            plt.plot(range(1,len(plot_data_formatted)+1),plot_data_formatted,'b',linewidth=1,zorder=2)
+            plt.show()
+            
+        # Axes Labels
+        if skip == 1:
+            plt.xlabel('Samples') 
+            plt.ylabel('Amplitude (LSB)') 
+        else:
+            plt.xlabel('Samples/' + str(skip)) 
+            plt.ylabel('Amplitude (LSB)')
+
+        plt.ioff()  # Needed for 22.04, causes warning in 20.04
+        plt.show()  # Needed for 22.04, causes warning in 20.04

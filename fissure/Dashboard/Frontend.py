@@ -3252,22 +3252,6 @@ def connect_iq_slots(dashboard: Dashboard):
     dashboard.ui.pushButton_iq_FunctionsRight.clicked.connect(
         lambda: IQDataTabSlots._slotIQ_FunctionsRightClicked(dashboard)
     )
-    dashboard.ui.pushButton_iq_convert_original_load.clicked.connect(
-        lambda: IQDataTabSlots._slotIQ_ConvertOriginalLoadClicked(dashboard)
-    )
-    dashboard.ui.pushButton_iq_convert_new_load.clicked.connect(
-        lambda: IQDataTabSlots._slotIQ_ConvertNewLoadClicked(dashboard)
-    )
-    dashboard.ui.pushButton_iq_convert.clicked.connect(lambda: IQDataTabSlots._slotIQ_ConvertClicked(dashboard))
-    dashboard.ui.pushButton_iq_convert_original_select.clicked.connect(
-        lambda: IQDataTabSlots._slotIQ_ConvertNewSelectClicked(dashboard)
-    )
-    dashboard.ui.pushButton_iq_convert_new_select.clicked.connect(
-        lambda: IQDataTabSlots._slotIQ_ConvertOriginalSelectClicked(dashboard)
-    )
-    dashboard.ui.pushButton_iq_convert_copy.clicked.connect(
-        lambda: IQDataTabSlots._slotIQ_ConvertCopyClicked(dashboard)
-    )
     dashboard.ui.pushButton_iq_terminal.clicked.connect(lambda: IQDataTabSlots._slotIQ_TerminalClicked(dashboard))
     dashboard.ui.pushButton_iq_normalize_original_load.clicked.connect(
         lambda: IQDataTabSlots._slotIQ_NormalizeOriginalLoadClicked(dashboard)
@@ -3338,7 +3322,7 @@ def connect_iq_slots(dashboard: Dashboard):
     )
     dashboard.ui.pushButton_iq_split.clicked.connect(lambda: IQDataTabSlots._slotIQ_SplitClicked(dashboard))
     dashboard.ui.pushButton_iq_ook_save.clicked.connect(lambda: IQDataTabSlots._slotIQ_OOK_SaveClicked(dashboard))
-    dashboard.ui.pushButton_iq_plot.clicked.connect(lambda: IQDataTabSlots._slotIQ_PlotClicked(dashboard))
+    dashboard.ui.pushButton_iq_plot.clicked.connect(lambda: IQDataTabSlots._slotIQ_PlotRangeClicked(dashboard))
     dashboard.ui.pushButton_iq_plot_all.clicked.connect(lambda: IQDataTabSlots._slotIQ_PlotAllClicked(dashboard))
     dashboard.ui.pushButton_iq_magnitude.clicked.connect(lambda: IQDataTabSlots._slotIQ_PlotMagnitudeClicked(dashboard))
     dashboard.ui.pushButton_iq_if.clicked.connect(lambda: IQDataTabSlots._slotIQ_PlotIF_Clicked(dashboard))
@@ -3391,7 +3375,35 @@ def connect_iq_slots(dashboard: Dashboard):
     dashboard.ui.pushButton_iq_inspection_fg_start.clicked.connect(lambda: IQDataTabSlots._slotIQ_InspectionFG_StartClicked(dashboard))
     dashboard.ui.pushButton_iq_inspection_fg_file_start.clicked.connect(lambda: IQDataTabSlots._slotIQ_InspectionFG_FileStartClicked(dashboard))
     dashboard.ui.pushButton_iq_iqengine.clicked.connect(lambda: IQDataTabSlots._slotIQ_IQEngineClicked(dashboard))
-    
+    dashboard.ui.pushButton1_iq_tab_endianness.clicked.connect(
+        lambda: IQDataTabSlots._slotIQ_TabClicked(dashboard, button_name="pushButton1_iq_tab_endianness")
+    )
+    dashboard.ui.pushButton_iq_endianness_clear.clicked.connect(lambda: IQDataTabSlots._slotIQ_EndiannessClearClicked(dashboard))
+    dashboard.ui.pushButton_iq_endianness_select.clicked.connect(
+        lambda: IQDataTabSlots._slotIQ_EndiannessSelectClicked(dashboard)
+    )
+    dashboard.ui.pushButton_iq_endianness_load.clicked.connect(lambda: IQDataTabSlots._slotIQ_EndiannessLoadClicked(dashboard))
+    dashboard.ui.pushButton_iq_endianness_remove.clicked.connect(
+        lambda: IQDataTabSlots._slotIQ_EndiannessRemoveClicked(dashboard)
+    )
+    dashboard.ui.pushButton_iq_endianness_choose.clicked.connect(
+        lambda: IQDataTabSlots._slotIQ_EndiannessChooseClicked(dashboard)
+    )
+    dashboard.ui.pushButton_iq_endianness.clicked.connect(lambda: IQDataTabSlots._slotIQ_EndiannessClicked(dashboard))
+    ###########################
+    dashboard.ui.pushButton_iq_convert_clear.clicked.connect(lambda: IQDataTabSlots._slotIQ_ConvertClearClicked(dashboard))
+    dashboard.ui.pushButton_iq_convert_select.clicked.connect(
+        lambda: IQDataTabSlots._slotIQ_ConvertSelectClicked(dashboard)
+    )
+    dashboard.ui.pushButton_iq_convert_load.clicked.connect(lambda: IQDataTabSlots._slotIQ_ConvertLoadClicked(dashboard))
+    dashboard.ui.pushButton_iq_convert_remove.clicked.connect(
+        lambda: IQDataTabSlots._slotIQ_ConvertRemoveClicked(dashboard)
+    )
+    dashboard.ui.pushButton_iq_convert_choose.clicked.connect(
+        lambda: IQDataTabSlots._slotIQ_ConvertChooseClicked(dashboard)
+    )
+    dashboard.ui.pushButton_iq_convert.clicked.connect(lambda: IQDataTabSlots._slotIQ_ConvertClicked(dashboard))
+
     # Table Widget
     dashboard.ui.tableWidget_iq_append.horizontalHeader().sectionClicked.connect(
         lambda col: IQDataTabSlots._slotIQ_AppendColumnClicked(dashboard, col)

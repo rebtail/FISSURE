@@ -4521,61 +4521,6 @@ p, li { white-space: pre-wrap; }
            <string>Terminal</string>
           </property>
          </widget>
-         <widget class="QComboBox" name="comboBox_tsi_conditioner_input_data_type">
-          <property name="geometry">
-           <rect>
-            <x>92</x>
-            <y>2</y>
-            <width>165</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <item>
-           <property name="text">
-            <string>Complex Float 32</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Float/Float 32</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Short/Int 16</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Int/Int 32</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Byte/Int 8</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Complex Float 64</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Complex Int 64</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Complex Int 16</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Complex Int 8</string>
-           </property>
-          </item>
-         </widget>
          <widget class="QLabel" name="label2_58">
           <property name="geometry">
            <rect>
@@ -4776,6 +4721,97 @@ p, li { white-space: pre-wrap; }
           <property name="text">
            <string>Remove</string>
           </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox_tsi_conditioner_input_data_type">
+          <property name="geometry">
+           <rect>
+            <x>92</x>
+            <y>2</y>
+            <width>165</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>11</pointsize>
+            <strikeout>false</strikeout>
+           </font>
+          </property>
+          <item>
+           <property name="text">
+            <string>Complex Float 32</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Float/Float 32</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Short/Int 16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Unsigned Int 16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Int/Int 32</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Unsigned Int 32</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Byte/Int 8</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Unsigned Int 8</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Complex Float 64</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Complex Int 64</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Complex Unsigned Int 64</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Complex Int 16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Complex Unsigned Int 16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Complex Int 8</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Complex Unsigned Int 8</string>
+           </property>
+          </item>
          </widget>
         </widget>
         <widget class="QWidget" name="page_27">
@@ -7696,61 +7732,6 @@ p, li { white-space: pre-wrap; }
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
-       <widget class="QComboBox" name="comboBox_tsi_fe_input_data_type">
-        <property name="geometry">
-         <rect>
-          <x>100</x>
-          <y>40</y>
-          <width>157</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <item>
-         <property name="text">
-          <string>Complex Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Float/Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Short/Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Int/Int 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Byte/Int 8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Float 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 8</string>
-         </property>
-        </item>
-       </widget>
        <widget class="QPushButton" name="pushButton_tsi_fe_input_remove">
         <property name="geometry">
          <rect>
@@ -7881,6 +7862,97 @@ p, li { white-space: pre-wrap; }
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox_tsi_fe_input_data_type">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>40</y>
+          <width>160</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>Complex Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Float/Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Short/Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Int/Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Byte/Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Float 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 8</string>
+         </property>
+        </item>
        </widget>
       </widget>
      </widget>
@@ -22996,7 +23068,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>10</x>
         <y>65</y>
-        <width>241</width>
+        <width>246</width>
         <height>236</height>
        </rect>
       </property>
@@ -23013,7 +23085,7 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="pushButton_iq_load_file">
       <property name="geometry">
        <rect>
-        <x>90</x>
+        <x>93</x>
         <y>305</y>
         <width>81</width>
         <height>27</height>
@@ -23054,9 +23126,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="label2_51">
       <property name="geometry">
        <rect>
-        <x>5</x>
+        <x>3</x>
         <y>10</y>
-        <width>80</width>
+        <width>40</width>
         <height>17</height>
        </rect>
       </property>
@@ -23067,7 +23139,7 @@ p, li { white-space: pre-wrap; }
        </font>
       </property>
       <property name="text">
-       <string>Data Type:</string>
+       <string>Type:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -23076,9 +23148,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QComboBox" name="comboBox_iq_data_type">
       <property name="geometry">
        <rect>
-        <x>95</x>
+        <x>46</x>
         <y>5</y>
-        <width>157</width>
+        <width>210</width>
         <height>27</height>
        </rect>
       </property>
@@ -23087,6 +23159,9 @@ p, li { white-space: pre-wrap; }
         <pointsize>11</pointsize>
         <strikeout>false</strikeout>
        </font>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
       </property>
       <item>
        <property name="text">
@@ -23105,12 +23180,27 @@ p, li { white-space: pre-wrap; }
       </item>
       <item>
        <property name="text">
+        <string>Unsigned Int 16</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Int/Int 32</string>
        </property>
       </item>
       <item>
        <property name="text">
+        <string>Unsigned Int 32</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Byte/Int 8</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Unsigned Int 8</string>
        </property>
       </item>
       <item>
@@ -23125,7 +23215,17 @@ p, li { white-space: pre-wrap; }
       </item>
       <item>
        <property name="text">
+        <string>Complex Unsigned Int 64</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Complex Int 16</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Complex Unsigned Int 16</string>
        </property>
       </item>
       <item>
@@ -23133,11 +23233,16 @@ p, li { white-space: pre-wrap; }
         <string>Complex Int 8</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>Complex Unsigned Int 8</string>
+       </property>
+      </item>
      </widget>
      <widget class="QPushButton" name="pushButton_iq_delete">
       <property name="geometry">
        <rect>
-        <x>170</x>
+        <x>176</x>
         <y>305</y>
         <width>81</width>
         <height>27</height>
@@ -23177,7 +23282,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>95</x>
         <y>35</y>
-        <width>157</width>
+        <width>161</width>
         <height>27</height>
        </rect>
       </property>
@@ -23216,7 +23321,7 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="pushButton_iq_terminal">
       <property name="geometry">
        <rect>
-        <x>90</x>
+        <x>93</x>
         <y>335</y>
         <width>81</width>
         <height>27</height>
@@ -23235,7 +23340,7 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="pushButton_iq_sigmf">
       <property name="geometry">
        <rect>
-        <x>170</x>
+        <x>176</x>
         <y>335</y>
         <width>81</width>
         <height>27</height>
@@ -25204,67 +25309,14 @@ p, li { white-space: pre-wrap; }
           <height>27</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
         <property name="tabChangesFocus">
          <bool>true</bool>
         </property>
-       </widget>
-       <widget class="QComboBox" name="comboBox_iq_crop_data_type">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>125</x>
-          <y>130</y>
-          <width>157</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <item>
-         <property name="text">
-          <string>Complex Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Float/Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Short/Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Int/Int 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Byte/Int 8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Float 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 8</string>
-         </property>
-        </item>
        </widget>
        <widget class="QPushButton" name="pushButton_iq_crop">
         <property name="geometry">
@@ -25319,6 +25371,11 @@ p, li { white-space: pre-wrap; }
           <height>27</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
         <property name="tabChangesFocus">
          <bool>true</bool>
         </property>
@@ -25335,6 +25392,11 @@ p, li { white-space: pre-wrap; }
           <height>27</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
         <property name="tabChangesFocus">
          <bool>true</bool>
         </property>
@@ -25342,8 +25404,8 @@ p, li { white-space: pre-wrap; }
          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
        <widget class="QLabel" name="label2_110">
@@ -25376,6 +25438,11 @@ p, li { white-space: pre-wrap; }
           <width>716</width>
           <height>27</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
         </property>
         <property name="tabChangesFocus">
          <bool>true</bool>
@@ -25447,6 +25514,100 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
        </widget>
+       <widget class="QComboBox" name="comboBox_iq_crop_data_type">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>125</x>
+          <y>130</y>
+          <width>200</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>Complex Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Float/Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Short/Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Int/Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Byte/Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Float 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 8</string>
+         </property>
+        </item>
+       </widget>
       </widget>
       <widget class="QLabel" name="label1_228">
        <property name="geometry">
@@ -25494,12 +25655,39 @@ p, li { white-space: pre-wrap; }
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <widget class="QPushButton" name="pushButton_iq_convert_new_load">
+       <widget class="QPushButton" name="pushButton_iq_convert_clear">
         <property name="geometry">
          <rect>
-          <x>1020</x>
-          <y>80</y>
-          <width>60</width>
+          <x>806</x>
+          <y>5</y>
+          <width>16</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>x</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_iq_convert_choose">
+        <property name="geometry">
+         <rect>
+          <x>810</x>
+          <y>105</y>
+          <width>65</width>
           <height>27</height>
          </rect>
         </property>
@@ -25510,18 +25698,37 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="text">
-         <string>Load</string>
+         <string>Choose</string>
         </property>
        </widget>
-       <widget class="QComboBox" name="comboBox_iq_convert_original">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLabel" name="label2_292">
         <property name="geometry">
          <rect>
-          <x>235</x>
-          <y>40</y>
-          <width>157</width>
+          <x>895</x>
+          <y>10</y>
+          <width>90</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Original Type:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox_iq_convert_original_data_type">
+        <property name="geometry">
+         <rect>
+          <x>990</x>
+          <y>5</y>
+          <width>200</width>
           <height>27</height>
          </rect>
         </property>
@@ -25530,9 +25737,6 @@ p, li { white-space: pre-wrap; }
           <pointsize>11</pointsize>
           <strikeout>false</strikeout>
          </font>
-        </property>
-        <property name="currentIndex">
-         <number>0</number>
         </property>
         <item>
          <property name="text">
@@ -25551,12 +25755,27 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <property name="text">
+          <string>Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>Int/Int 32</string>
          </property>
         </item>
         <item>
          <property name="text">
+          <string>Unsigned Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>Byte/Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 8</string>
          </property>
         </item>
         <item>
@@ -25571,7 +25790,17 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <property name="text">
+          <string>Complex Unsigned Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>Complex Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 16</string>
          </property>
         </item>
         <item>
@@ -25579,14 +25808,139 @@ p, li { white-space: pre-wrap; }
           <string>Complex Int 8</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 8</string>
+         </property>
+        </item>
+       </widget>
+       <widget class="QListWidget" name="listWidget_iq_convert_input">
+        <property name="geometry">
+         <rect>
+          <x>115</x>
+          <y>5</y>
+          <width>690</width>
+          <height>90</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="textEdit_iq_convert_output">
+        <property name="geometry">
+         <rect>
+          <x>115</x>
+          <y>105</y>
+          <width>690</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="tabChangesFocus">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_iq_convert_load">
+        <property name="geometry">
+         <rect>
+          <x>825</x>
+          <y>35</y>
+          <width>65</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Load</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_iq_convert_select">
+        <property name="geometry">
+         <rect>
+          <x>825</x>
+          <y>5</y>
+          <width>65</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Select</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label2_109">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>10</y>
+          <width>110</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Input Files:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label2_iq_convert_output">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>110</y>
+          <width>110</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Output Directory:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
        </widget>
        <widget class="QPushButton" name="pushButton_iq_convert">
         <property name="geometry">
          <rect>
           <x>550</x>
-          <y>125</y>
+          <y>140</y>
           <width>98</width>
-          <height>45</height>
+          <height>30</height>
          </rect>
         </property>
         <property name="font">
@@ -25599,53 +25953,15 @@ p, li { white-space: pre-wrap; }
          <string>Convert</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label2_133">
+       <widget class="QCheckBox" name="checkBox_iq_convert_overwrite">
         <property name="geometry">
          <rect>
-          <x>80</x>
-          <y>15</y>
-          <width>150</width>
-          <height>17</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Original File:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-       <widget class="QTextEdit" name="textEdit_iq_convert_original">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>235</x>
-          <y>10</y>
-          <width>716</width>
+          <x>880</x>
+          <y>105</y>
+          <width>90</width>
           <height>27</height>
          </rect>
         </property>
-        <property name="tabChangesFocus">
-         <bool>true</bool>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label2_266">
-        <property name="geometry">
-         <rect>
-          <x>80</x>
-          <y>45</y>
-          <width>150</width>
-          <height>17</height>
-         </rect>
-        </property>
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -25653,53 +25969,15 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="text">
-         <string>Original Data Type:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <string>Overwrite</string>
         </property>
        </widget>
-       <widget class="QTextEdit" name="textEdit_iq_convert_new">
+       <widget class="QPushButton" name="pushButton_iq_convert_remove">
         <property name="geometry">
          <rect>
-          <x>235</x>
-          <y>80</y>
-          <width>716</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="tabChangesFocus">
-         <bool>true</bool>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label2_79">
-        <property name="geometry">
-         <rect>
-          <x>80</x>
-          <y>85</y>
-          <width>150</width>
-          <height>17</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>New File:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_iq_convert_original_load">
-        <property name="geometry">
-         <rect>
-          <x>1020</x>
-          <y>10</y>
-          <width>60</width>
+          <x>825</x>
+          <y>65</y>
+          <width>65</width>
           <height>27</height>
          </rect>
         </property>
@@ -25710,18 +25988,37 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="text">
-         <string>Load</string>
+         <string>Remove</string>
         </property>
        </widget>
-       <widget class="QComboBox" name="comboBox_iq_convert_new">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLabel" name="label2_293">
         <property name="geometry">
          <rect>
-          <x>235</x>
-          <y>110</y>
-          <width>157</width>
+          <x>895</x>
+          <y>40</y>
+          <width>90</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>New Type:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox_iq_convert_new_data_type">
+        <property name="geometry">
+         <rect>
+          <x>990</x>
+          <y>35</y>
+          <width>200</width>
           <height>27</height>
          </rect>
         </property>
@@ -25730,9 +26027,6 @@ p, li { white-space: pre-wrap; }
           <pointsize>11</pointsize>
           <strikeout>false</strikeout>
          </font>
-        </property>
-        <property name="currentIndex">
-         <number>0</number>
         </property>
         <item>
          <property name="text">
@@ -25751,12 +26045,27 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <property name="text">
+          <string>Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>Int/Int 32</string>
          </property>
         </item>
         <item>
          <property name="text">
+          <string>Unsigned Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>Byte/Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 8</string>
          </property>
         </item>
         <item>
@@ -25771,7 +26080,17 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <property name="text">
+          <string>Complex Unsigned Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>Complex Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 16</string>
          </property>
         </item>
         <item>
@@ -25779,14 +26098,19 @@ p, li { white-space: pre-wrap; }
           <string>Complex Int 8</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 8</string>
+         </property>
+        </item>
        </widget>
-       <widget class="QLabel" name="label2_267">
+       <widget class="QCheckBox" name="checkBox_iq_convert_normalize">
         <property name="geometry">
          <rect>
-          <x>80</x>
-          <y>115</y>
-          <width>150</width>
-          <height>17</height>
+          <x>965</x>
+          <y>70</y>
+          <width>216</width>
+          <height>27</height>
          </rect>
         </property>
         <property name="font">
@@ -25796,67 +26120,7 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="text">
-         <string>New Data Type:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_iq_convert_copy">
-        <property name="geometry">
-         <rect>
-          <x>1085</x>
-          <y>80</y>
-          <width>60</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Copy</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_iq_convert_original_select">
-        <property name="geometry">
-         <rect>
-          <x>955</x>
-          <y>10</y>
-          <width>60</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Select</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_iq_convert_new_select">
-        <property name="geometry">
-         <rect>
-          <x>955</x>
-          <y>80</y>
-          <width>60</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="text">
-         <string>Select</string>
+         <string>Normalize to Target Data Range</string>
         </property>
        </widget>
       </widget>
@@ -25950,7 +26214,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="pushButton_iq_append_load1">
         <property name="geometry">
          <rect>
-          <x>995</x>
+          <x>990</x>
           <y>10</y>
           <width>75</width>
           <height>27</height>
@@ -26032,7 +26296,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="pushButton_iq_append_select1">
         <property name="geometry">
          <rect>
-          <x>915</x>
+          <x>910</x>
           <y>10</y>
           <width>75</width>
           <height>27</height>
@@ -26066,73 +26330,6 @@ p, li { white-space: pre-wrap; }
         <property name="text">
          <string>Select</string>
         </property>
-       </widget>
-       <widget class="QComboBox" name="comboBox_iq_append_data_type">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>1015</x>
-          <y>80</y>
-          <width>157</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="currentIndex">
-         <number>0</number>
-        </property>
-        <item>
-         <property name="text">
-          <string>Complex Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Float/Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Short/Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Int/Int 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Byte/Int 8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Float 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 8</string>
-         </property>
-        </item>
        </widget>
        <widget class="QTableWidget" name="tableWidget_iq_append">
         <property name="geometry">
@@ -26171,7 +26368,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="pushButton_iq_append_remove">
         <property name="geometry">
          <rect>
-          <x>915</x>
+          <x>910</x>
           <y>40</y>
           <width>75</width>
           <height>27</height>
@@ -26190,7 +26387,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="pushButton_iq_append_clear">
         <property name="geometry">
          <rect>
-          <x>895</x>
+          <x>890</x>
           <y>10</y>
           <width>16</width>
           <height>16</height>
@@ -26217,7 +26414,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="pushButton_iq_append_down">
         <property name="geometry">
          <rect>
-          <x>915</x>
+          <x>910</x>
           <y>100</y>
           <width>75</width>
           <height>27</height>
@@ -26236,7 +26433,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="pushButton_iq_append_up">
         <property name="geometry">
          <rect>
-          <x>915</x>
+          <x>910</x>
           <y>70</y>
           <width>75</width>
           <height>27</height>
@@ -26255,7 +26452,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="pushButton_iq_append_copy">
         <property name="geometry">
          <rect>
-          <x>995</x>
+          <x>990</x>
           <y>40</y>
           <width>75</width>
           <height>27</height>
@@ -26270,6 +26467,97 @@ p, li { white-space: pre-wrap; }
         <property name="text">
          <string>Copy</string>
         </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox_iq_append_data_type">
+        <property name="geometry">
+         <rect>
+          <x>990</x>
+          <y>80</y>
+          <width>200</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>Complex Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Float/Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Short/Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Int/Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Byte/Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Float 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 8</string>
+         </property>
+        </item>
        </widget>
       </widget>
       <widget class="QLabel" name="label1_229">
@@ -27739,70 +28027,6 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
-       <widget class="QComboBox" name="comboBox_iq_resample_data_type">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>125</x>
-          <y>130</y>
-          <width>157</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <item>
-         <property name="text">
-          <string>Complex Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Float/Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Short/Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Int/Int 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Byte/Int 8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Float 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 8</string>
-         </property>
-        </item>
-       </widget>
        <widget class="QPushButton" name="pushButton_iq_resample_original_load">
         <property name="geometry">
          <rect>
@@ -27897,6 +28121,97 @@ p, li { white-space: pre-wrap; }
         <property name="text">
          <string>Select</string>
         </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox_iq_resample_data_type">
+        <property name="geometry">
+         <rect>
+          <x>125</x>
+          <y>130</y>
+          <width>200</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>Complex Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Float/Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Short/Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Int/Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Byte/Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Float 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 8</string>
+         </property>
+        </item>
        </widget>
       </widget>
       <widget class="QLabel" name="label1_232">
@@ -29477,70 +29792,6 @@ p, li { white-space: pre-wrap; }
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
-       <widget class="QComboBox" name="comboBox_iq_normalize_data_type">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>875</x>
-          <y>45</y>
-          <width>157</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <item>
-         <property name="text">
-          <string>Complex Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Float/Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Short/Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Int/Int 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Byte/Int 8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Float 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 8</string>
-         </property>
-        </item>
-       </widget>
        <widget class="QPushButton" name="pushButton_iq_normalize_original_select">
         <property name="geometry">
          <rect>
@@ -29578,6 +29829,97 @@ p, li { white-space: pre-wrap; }
         <property name="text">
          <string>Select</string>
         </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox_iq_normalize_data_type">
+        <property name="geometry">
+         <rect>
+          <x>875</x>
+          <y>45</y>
+          <width>200</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>Complex Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Float/Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Short/Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Int/Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Byte/Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Float 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 8</string>
+         </property>
+        </item>
        </widget>
       </widget>
       <widget class="QLabel" name="label1_271">
@@ -29677,7 +30019,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QLabel" name="label2_280">
         <property name="geometry">
          <rect>
-          <x>945</x>
+          <x>915</x>
           <y>65</y>
           <width>70</width>
           <height>17</height>
@@ -29695,70 +30037,6 @@ p, li { white-space: pre-wrap; }
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
-       </widget>
-       <widget class="QComboBox" name="comboBox_iq_strip_data_type">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>1020</x>
-          <y>60</y>
-          <width>157</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <item>
-         <property name="text">
-          <string>Complex Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Float/Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Short/Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Int/Int 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Byte/Int 8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Float 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 8</string>
-         </property>
-        </item>
        </widget>
        <widget class="QListWidget" name="listWidget_iq_strip_input">
         <property name="geometry">
@@ -30059,6 +30337,97 @@ p, li { white-space: pre-wrap; }
          <string>x</string>
         </property>
        </widget>
+       <widget class="QComboBox" name="comboBox_iq_strip_data_type">
+        <property name="geometry">
+         <rect>
+          <x>990</x>
+          <y>60</y>
+          <width>200</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>Complex Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Float/Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Short/Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Int/Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Byte/Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Float 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 8</string>
+         </property>
+        </item>
+       </widget>
       </widget>
      </widget>
      <widget class="QWidget" name="Split">
@@ -30330,70 +30699,6 @@ p, li { white-space: pre-wrap; }
          <number>2</number>
         </property>
        </widget>
-       <widget class="QComboBox" name="comboBox_iq_split_data_type">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>165</x>
-          <y>70</y>
-          <width>157</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <item>
-         <property name="text">
-          <string>Complex Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Float/Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Short/Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Int/Int 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Byte/Int 8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Float 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 8</string>
-         </property>
-        </item>
-       </widget>
        <widget class="QLabel" name="label2_282">
         <property name="geometry">
          <rect>
@@ -30415,6 +30720,100 @@ p, li { white-space: pre-wrap; }
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox_iq_split_data_type">
+        <property name="geometry">
+         <rect>
+          <x>165</x>
+          <y>70</y>
+          <width>200</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>Complex Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Float/Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Short/Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Int/Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Byte/Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Float 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 8</string>
+         </property>
+        </item>
        </widget>
       </widget>
      </widget>
@@ -30642,70 +31041,6 @@ p, li { white-space: pre-wrap; }
         <property name="value">
          <number>1</number>
         </property>
-       </widget>
-       <widget class="QComboBox" name="comboBox_iq_ook_data_type">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>385</x>
-          <y>95</y>
-          <width>157</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <item>
-         <property name="text">
-          <string>Complex Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Float/Float 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Short/Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Int/Int 32</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Byte/Int 8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Float 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 64</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Complex Int 8</string>
-         </property>
-        </item>
        </widget>
        <widget class="QLabel" name="label2_285">
         <property name="geometry">
@@ -30955,6 +31290,480 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox_iq_ook_data_type">
+        <property name="geometry">
+         <rect>
+          <x>385</x>
+          <y>95</y>
+          <width>200</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>Complex Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Float/Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Short/Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Int/Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Byte/Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Float 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 8</string>
+         </property>
+        </item>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_3">
+      <widget class="QLabel" name="label1_275">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>5</y>
+         <width>1195</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Ubuntu</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+       <property name="text">
+        <string>Swap Endianness</string>
+       </property>
+      </widget>
+      <widget class="QFrame" name="frame1_93">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>25</y>
+         <width>1195</width>
+         <height>180</height>
+        </rect>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QPushButton" name="pushButton_iq_endianness">
+        <property name="geometry">
+         <rect>
+          <x>550</x>
+          <y>140</y>
+          <width>98</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Swap</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label2_291">
+        <property name="geometry">
+         <rect>
+          <x>915</x>
+          <y>10</y>
+          <width>70</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Data Type:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QListWidget" name="listWidget_iq_endianness_input">
+        <property name="geometry">
+         <rect>
+          <x>115</x>
+          <y>5</y>
+          <width>690</width>
+          <height>90</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_iq_endianness_select">
+        <property name="geometry">
+         <rect>
+          <x>825</x>
+          <y>5</y>
+          <width>65</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Select</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_iq_endianness_load">
+        <property name="geometry">
+         <rect>
+          <x>825</x>
+          <y>35</y>
+          <width>65</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Load</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label2_iq_endianness_output">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>110</y>
+          <width>110</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Output Directory:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="textEdit_iq_endianness_output">
+        <property name="geometry">
+         <rect>
+          <x>115</x>
+          <y>105</y>
+          <width>690</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="tabChangesFocus">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_iq_endianness_choose">
+        <property name="geometry">
+         <rect>
+          <x>810</x>
+          <y>105</y>
+          <width>65</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Choose</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label2_107">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>10</y>
+          <width>110</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Input Files:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_iq_endianness_remove">
+        <property name="geometry">
+         <rect>
+          <x>825</x>
+          <y>65</y>
+          <width>65</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Remove</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_iq_endianness_overwrite">
+        <property name="geometry">
+         <rect>
+          <x>880</x>
+          <y>105</y>
+          <width>90</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>Overwrite</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_iq_endianness_clear">
+        <property name="geometry">
+         <rect>
+          <x>806</x>
+          <y>5</y>
+          <width>16</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="text">
+         <string>x</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox_iq_endianness_data_type">
+        <property name="geometry">
+         <rect>
+          <x>990</x>
+          <y>5</y>
+          <width>200</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>Complex Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Float/Float 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Short/Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Int/Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 32</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Byte/Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Unsigned Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Float 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 64</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 16</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Int 8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Complex Unsigned Int 8</string>
+         </property>
+        </item>
        </widget>
       </widget>
      </widget>
@@ -31647,6 +32456,30 @@ p, li { white-space: pre-wrap; }
       <string>OOK</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton1_iq_tab_endianness">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>26</y>
+       <width>109</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+       <strikeout>false</strikeout>
+      </font>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>Endianness</string>
+     </property>
+    </widget>
     <zorder>frame2_69</zorder>
     <zorder>frame3_iq</zorder>
     <zorder>label_iq_folder</zorder>
@@ -31679,6 +32512,7 @@ p, li { white-space: pre-wrap; }
     <zorder>pushButton1_iq_tab_strip</zorder>
     <zorder>pushButton1_iq_tab_split</zorder>
     <zorder>pushButton1_iq_tab_ook</zorder>
+    <zorder>pushButton1_iq_tab_endianness</zorder>
    </widget>
    <widget class="QWidget" name="tab_archive">
     <attribute name="title">
@@ -33212,7 +34046,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>5</x>
         <y>715</y>
-        <width>120</width>
+        <width>80</width>
         <height>27</height>
        </rect>
       </property>
@@ -33223,7 +34057,7 @@ p, li { white-space: pre-wrap; }
        </font>
       </property>
       <property name="text">
-       <string>Preview Data Type:</string>
+       <string>Data Type:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -33232,9 +34066,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QComboBox" name="comboBox_archive_downloaded_data_type">
       <property name="geometry">
        <rect>
-        <x>130</x>
+        <x>90</x>
         <y>715</y>
-        <width>160</width>
+        <width>200</width>
         <height>27</height>
        </rect>
       </property>
@@ -33261,12 +34095,27 @@ p, li { white-space: pre-wrap; }
       </item>
       <item>
        <property name="text">
+        <string>Unsigned Int 16</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Int/Int 32</string>
        </property>
       </item>
       <item>
        <property name="text">
+        <string>Unsigned Int 32</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Byte/Int 8</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Unsigned Int 8</string>
        </property>
       </item>
       <item>
@@ -33281,12 +34130,27 @@ p, li { white-space: pre-wrap; }
       </item>
       <item>
        <property name="text">
+        <string>Complex Unsigned Int 64</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Complex Int 16</string>
        </property>
       </item>
       <item>
        <property name="text">
+        <string>Complex Unsigned Int 16</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Complex Int 8</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Complex Unsigned Int 8</string>
        </property>
       </item>
      </widget>

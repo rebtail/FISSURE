@@ -301,6 +301,8 @@ def refreshCustomWidgets(dashboard: QtWidgets.QMainWindow):
         IQDataTabSlots._slotIQ_TabClicked(dashboard, "pushButton1_iq_tab_split")
     elif dashboard.ui.stackedWidget3_iq.currentIndex() == 14:
         IQDataTabSlots._slotIQ_TabClicked(dashboard, "pushButton1_iq_tab_ook")
+    elif dashboard.ui.stackedWidget3_iq.currentIndex() == 15:
+        IQDataTabSlots._slotIQ_TabClicked(dashboard, "pushButton1_iq_tab_endianness")        
 
     dashboard.iq_matplotlib_widget.configureAxes(polar=False,background_color=dashboard.backend.settings['color2'],face_color=dashboard.backend.settings['color5'],text_color=dashboard.backend.settings['color4'])
     dashboard.iq_matplotlib_widget.applyLabels("IQ Data",'Samples','Amplitude (LSB)',None,None,text_color=dashboard.backend.settings['color4'])
